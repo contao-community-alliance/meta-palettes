@@ -84,29 +84,8 @@ class MetaPalettes
 				// only generate if not palette exists
 				if (!isset($GLOBALS['TL_DCA'][$strTable]['palettes'][$strPalette]) && is_array($arrMeta))
 				{
-					$arrBuffer = array();
-					// walk over the chapters
-					foreach ($arrMeta as $strLegend=>$arrFields)
-					{
-						if (is_array($arrFields))
-						{
-							// generate palettes legend
-							$strBuffer = sprintf('{%s_legend%s},', $strLegend, in_array(':hide', $arrFields) ? ':hide' : '');
-
-							// filter meta description (fields starting with ":")
-							$arrFields = array_filter($arrFields, array($this, 'filterFields'));
-
-							// only generate chapter if there are any fields
-							if (count($arrFields) > 0)
-							{
-								$strBuffer .= implode(',', $arrFields);
-								$arrBuffer[] = $strBuffer;
-							}
-						}
-					}
-
 					// set the palette
-					$GLOBALS['TL_DCA'][$strTable]['palettes'][$strPalette] = implode(';', $arrBuffer);
+					$GLOBALS['TL_DCA'][$strTable]['palettes'][$strPalette] = self::generatePalette($arrMeta);
 				}
 			}
 		}
@@ -143,4 +122,32 @@ class MetaPalettes
 	public function filterFields($strField) {
 		return $strField[0] != ':';
 	}
+
+	protected static function generatePalette($arrMeta)
+	{
+		$arrBuffer = array();
+
+		// walk over the chapters
+		foreach ($arrMeta as $strLegend=>$arrFields)
+		{
+			if (is_array($arrFields))
+			{
+				// generate palettes legend
+				$strBuffer = sprintf('{%s_legend%s},', $strLegend, in_array(':hide', $arrFields) ? ':hide' : '');
+
+				// filter meta description (fields starting with ":")
+				$arrFields = array_filter($arrFields, array(self::getInstance(), 'filterFields'));
+
+				// only generate chapter if there are any fields
+				if (count($arrFields) > 0)
+				{
+					$strBuffer .= implode(',', $arrFields);
+					$arrBuffer[] = $strBuffer;
+				}
+			}
+		}
+
+		return implode(';', $arrBuffer);
+	}
+
 }
