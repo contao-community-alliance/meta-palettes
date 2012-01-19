@@ -45,6 +45,31 @@
 class MetaPalettes
 {
 	/**
+	 * @var MetaPalettes
+	 */
+	protected static $objInstance = null;
+
+	/**
+	 * Get the static instance.
+	 *
+	 * @static
+	 * @return MetaPalettes
+	 */
+	public static function getInstance()
+	{
+		if (self::$objInstance == null) {
+			self::$objInstance = new MetaPalettes();
+		}
+		return self::$objInstance;
+	}
+
+	/**
+	 * Protected constructor for singleton instance.
+	 */
+	protected function __construct() {}
+
+
+	/**
 	 * @param $strTable
 	 * @return void
 	 */
