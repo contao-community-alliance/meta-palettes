@@ -68,6 +68,97 @@ class MetaPalettes
 	 */
 	protected function __construct() {}
 
+	/**
+	 * Dynamic append a meta palette definition to the dca.
+	 *
+	 * @static
+	 * @param string $strTable
+	 * The table name.
+	 * @param mixed $varArg1
+	 * The palette name or the meta definition. In last case, the meta will be appended to the default palette.
+	 * @param mixed $varArg2
+	 * The meta definition, only needed if the palette name is given as second parameter.
+	 * @return void
+	 */
+	public static function appendTo($strTable, $varArg1, $varArg2 = null)
+	{
+		if (is_array($varArg1)) {
+			$varArg2 = $varArg1;
+			$varArg1 = 'default';
+		}
+
+		$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] .= ';' . self::generatePalette($varArg2);
+	}
+
+	/**
+	 * Dynamic append a meta palette definition to the dca, before a block.
+	 *
+	 * @static
+	 * @param string $strTable
+	 * The table name.
+	 * @param mixed $varArg1
+	 * The palette name or the legend name (without trailing _legend, e.a. title and NOT title_legend) the palette should appended after. In last case, the meta will be appended to the default palette.
+	 * @param mixed $varArg2
+	 * The legend name the palette should appended after or the meta definition.
+	 * @param mixed $varArg3
+	 * The meta definition, only needed if the palette name is given as third parameter.
+	 * @return void
+	 */
+	public static function appendBefore($strTable, $varArg1, $varArg2, $varArg3 = null)
+	{
+		if (is_array($varArg2)) {
+			$varArg3 = $varArg2;
+			$varArg2 = $varArg1;
+			$varArg1 = 'default';
+		}
+
+		$strRegexp = sprintf('#\{%s_legend(:hide)?\}.*;#Ui', $varArg2);
+
+		if (preg_match($strRegexp, $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1], $match)) {
+			$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = preg_replace(
+				$strRegexp,
+				sprintf('%s;$0', self::generatePalette($varArg3)),
+				$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1]
+			);
+		} else {
+			self::appendTo($strTable, $varArg1, $varArg3);
+		}
+	}
+
+	/**
+	 * Dynamic append a meta palette definition to the dca, after a block.
+	 *
+	 * @static
+	 * @param string $strTable
+	 * The table name.
+	 * @param mixed $varArg1
+	 * The palette name or the legend name (without trailing _legend, e.a. title and NOT title_legend) the palette should appended after. In last case, the meta will be appended to the default palette.
+	 * @param mixed $varArg2
+	 * The legend name the palette should appended after or the meta definition.
+	 * @param mixed $varArg3
+	 * The meta definition, only needed if the palette name is given as third parameter.
+	 * @return void
+	 */
+	public static function appendAfter($strTable, $varArg1, $varArg2, $varArg3 = null)
+	{
+		if (is_array($varArg2)) {
+			$varArg3 = $varArg2;
+			$varArg2 = $varArg1;
+			$varArg1 = 'default';
+		}
+
+		$strRegexp = sprintf('#\{%s_legend(:hide)?\}.*;#Ui', $varArg2);
+
+		if (preg_match($strRegexp, $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1], $match)) {
+			$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = preg_replace(
+				$strRegexp,
+				sprintf('$0%s;', self::generatePalette($varArg3)),
+				$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1]
+			);
+		} else {
+			self::appendTo($strTable, $varArg1, $varArg3);
+		}
+	}
 
 	/**
 	 * @param $strTable
