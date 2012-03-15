@@ -302,7 +302,14 @@ class MetaPalettes
 
 					// or break, when unable to handle data container
 					else {
-						return;
+						$objRecord = Database::getInstance()
+							->prepare("SELECT * FROM {$dc->table} WHERE id=?")
+							->execute($dc->id);
+						if ($objRecord->next()) {
+							$strValue = $objRecord->$strSelector;
+						} else {
+							return;
+						}
 					}
 
 					$strPalette = '';
