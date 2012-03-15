@@ -161,6 +161,78 @@ class MetaPalettes
 	}
 
 	/**
+	 * Dynamic append fields to a group in the palette definition.
+	 *
+	 * @static
+	 * @param string $strTable
+	 * The table name.
+	 * @param mixed $varArg1
+	 * The palette name or the legend name (without trailing _legend, e.a. title and NOT title_legend). In last case, the meta will be appended to the default palette.
+	 * @param mixed $varArg2
+	 * The legend name the fields should appended or the list of fields.
+	 * @param mixed $varArg3
+	 * List of fields to append.
+	 * @return void
+	 */
+	public static function appendFields($strTable, $varArg1, $varArg2, $varArg3 = null)
+	{
+		if (is_array($varArg2)) {
+			$varArg3 = $varArg2;
+			$varArg2 = $varArg1;
+			$varArg1 = 'default';
+		}
+
+		$strFields = implode(',', $varArg3);
+		$strRegexp = sprintf('#(\{%s_legend(:hide)?\})((.*?);|.*)#i', $varArg2);
+
+		if (preg_match($strRegexp, $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1], $match)) {
+			$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = preg_replace(
+				$strRegexp,
+				sprintf(isset($match[4]) ? '$1$4,%s;' : '$1$3,%s', $strFields),
+				$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1]
+			);
+		} else {
+			self::appendTo($strTable, $varArg1, array($varArg2 => $varArg3));
+		}
+	}
+
+	/**
+	 * Dynamic prepend fields to a group in the palette definition.
+	 *
+	 * @static
+	 * @param string $strTable
+	 * The table name.
+	 * @param mixed $varArg1
+	 * The palette name or the legend name (without trailing _legend, e.a. title and NOT title_legend). In last case, the meta will be appended to the default palette.
+	 * @param mixed $varArg2
+	 * The legend name the fields should appended or the list of fields.
+	 * @param mixed $varArg3
+	 * List of fields to append.
+	 * @return void
+	 */
+	public static function prependFields($strTable, $varArg1, $varArg2, $varArg3 = null)
+	{
+		if (is_array($varArg2)) {
+			$varArg3 = $varArg2;
+			$varArg2 = $varArg1;
+			$varArg1 = 'default';
+		}
+
+		$strFields = implode(',', $varArg3);
+		$strRegexp = sprintf('#(\{%s_legend(:hide)?\})(.*);#Ui', $varArg2);
+
+		if (preg_match($strRegexp, $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1], $match)) {
+			$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = preg_replace(
+				$strRegexp,
+				sprintf('$1,%s$2;', $strFields),
+				$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1]
+			);
+		} else {
+			self::appendTo($strTable, $varArg1, array($varArg2 => $varArg3));
+		}
+	}
+
+	/**
 	 * @param $strTable
 	 * @return void
 	 */
