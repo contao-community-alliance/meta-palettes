@@ -274,6 +274,64 @@ class MetaPalettes
 				}
 			}
 		}
+
+		// add callback to generate subselect palettes
+		$GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] = array_merge(
+			array(array('MetaPalettes', 'generateSubSelectPalettes')),
+			(isset($GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']) && is_array($GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']) ? $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] : array())
+		);
+	}
+
+	public function generateSubSelectPalettes($dc)
+	{
+		if ($dc instanceof DataContainer) {
+			$strTable = $dc->table;
+			if (isset($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes']) && is_array($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes']))
+			{
+				foreach ($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes'] as $strSelector=>$arrPalettes)
+				{
+					// support for TL_CONFIG data container
+					if ($dc instanceof DC_File) {
+						$strValue = $GLOBALS['TL_CONFIG'][$strSelector];
+					}
+
+					// try getting activeRecord value
+					else if ($dc->activeRecord) {
+						$strValue = $dc->activeRecord->$strSelector;
+					}
+
+					// or break, when unable to handle data container
+					else {
+						return;
+					}
+
+					$strPalette = '';
+					foreach ($arrPalettes as $strSelectValue=>$arrSelectPalette) {
+						// add palette if value is selected or not
+						if (count($arrSelectPalette) &&
+							(   $strSelectValue == $strValue ||
+								$strSelectValue[0]=='!' && substr($strSelectValue, 1) != $strValue)) {
+							$strPalette .= ',' . implode(',', $arrSelectPalette);
+						}
+
+						// continue with next
+						else {
+							continue;
+						}
+					}
+
+					if (strlen($strPalette)) {
+						foreach ($GLOBALS['TL_DCA'][$strTable]['palettes'] as $k=>$v) {
+							$GLOBALS['TL_DCA'][$strTable]['palettes'][$k] = preg_replace(
+								'#([,;]' . preg_quote($strSelector) . ')([,;].*)?$#',
+								'$1' . $strPalette . '$2',
+								$GLOBALS['TL_DCA'][$strTable]['palettes'][$k]
+							);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**
