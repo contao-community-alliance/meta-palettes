@@ -290,8 +290,13 @@ class MetaPalettes
 			{
 				foreach ($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes'] as $strSelector=>$arrPalettes)
 				{
+					// on post, use new value
+					if (Input::getInstance()->post('FORM_SUBMIT') == $strTable) {
+						$strValue = Input::getInstance()->post($strSelector);
+					}
+
 					// support for TL_CONFIG data container
-					if ($dc instanceof DC_File) {
+					else if ($dc instanceof DC_File) {
 						$strValue = $GLOBALS['TL_CONFIG'][$strSelector];
 					}
 
