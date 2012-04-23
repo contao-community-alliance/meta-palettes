@@ -340,6 +340,13 @@ class MetaPalettes
 								$GLOBALS['TL_DCA'][$strTable]['palettes'][$k]
 							);
 						}
+						foreach ($GLOBALS['TL_DCA'][$strTable]['subpalettes'] as $k=>$v) {
+							$GLOBALS['TL_DCA'][$strTable]['subpalettes'][$k] = preg_replace(
+								'#([,;]?' . preg_quote($strSelector) . ')([,;].*)?$#',
+								'$1' . $strPalette . '$2',
+								$GLOBALS['TL_DCA'][$strTable]['subpalettes'][$k]
+							);
+						}
 					}
 				}
 			}
