@@ -244,6 +244,9 @@ class MetaPalettes
 			// walk over the meta palette
 			foreach ($GLOBALS['TL_DCA'][$strTable]['metapalettes'] as $strPalette=>$arrMeta)
 			{
+				// extend palettes
+				$this->extendPalette($strTable, $strPalette, $arrMeta);
+
 				// only generate if not palette exists
 				if (!isset($GLOBALS['TL_DCA'][$strTable]['palettes'][$strPalette]) && is_array($arrMeta))
 				{
@@ -280,6 +283,135 @@ class MetaPalettes
 			array(array('MetaPalettes', 'generateSubSelectPalettes')),
 			(isset($GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']) && is_array($GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']) ? $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] : array())
 		);
+	}
+
+	/**
+	 * @param string $strTable
+	 * @param string $strPalette
+	 * @param array $arrMeta
+	 * @return array
+	 */
+	public function extendPalette($strTable, &$strPalette, array &$arrMeta)
+	{
+		if (preg_match('#^(\w+) extends (\w+)$#', $strPalette, $arrMatch)) {
+			$arrBaseMeta = array_slice($GLOBALS['TL_DCA'][$strTable]['metapalettes'][$arrMatch[2]], 0);
+			$this->extendPalette($strTable, $arrMatch[2], $arrBaseMeta);
+			$strPalette  = $arrMatch[1];
+
+			// walk over the extending palette
+			foreach ($arrMeta as $strGroup=>$arrFields) {
+				// palette should be extended
+				if (preg_match('#^([\+-])(\w+)$#', $strGroup, $arrMatch)) {
+					$strOperator = $arrMatch[1];
+					$strGroup = $arrMatch[2];
+
+					if (empty($arrBaseMeta[$strGroup])) {
+						$arrBaseMeta[$strGroup] = array();
+					}
+
+					foreach ($arrFields as $strField)
+					{
+						// test for field operator
+						if (preg_match('#^([\+-])#', $strField, $arrMatch)) {
+							$strFieldOperator = $arrMatch[1];
+							$strField = substr($strField, 1);
+						}
+
+						// use default operator
+						else {
+							$strFieldOperator = $strOperator;
+						}
+
+						// remove a field
+						if ($strFieldOperator == '-') {
+							$intPos = array_search($strField, $arrBaseMeta[$strGroup]);
+
+							if ($intPos !== false) {
+								$arrBaseMeta[$strGroup] = array_delete($arrBaseMeta[$strGroup], $intPos);
+							}
+						}
+
+						// insert at position
+						else if (preg_match('#^(\w+) (before|after) (\w+)$#', $strField, $arrMatch)) {
+							$strPosition = $arrMatch[2];
+							$strRefField = $arrMatch[3];
+							$strField = $arrMatch[1];
+
+							// search position
+							$intPos = array_search($strRefField, $arrBaseMeta[$strGroup]);
+
+							// append because position could not be determinated
+							if ($intPos === false) {
+								$arrBaseMeta[$strGroup][] = $strField;
+							}
+
+							// insert into position
+							else {
+								if ($strPosition == 'after') {
+									$intPos ++;
+								}
+
+								$arrBaseMeta[$strGroup] = array_merge
+								(
+									array_slice($arrBaseMeta[$strGroup], 0, $intPos),
+									array($strField),
+									array_slice($arrBaseMeta[$strGroup], $intPos)
+								);
+							}
+						}
+
+						// append field
+						else {
+							$arrBaseMeta[$strGroup][] = $strField;
+						}
+					}
+				}
+
+				// palette should be inserted at position
+				else if (preg_match('#^(\w+) (before|after) (\w+)$#', $strGroup, $arrMatch)) {
+					$strPosition = $arrMatch[2];
+					$strRefPalette = $arrMatch[3];
+					$strGroup = $arrMatch[1];
+
+					// remove existing palette to make it possible to add at a new position
+					if (isset($arrBaseMeta[$strGroup])) {
+						unset($arrBaseMeta[$strGroup]);
+					}
+
+					// search position and insert
+					$intPos = array_search($strRefPalette, array_keys($arrBaseMeta));
+
+					// append because position could not be determinated
+					if ($intPos === false) {
+						$arrBaseMeta[$strGroup] = $arrFields;
+					}
+
+					// insert into position
+					else {
+						if ($strPosition == 'after') {
+							$intPos ++;
+						}
+
+						$arrBaseMeta = array_merge
+						(
+							array_slice($arrBaseMeta, 0, $intPos),
+							array
+							(
+								$strGroup => $arrFields
+							),
+							array_slice($arrBaseMeta, $intPos)
+						);
+					}
+				}
+
+				// palette should be appended or overwritten
+				else {
+					$arrBaseMeta[$strGroup] = $arrFields;
+				}
+			}
+
+			$arrMeta = $arrBaseMeta;
+		}
 	}
 
 	public function generateSubSelectPalettes($dc)
