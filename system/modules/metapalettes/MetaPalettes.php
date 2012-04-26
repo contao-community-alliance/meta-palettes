@@ -414,7 +414,7 @@ class MetaPalettes
 		}
 	}
 
-	public function generateSubSelectPalettes($dc)
+	public function generateSubSelectPalettes($dc = null)
 	{
 		if ($dc instanceof DataContainer) {
 			$strTable = $dc->table;
