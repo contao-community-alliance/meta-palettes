@@ -289,7 +289,7 @@ class MetaPalettes
 	 * @param string $strTable
 	 * @param string $strPalette
 	 * @param array $arrMeta
-	 * @return array
+	 * @return void
 	 */
 	public function extendPalette($strTable, &$strPalette, array &$arrMeta)
 	{
@@ -411,6 +411,8 @@ class MetaPalettes
 			}
 
 			$arrMeta = $arrBaseMeta;
+			// keep result for derived palettes to use.
+			$GLOBALS['TL_DCA'][$strTable]['metapalettes'][$strPalette] = $arrMeta;
 		}
 	}
 
