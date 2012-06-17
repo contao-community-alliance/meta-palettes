@@ -42,7 +42,7 @@
  * @author     Tristan Lins <tristan.lins@infinitysoft.de>
  * @package    MetaPalettes
  */
-class MetaPalettes
+class MetaPalettes extends System
 {
 	/**
 	 * @var MetaPalettes
@@ -66,18 +66,22 @@ class MetaPalettes
 	/**
 	 * Protected constructor for singleton instance.
 	 */
-	protected function __construct() {}
+	protected function __construct()
+	{
+	}
 
 	/**
 	 * Dynamic append a meta palette definition to the dca.
 	 *
 	 * @static
+	 *
 	 * @param string $strTable
 	 * The table name.
 	 * @param mixed $varArg1
 	 * The palette name or the meta definition. In last case, the meta will be appended to the default palette.
 	 * @param mixed $varArg2
 	 * The meta definition, only needed if the palette name is given as second parameter.
+	 *
 	 * @return void
 	 */
 	public static function appendTo($strTable, $varArg1, $varArg2 = null)
@@ -94,6 +98,7 @@ class MetaPalettes
 	 * Dynamic append a meta palette definition to the dca, before a block.
 	 *
 	 * @static
+	 *
 	 * @param string $strTable
 	 * The table name.
 	 * @param mixed $varArg1
@@ -102,6 +107,7 @@ class MetaPalettes
 	 * The legend name the palette should appended after or the meta definition.
 	 * @param mixed $varArg3
 	 * The meta definition, only needed if the palette name is given as third parameter.
+	 *
 	 * @return void
 	 */
 	public static function appendBefore($strTable, $varArg1, $varArg2, $varArg3 = null)
@@ -129,6 +135,7 @@ class MetaPalettes
 	 * Dynamic append a meta palette definition to the dca, after a block.
 	 *
 	 * @static
+	 *
 	 * @param string $strTable
 	 * The table name.
 	 * @param mixed $varArg1
@@ -137,6 +144,7 @@ class MetaPalettes
 	 * The legend name the palette should appended after or the meta definition.
 	 * @param mixed $varArg3
 	 * The meta definition, only needed if the palette name is given as third parameter.
+	 *
 	 * @return void
 	 */
 	public static function appendAfter($strTable, $varArg1, $varArg2, $varArg3 = null)
@@ -164,6 +172,7 @@ class MetaPalettes
 	 * Dynamic append fields to a group in the palette definition.
 	 *
 	 * @static
+	 *
 	 * @param string $strTable
 	 * The table name.
 	 * @param mixed $varArg1
@@ -172,6 +181,7 @@ class MetaPalettes
 	 * The legend name the fields should appended or the list of fields.
 	 * @param mixed $varArg3
 	 * List of fields to append.
+	 *
 	 * @return void
 	 */
 	public static function appendFields($strTable, $varArg1, $varArg2, $varArg3 = null)
@@ -200,6 +210,7 @@ class MetaPalettes
 	 * Dynamic prepend fields to a group in the palette definition.
 	 *
 	 * @static
+	 *
 	 * @param string $strTable
 	 * The table name.
 	 * @param mixed $varArg1
@@ -208,6 +219,7 @@ class MetaPalettes
 	 * The legend name the fields should appended or the list of fields.
 	 * @param mixed $varArg3
 	 * List of fields to append.
+	 *
 	 * @return void
 	 */
 	public static function prependFields($strTable, $varArg1, $varArg2, $varArg3 = null)
@@ -234,6 +246,7 @@ class MetaPalettes
 
 	/**
 	 * @param $strTable
+	 *
 	 * @return void
 	 */
 	public function generatePalettes($strTable)
@@ -248,17 +261,14 @@ class MetaPalettes
 		}
 
 		// check if any meta palette information exists
-		if (isset($GLOBALS['TL_DCA'][$strTable]['metapalettes']) && is_array($GLOBALS['TL_DCA'][$strTable]['metapalettes']))
-		{
+		if (isset($GLOBALS['TL_DCA'][$strTable]['metapalettes']) && is_array($GLOBALS['TL_DCA'][$strTable]['metapalettes'])) {
 			// walk over the meta palette
-			foreach ($GLOBALS['TL_DCA'][$strTable]['metapalettes'] as $strPalette=>$arrMeta)
-			{
+			foreach ($GLOBALS['TL_DCA'][$strTable]['metapalettes'] as $strPalette=> $arrMeta) {
 				// extend palettes
 				$this->extendPalette($strTable, $strPalette, $arrMeta);
 
 				// only generate if not palette exists
-				if (!isset($GLOBALS['TL_DCA'][$strTable]['palettes'][$strPalette]) && is_array($arrMeta))
-				{
+				if (!isset($GLOBALS['TL_DCA'][$strTable]['palettes'][$strPalette]) && is_array($arrMeta)) {
 					// set the palette
 					$GLOBALS['TL_DCA'][$strTable]['palettes'][$strPalette] = self::generatePalette($arrMeta);
 				}
@@ -266,17 +276,13 @@ class MetaPalettes
 		}
 
 		// check if any meta palette information exists
-		if (isset($GLOBALS['TL_DCA'][$strTable]['metasubpalettes']) && is_array($GLOBALS['TL_DCA'][$strTable]['metasubpalettes']))
-		{
+		if (isset($GLOBALS['TL_DCA'][$strTable]['metasubpalettes']) && is_array($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'])) {
 			// walk over the meta palette
-			foreach ($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'] as $strPalette=>$arrFields)
-			{
+			foreach ($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'] as $strPalette=> $arrFields) {
 				// only generate if not palette exists
-				if (!isset($GLOBALS['TL_DCA'][$strTable]['subpalettes'][$strPalette]) && is_array($arrFields))
-				{
+				if (!isset($GLOBALS['TL_DCA'][$strTable]['subpalettes'][$strPalette]) && is_array($arrFields)) {
 					// only generate if there are any fields
-					if (is_array($arrFields) && count($arrFields) > 0)
-					{
+					if (is_array($arrFields) && count($arrFields) > 0) {
 						// generate subpalettes selectors
 						$GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'][] = $strPalette;
 
@@ -298,6 +304,7 @@ class MetaPalettes
 	 * @param string $strTable
 	 * @param string $strPalette
 	 * @param array $arrMeta
+	 *
 	 * @return array
 	 */
 	public function extendPalette($strTable, &$strPalette, array &$arrMeta)
@@ -305,25 +312,24 @@ class MetaPalettes
 		if (preg_match('#^(\w+) extends (\w+)$#', $strPalette, $arrMatch)) {
 			$arrBaseMeta = array_slice($GLOBALS['TL_DCA'][$strTable]['metapalettes'][$arrMatch[2]], 0);
 			$this->extendPalette($strTable, $arrMatch[2], $arrBaseMeta);
-			$strPalette  = $arrMatch[1];
+			$strPalette = $arrMatch[1];
 
 			// walk over the extending palette
-			foreach ($arrMeta as $strGroup=>$arrFields) {
+			foreach ($arrMeta as $strGroup=> $arrFields) {
 				// palette should be extended
 				if (preg_match('#^([\+-])(\w+)$#', $strGroup, $arrMatch)) {
 					$strOperator = $arrMatch[1];
-					$strGroup = $arrMatch[2];
+					$strGroup    = $arrMatch[2];
 
 					if (empty($arrBaseMeta[$strGroup])) {
 						$arrBaseMeta[$strGroup] = array();
 					}
 
-					foreach ($arrFields as $strField)
-					{
+					foreach ($arrFields as $strField) {
 						// test for field operator
 						if (preg_match('#^([\+-])#', $strField, $arrMatch)) {
 							$strFieldOperator = $arrMatch[1];
-							$strField = substr($strField, 1);
+							$strField         = substr($strField, 1);
 						}
 
 						// use default operator
@@ -344,7 +350,7 @@ class MetaPalettes
 						else if (preg_match('#^(\w+) (before|after) (\w+)$#', $strField, $arrMatch)) {
 							$strPosition = $arrMatch[2];
 							$strRefField = $arrMatch[3];
-							$strField = $arrMatch[1];
+							$strField    = $arrMatch[1];
 
 							// search position
 							$intPos = array_search($strRefField, $arrBaseMeta[$strGroup]);
@@ -357,7 +363,7 @@ class MetaPalettes
 							// insert into position
 							else {
 								if ($strPosition == 'after') {
-									$intPos ++;
+									$intPos++;
 								}
 
 								$arrBaseMeta[$strGroup] = array_merge
@@ -378,9 +384,9 @@ class MetaPalettes
 
 				// palette should be inserted at position
 				else if (preg_match('#^(\w+) (before|after) (\w+)$#', $strGroup, $arrMatch)) {
-					$strPosition = $arrMatch[2];
+					$strPosition   = $arrMatch[2];
 					$strRefPalette = $arrMatch[3];
-					$strGroup = $arrMatch[1];
+					$strGroup      = $arrMatch[1];
 
 					// remove existing palette to make it possible to add at a new position
 					if (isset($arrBaseMeta[$strGroup])) {
@@ -398,7 +404,7 @@ class MetaPalettes
 					// insert into position
 					else {
 						if ($strPosition == 'after') {
-							$intPos ++;
+							$intPos++;
 						}
 
 						$arrBaseMeta = array_merge
@@ -498,9 +504,11 @@ class MetaPalettes
 	 * Filter meta fields, starting with ":" from an array.
 	 *
 	 * @param $strField string
+	 *
 	 * @return bool
 	 */
-	public function filterFields($strField) {
+	public function filterFields($strField)
+	{
 		return $strField[0] != ':';
 	}
 
@@ -509,10 +517,8 @@ class MetaPalettes
 		$arrBuffer = array();
 
 		// walk over the chapters
-		foreach ($arrMeta as $strLegend=>$arrFields)
-		{
-			if (is_array($arrFields))
-			{
+		foreach ($arrMeta as $strLegend=> $arrFields) {
+			if (is_array($arrFields)) {
 				// generate palettes legend
 				$strBuffer = sprintf('{%s_legend%s},', $strLegend, in_array(':hide', $arrFields) ? ':hide' : '');
 
@@ -520,8 +526,7 @@ class MetaPalettes
 				$arrFields = array_filter($arrFields, array(self::getInstance(), 'filterFields'));
 
 				// only generate chapter if there are any fields
-				if (count($arrFields) > 0)
-				{
+				if (count($arrFields) > 0) {
 					$strBuffer .= implode(',', $arrFields);
 					$arrBuffer[] = $strBuffer;
 				}
