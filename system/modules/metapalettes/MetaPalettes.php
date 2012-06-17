@@ -431,70 +431,90 @@ class MetaPalettes extends System
 
 	public function generateSubSelectPalettes($dc = null)
 	{
-		if ($dc instanceof DataContainer) {
+		if ($dc instanceof DataContainer)
+		{
 			$strTable = $dc->table;
-			if (isset($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes']) && is_array($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes']))
+			if (!empty($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes']))
 			{
-				foreach ($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes'] as $strSelector=>$arrPalettes)
+				if (is_array($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes']))
 				{
-					// on post, use new value
-					if (Input::getInstance()->post('FORM_SUBMIT') == $strTable) {
-						$strValue = Input::getInstance()->post($strSelector);
-					}
-
-					// support for TL_CONFIG data container
-					else if ($dc instanceof DC_File) {
-						$strValue = $GLOBALS['TL_CONFIG'][$strSelector];
-					}
-
-					// try getting activeRecord value
-					else if ($dc->activeRecord) {
-						$strValue = $dc->activeRecord->$strSelector;
-					}
-
-					// or break, when unable to handle data container
-					else {
-						$objRecord = Database::getInstance()
-							->prepare("SELECT * FROM {$dc->table} WHERE id=?")
-							->execute($dc->id);
-						if ($objRecord->next()) {
-							$strValue = $objRecord->$strSelector;
-						} else {
-							return;
-						}
-					}
-
-					$strPalette = '';
-					foreach ($arrPalettes as $strSelectValue=>$arrSelectPalette) {
-						// add palette if value is selected or not
-						if (count($arrSelectPalette) &&
-							(   $strSelectValue == $strValue ||
-								$strSelectValue[0]=='!' && substr($strSelectValue, 1) != $strValue)) {
-							$strPalette .= ',' . implode(',', $arrSelectPalette);
-						}
-
-						// continue with next
-						else {
+					foreach ($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes'] as $strSelector=> $arrPalettes)
+					{
+						if (!is_array($arrPalettes))
+						{
+						trigger_error(sprintf('The field $GLOBALS[\'TL_DCA\'][\'%s\'][\'metasubselectpalettes\'][\'%s\'] have to be an array, %s given!',
+							$strTable, $strSelector, gettype($arrPalettes)), E_ERROR);
 							continue;
 						}
-					}
 
-					if (strlen($strPalette)) {
-						foreach ($GLOBALS['TL_DCA'][$strTable]['palettes'] as $k=>$v) {
-							$GLOBALS['TL_DCA'][$strTable]['palettes'][$k] = preg_replace(
-								'#([,;]' . preg_quote($strSelector) . ')([,;].*)?$#',
-								'$1' . $strPalette . '$2',
-								$GLOBALS['TL_DCA'][$strTable]['palettes'][$k]
-							);
+						// on post, use new value
+						if (Input::getInstance()->post('FORM_SUBMIT') == $strTable) {
+							$strValue = Input::getInstance()->post($strSelector);
 						}
-						foreach ($GLOBALS['TL_DCA'][$strTable]['subpalettes'] as $k=>$v) {
-							$GLOBALS['TL_DCA'][$strTable]['subpalettes'][$k] = preg_replace(
-								'#([,;]?' . preg_quote($strSelector) . ')([,;].*)?$#',
-								'$1' . $strPalette . '$2',
-								$GLOBALS['TL_DCA'][$strTable]['subpalettes'][$k]
-							);
+
+						// support for TL_CONFIG data container
+						else if ($dc instanceof DC_File) {
+							$strValue = $GLOBALS['TL_CONFIG'][$strSelector];
+						}
+
+						// try getting activeRecord value
+						else if ($dc->activeRecord) {
+							$strValue = $dc->activeRecord->$strSelector;
+						}
+
+						// or break, when unable to handle data container
+						else {
+							$objRecord = Database::getInstance()
+								->prepare("SELECT * FROM {$dc->table} WHERE id=?")
+								->execute($dc->id);
+							if ($objRecord->next()) {
+								$strValue = $objRecord->$strSelector;
+							} else {
+								return;
+							}
+						}
+
+						$strPalette = '';
+						foreach ($arrPalettes as $strSelectValue=> $arrSelectPalette) {
+							// add palette if value is selected or not
+							if (count($arrSelectPalette) &&
+								($strSelectValue == $strValue ||
+									$strSelectValue[0] == '!' && substr($strSelectValue, 1) != $strValue)
+							) {
+								$strPalette .= ',' . implode(',', $arrSelectPalette);
+							}
+
+							// continue with next
+							else {
+								continue;
+							}
+						}
+
+						if (strlen($strPalette)) {
+							foreach ($GLOBALS['TL_DCA'][$strTable]['palettes'] as $k=> $v) {
+								$GLOBALS['TL_DCA'][$strTable]['palettes'][$k] = preg_replace(
+									'#([,;]' . preg_quote($strSelector) . ')([,;].*)?$#',
+									'$1' . $strPalette . '$2',
+									$GLOBALS['TL_DCA'][$strTable]['palettes'][$k]
+								);
+							}
+							if (!empty($GLOBALS['TL_DCA'][$strTable]['subpalettes']) &&
+								is_array($GLOBALS['TL_DCA'][$strTable]['subpalettes'])
+							) {
+								foreach ($GLOBALS['TL_DCA'][$strTable]['subpalettes'] as $k=> $v) {
+									$GLOBALS['TL_DCA'][$strTable]['subpalettes'][$k] = preg_replace(
+										'#([,;]?' . preg_quote($strSelector) . ')([,;].*)?$#',
+										'$1' . $strPalette . '$2',
+										$GLOBALS['TL_DCA'][$strTable]['subpalettes'][$k]
+									);
+								}
+							}
 						}
 					}
+				}
+				else  {
+					trigger_error(sprintf('The field $GLOBALS[\'TL_DCA\'][\'%s\'][\'metasubselectpalettes\'] have to be an array, %s given!',
+						$strTable, gettype($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes'])), E_ERROR);
 				}
 			}
 		}
