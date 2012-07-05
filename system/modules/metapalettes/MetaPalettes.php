@@ -476,7 +476,9 @@ class MetaPalettes extends System
 							}
 						}
 
-						if (isset($GLOBALS['TL_DCA'][$strTable]['fields'][$strSelector]['load_callback'])
+						// call onload callback if the value is not result of a submit.
+						if ((Input::getInstance()->post('FORM_SUBMIT') != $strTable)
+						&& isset($GLOBALS['TL_DCA'][$strTable]['fields'][$strSelector]['load_callback'])
 						&& is_array($GLOBALS['TL_DCA'][$strTable]['fields'][$strSelector]['load_callback']))
 						{
 							foreach ($GLOBALS['TL_DCA'][$strTable]['fields'][$strSelector]['load_callback'] as $callback)
