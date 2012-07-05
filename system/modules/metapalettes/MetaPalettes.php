@@ -476,6 +476,16 @@ class MetaPalettes extends System
 							}
 						}
 
+						if (isset($GLOBALS['TL_DCA'][$strTable]['fields'][$strSelector]['load_callback'])
+						&& is_array($GLOBALS['TL_DCA'][$strTable]['fields'][$strSelector]['load_callback']))
+						{
+							foreach ($GLOBALS['TL_DCA'][$strTable]['fields'][$strSelector]['load_callback'] as $callback)
+							{
+								$this->import($callback[0]);
+								$strValue = $this->$callback[0]->$callback[1]($strValue, $dc);
+							}
+						}
+
 						$strPalette = '';
 						foreach ($arrPalettes as $strSelectValue=> $arrSelectPalette) {
 							// add palette if value is selected or not
