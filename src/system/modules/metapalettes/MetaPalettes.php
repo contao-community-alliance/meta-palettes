@@ -309,7 +309,11 @@ class MetaPalettes extends System
 	 */
 	public function extendPalette($strTable, &$strPalette, array &$arrMeta)
 	{
-		if (preg_match('#^(\w+) extends (\w+)$#', $strPalette, $arrMatch)) {
+		if ((!empty($arrMeta)) && preg_match('#^(\w+) extends (\w+)$#', $strPalette, $arrMatch)) {
+			if (!is_array($GLOBALS['TL_DCA'][$strTable]['metapalettes'][$arrMatch[2]]))
+			{
+				return;
+			}
 			$arrBaseMeta = array_slice($GLOBALS['TL_DCA'][$strTable]['metapalettes'][$arrMatch[2]], 0);
 			$this->extendPalette($strTable, $arrMatch[2], $arrBaseMeta);
 			$strPalette = $arrMatch[1];
@@ -444,7 +448,7 @@ class MetaPalettes extends System
 					{
 						if (!is_array($arrPalettes))
 						{
-						trigger_error(sprintf('The field $GLOBALS[\'TL_DCA\'][\'%s\'][\'metasubselectpalettes\'][\'%s\'] have to be an array, %s given!',
+						trigger_error(sprintf('The field $GLOBALS[\'TL_DCA\'][\'%s\'][\'metasubselectpalettes\'][\'%s\'] has to be an array, %s given!',
 							$strTable, $strSelector, gettype($arrPalettes)), E_ERROR);
 							continue;
 						}
@@ -475,7 +479,7 @@ class MetaPalettes extends System
 						}
 
 						// or break, when unable to handle data container
-						else {
+						else if ($dc instanceof DC_Table) {
 							$objRecord = Database::getInstance()
 								->prepare("SELECT * FROM {$dc->table} WHERE id=?")
 								->execute($dc->id);
@@ -537,7 +541,7 @@ class MetaPalettes extends System
 					}
 				}
 				else  {
-					trigger_error(sprintf('The field $GLOBALS[\'TL_DCA\'][\'%s\'][\'metasubselectpalettes\'] have to be an array, %s given!',
+					trigger_error(sprintf('The field $GLOBALS[\'TL_DCA\'][\'%s\'][\'metasubselectpalettes\'] has to be an array, %s given!',
 						$strTable, gettype($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes'])), E_ERROR);
 				}
 			}
