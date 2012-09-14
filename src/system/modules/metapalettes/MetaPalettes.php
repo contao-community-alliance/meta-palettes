@@ -453,6 +453,8 @@ class MetaPalettes extends System
 							continue;
 						}
 
+						$strValue = null;
+
 						// try getting getCurrentModel value, provided by DC_General which is not neccessarily installed
 						// therefore no instanceof check, do NOT(!) try to load via post if DC_General is in use, as it has
 						// already updated the current model.
@@ -488,6 +490,11 @@ class MetaPalettes extends System
 							} else {
 								return;
 							}
+						}
+
+						if (!$strValue)
+						{
+							return;
 						}
 
 						// call onload callback if the value is not result of a submit.
