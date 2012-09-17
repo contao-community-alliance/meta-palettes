@@ -449,8 +449,18 @@ class MetaPalettes extends System
 							continue;
 						}
 
+						// try getting getCurrentModel value, provided by DC_General which is not neccessarily installed
+						// therefore no instanceof check, do NOT(!) try to load via post if DC_General is in use, as it has
+						// already updated the current model.
+						if (method_exists($dc, 'getCurrentModel')) {
+							$objModel = $dc->getCurrentModel();
+							if ($objModel) {
+								$strValue = $objModel->getProperty($strSelector);
+							}
+						}
+
 						// on post, use new value
-						if (Input::getInstance()->post('FORM_SUBMIT') == $strTable) {
+						else if (Input::getInstance()->post('FORM_SUBMIT') == $strTable) {
 							$strValue = Input::getInstance()->post($strSelector);
 						}
 
