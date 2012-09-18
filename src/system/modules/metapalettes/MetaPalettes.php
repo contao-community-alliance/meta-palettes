@@ -309,7 +309,7 @@ class MetaPalettes extends System
 	 */
 	public function extendPalette($strTable, &$strPalette, array &$arrMeta)
 	{
-		if ((!empty($arrMeta)) && preg_match('#^(\w+) extends (\w+)$#', $strPalette, $arrMatch)) {
+		if (preg_match('#^(\w+) extends (\w+)$#', $strPalette, $arrMatch)) {
 			if (!is_array($GLOBALS['TL_DCA'][$strTable]['metapalettes'][$arrMatch[2]]))
 			{
 				return;
