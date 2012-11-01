@@ -492,9 +492,9 @@ class MetaPalettes extends System
 							}
 						}
 
-						if (!$strValue)
+						if ($strValue === null)
 						{
-							return;
+							continue;
 						}
 
 						// call onload callback if the value is not result of a submit.
