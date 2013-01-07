@@ -156,7 +156,6 @@ class MetaPalettes extends System
 		}
 
 		$strRegexp = sprintf('#\{%s_legend(:hide)?\}(.*?;|.*)#i', $varArg2);
-
 		if (preg_match($strRegexp, $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1], $match)) {
 			$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = preg_replace(
 				$strRegexp,
@@ -293,11 +292,14 @@ class MetaPalettes extends System
 			}
 		}
 
-		// add callback to generate subselect palettes
-		$GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] = array_merge(
-			array(array('MetaPalettes', 'generateSubSelectPalettes')),
-			(isset($GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']) && is_array($GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']) ? $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] : array())
-		);
+		if (!empty($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes']))
+		{
+			// add callback to generate subselect palettes
+			$GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] = array_merge(
+				array(array('MetaPalettes', 'generateSubSelectPalettes')),
+				(isset($GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']) && is_array($GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']) ? $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] : array())
+			);
+		}
 	}
 
 	/**
@@ -492,9 +494,9 @@ class MetaPalettes extends System
 							}
 						}
 
-						if (!$strValue)
+						if ($strValue === null)
 						{
-							return;
+							continue;
 						}
 
 						// call onload callback if the value is not result of a submit.
@@ -516,7 +518,26 @@ class MetaPalettes extends System
 								($strSelectValue == $strValue ||
 									$strSelectValue[0] == '!' && substr($strSelectValue, 1) != $strValue)
 							) {
-								$strPalette .= ',' . implode(',', $arrSelectPalette);
+								foreach ($arrSelectPalette as $strLegend => $mixSub)
+								{
+									if (is_array($mixSub))
+									{
+										// supporting sub sub palettes :)
+										foreach ($mixSub as $strKey => $arrValue)
+										{
+											foreach ($GLOBALS['TL_DCA'][$strTable]['palettes'] as $k => $v) {
+												if ($k == '__selector__')
+												{
+													continue;
+												}
+												MetaPalettes::appendFields($strTable, $k, $strLegend, array($arrValue));
+											}
+										}
+									} else {
+										// legacy, simple array of fields.
+										$strPalette .= ',' . $mixSub;
+									}
+								}
 							}
 
 							// continue with next
@@ -570,7 +591,6 @@ class MetaPalettes extends System
 	protected static function generatePalette($arrMeta)
 	{
 		$arrBuffer = array();
-
 		// walk over the chapters
 		foreach ($arrMeta as $strLegend=> $arrFields) {
 			if (is_array($arrFields)) {
