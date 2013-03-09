@@ -1,8 +1,8 @@
 {
 	"name":"bit3/contao-meta-palettes",
 	"description":"MetaPalettes extension for Contao OpenSource CMS",
-	"version":"1.1.0",
 	"keywords":["contao", "page", "title"],
+	"version":"1.4.0",
 	"type":"contao-module",
 	"homepage":"http://bit3.de",
 	"license":"LGPL-3.0+",
