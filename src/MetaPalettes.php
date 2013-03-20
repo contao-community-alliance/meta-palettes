@@ -118,7 +118,7 @@ class MetaPalettes extends System
 			$varArg1 = 'default';
 		}
 
-		$strRegexp = sprintf('#\{%s_legend(:hide)?\}(.*?;|.*)#i', $varArg2);
+		$strRegexp = sprintf('#\{%s_legend(?::hide)?\}(.*?;|.*)#i', $varArg2);
 
 		if (preg_match($strRegexp, $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1], $match)) {
 			$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = preg_replace(
@@ -155,7 +155,7 @@ class MetaPalettes extends System
 			$varArg1 = 'default';
 		}
 
-		$strRegexp = sprintf('#\{%s_legend(:hide)?\}(.*?;|.*)#i', $varArg2);
+		$strRegexp = sprintf('#\{%s_legend(?::hide)?\}(.*?;|.*)#i', $varArg2);
 		if (preg_match($strRegexp, $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1], $match)) {
 			$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = preg_replace(
 				$strRegexp,
@@ -192,7 +192,7 @@ class MetaPalettes extends System
 		}
 
 		$strFields = implode(',', $varArg3);
-		$strRegexp = sprintf('#(\{%s_legend(:hide)?\})((.*?);|.*)#i', $varArg2);
+		$strRegexp = sprintf('#(\{%s_legend(?::hide)?\})((.*?);|.*)#i', $varArg2);
 
 		if (preg_match($strRegexp, $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1], $match)) {
 			$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = preg_replace(
@@ -230,7 +230,7 @@ class MetaPalettes extends System
 		}
 
 		$strFields = implode(',', $varArg3);
-		$strRegexp = sprintf('#(\{%s_legend(:hide)?\})(.*);#Ui', $varArg2);
+		$strRegexp = sprintf('#(\{%s_legend(?::hide)?\})(.*);#Ui', $varArg2);
 
 		if (preg_match($strRegexp, $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1], $match)) {
 			$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = preg_replace(
