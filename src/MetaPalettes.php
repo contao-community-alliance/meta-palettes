@@ -548,11 +548,13 @@ class MetaPalettes extends System
 
 						if (strlen($strPalette)) {
 							foreach ($GLOBALS['TL_DCA'][$strTable]['palettes'] as $k=> $v) {
-								$GLOBALS['TL_DCA'][$strTable]['palettes'][$k] = preg_replace(
-									'#([,;]' . preg_quote($strSelector) . ')([,;].*)?$#',
-									'$1' . $strPalette . '$2',
-									$GLOBALS['TL_DCA'][$strTable]['palettes'][$k]
-								);
+								if ($k != '__selector__') {
+									$GLOBALS['TL_DCA'][$strTable]['palettes'][$k] = preg_replace(
+										'#([,;]' . preg_quote($strSelector) . ')([,;].*)?$#',
+										'$1' . $strPalette . '$2',
+										$GLOBALS['TL_DCA'][$strTable]['palettes'][$k]
+									);
+								}
 							}
 							if (!empty($GLOBALS['TL_DCA'][$strTable]['subpalettes']) &&
 								is_array($GLOBALS['TL_DCA'][$strTable]['subpalettes'])
