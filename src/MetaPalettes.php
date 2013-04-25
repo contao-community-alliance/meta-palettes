@@ -197,7 +197,7 @@ class MetaPalettes extends System
 		if (preg_match($strRegexp, $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1], $match)) {
 			$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = preg_replace(
 				$strRegexp,
-				sprintf(isset($match[4]) ? '$1$4,%s;' : '$1$3,%s', $strFields),
+				sprintf(isset($match[4]) ? '$1$4,%s' : '$1$3,%s;', $strFields),
 				$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1]
 			);
 		} else {
