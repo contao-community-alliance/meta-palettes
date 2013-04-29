@@ -34,7 +34,7 @@
 	"extra":{
 		"contao": {
 			"symlinks":{
-				"contao":"system/modules/meta-palettes"
+				"contao":"system/modules/metapalettes"
 			}
 		}
 	}
