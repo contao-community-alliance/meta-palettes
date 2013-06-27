@@ -283,7 +283,9 @@ class MetaPalettes extends System
 					// only generate if there are any fields
 					if (is_array($arrFields) && count($arrFields) > 0) {
 						// generate subpalettes selectors
-						$GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'][] = $strPalette;
+						if (!in_array($strPalette, $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
+							$GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'][] = $strPalette;
+						}
 
 						// set the palette
 						$GLOBALS['TL_DCA'][$strTable]['subpalettes'][$strPalette] = implode(',', $arrFields);
