@@ -283,7 +283,10 @@ class MetaPalettes extends System
 					// only generate if there are any fields
 					if (is_array($arrFields) && count($arrFields) > 0) {
 						// generate subpalettes selectors
-						if (!in_array($strPalette, $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
+						if (!is_array($GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
+							$GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'] = array($strPalette);
+						}
+						else if (!in_array($strPalette, $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
 							$GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'][] = $strPalette;
 						}
 
