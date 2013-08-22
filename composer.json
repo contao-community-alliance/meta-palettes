@@ -22,7 +22,8 @@
 	},
 	"require":{
 		"php":">=5.3",
-		"contao/core":">=2.11,<4"
+		"contao/core":">=2.11,<4",
+		"contao-community-alliance/composer-installer": "*"
 	},
 	"require-dev":{
 		"squizlabs/php_codesniffer":"1.*",
@@ -33,9 +34,12 @@
 	},
 	"extra":{
 		"contao": {
-			"symlinks":{
+			"sources":{
 				"contao":"system/modules/metapalettes"
 			}
+		},
+		"branch-alias": {
+			"dev-master": "1.x-dev"
 		}
 	}
 }
