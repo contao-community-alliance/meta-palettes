@@ -465,7 +465,13 @@ class MetaPalettes extends System
 						// try getting getCurrentModel value, provided by DC_General which is not neccessarily installed
 						// therefore no instanceof check, do NOT(!) try to load via post if DC_General is in use, as it has
 						// already updated the current model.
-						if (method_exists($dc, 'getCurrentModel')) {
+						if (method_exists($dc, 'getEnvironment')) {
+							$objModel = $dc->getEnvironment()->getCurrentModel();
+							if ($objModel) {
+								$strValue = $objModel->getProperty($strSelector);
+							}
+						}
+						else if (method_exists($dc, 'getCurrentModel')) {
 							$objModel = $dc->getCurrentModel();
 							if ($objModel) {
 								$strValue = $objModel->getProperty($strSelector);
