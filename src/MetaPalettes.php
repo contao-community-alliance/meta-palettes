@@ -494,7 +494,7 @@ class MetaPalettes extends System
 						}
 
 						// or break, when unable to handle data container
-						else if ($dc instanceof DC_Table) {
+						else if ($dc instanceof DC_Table && Database::getInstance()->tableExists($dc->table)) {
 							$objRecord = Database::getInstance()
 								->prepare("SELECT * FROM {$dc->table} WHERE id=?")
 								->execute($dc->id);
