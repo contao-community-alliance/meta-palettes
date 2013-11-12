@@ -30,7 +30,7 @@
 		"bit3/php-coding-standard":"@dev"
 	},
 	"replace":{
-		"contao-legacy/metapalettes":"*"
+		"contao-legacy/metapalettes":"self.version"
 	},
 	"autoload":{
 		"classmap": ["src/"]
