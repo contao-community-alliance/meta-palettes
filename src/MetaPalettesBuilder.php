@@ -12,6 +12,7 @@
 
 use DcGeneral\Contao\Dca\Builder\Legacy\DcaReadingDataDefinitionBuilder;
 use DcGeneral\Contao\Dca\Palette\LegacyPalettesParser;
+use DcGeneral\DataDefinition\ContainerInterface;
 use DcGeneral\DataDefinition\Definition\DefaultPalettesDefinition;
 use DcGeneral\DataDefinition\Definition\PalettesDefinitionInterface;
 use DcGeneral\DataDefinition\Palette\Legend;
@@ -20,6 +21,7 @@ use DcGeneral\DataDefinition\Palette\Property;
 use DcGeneral\DataDefinition\Palette\Condition\Property\NotCondition;
 use DcGeneral\DataDefinition\Palette\Condition\Property\PropertyTrueCondition;
 use DcGeneral\DataDefinition\Palette\Condition\Property\PropertyValueCondition;
+use DcGeneral\Factory\Event\BuildDataDefinitionEvent;
 
 /**
  * Class MetaPalettesBuilder
@@ -42,9 +44,21 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 	 * @return void
 	 */
 	public function build(
-		\DcGeneral\DataDefinition\ContainerInterface $container,
-		\DcGeneral\Factory\Event\BuildDataDefinitionEvent $event
+		ContainerInterface $container,
+		BuildDataDefinitionEvent $event
 	) {
+		if (!$this->loadDca($container->getName())) {
+			return;
+		}
+
+		if ($container->hasDefinition(PalettesDefinitionInterface::NAME)) {
+			$palettesDefinition = $container->getDefinition(PalettesDefinitionInterface::NAME);
+		}
+		else {
+			$palettesDefinition = new DefaultPalettesDefinition();
+			$container->setDefinition(PalettesDefinitionInterface::NAME, $palettesDefinition);
+		}
+
 		$parser = new LegacyPalettesParser();
 
 		$selectorFieldNames   = (array) $this->getFromDca('palettes/__selector__');
@@ -60,26 +74,24 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 
 		$subSelectPalettes = $this->parseSubSelectPalettes($subSelectPalettesDca);
 		$subPalettes       = $this->parseSubPalettes($parser, $subPalettesDca, $selectorFieldNames);
-		$palettes          = $this->parsePalettes($parser, $palettesDca, $subPalettes, $subSelectPalettes, $selectorFieldNames);
+		$palettes          = $this->parsePalettes(
+			$palettesDefinition,
+			$parser,
+			$palettesDca,
+			$subPalettes,
+			$subSelectPalettes,
+			$selectorFieldNames
+		);
 
 		if (empty($palettes)) {
 			return;
-		}
-
-		if ($container->hasDefinition(PalettesDefinitionInterface::NAME))
-		{
-			$palettesDefinition = $container->getDefinition(PalettesDefinitionInterface::NAME);
-		}
-		else
-		{
-			$palettesDefinition = new DefaultPalettesDefinition();
-			$container->setDefinition(PalettesDefinitionInterface::NAME, $palettesDefinition);
 		}
 
 		$palettesDefinition->addPalettes($palettes);
 	}
 
 	protected function parsePalettes(
+		PalettesDefinitionInterface $palettesDefinition,
 		LegacyPalettesParser $parser,
 		array $palettesDca,
 		array $subPalettes,
@@ -88,34 +100,179 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 	) {
 		$palettes = array();
 
-		// TODO support inheritance
-
 		if (is_array($palettesDca)) {
 			foreach ($palettesDca as $selector => $legendPropertyNames) {
-				$palette = new Palette();
-				$palette->setCondition($parser->createPaletteCondition($selector, $selectorFieldNames));
+				if (preg_match('#^(\w+) extends (\w+)$#', $selector, $matches)) {
+					$parentSelector = $matches[2];
+					$selector       = $matches[1];
 
-				foreach ($legendPropertyNames as $legend => $propertyNames) {
-					$legend = new Legend($legend);
+					if (isset($palettes[$parentSelector])) {
+						$palette = clone $palettes[$parentSelector];
+					}
+					else if ($palettesDefinition->hasPaletteByName($parentSelector)) {
+						$palette = clone $palettesDefinition->getPaletteByName($parentSelector);
+					}
+					else {
+						$palette = null;
+					}
 
-					foreach ($propertyNames as $propertyName) {
-						$property = new Property($propertyName);
-						$legend->addProperty($property);
+					if (!$palette) {
+						throw new RuntimeException('Parent palette ' . $parentSelector . ' does not exists');
+					}
 
-						// add subpalette properties
-						if (isset($subPalettes[$propertyName])) {
-							$legend->addProperties($subPalettes[$propertyName]);
+					$extended = true;
+				}
+				else {
+					$palette = new Palette();
+					$palette->setCondition($parser->createPaletteCondition($selector, $selectorFieldNames));
+					$extended = false;
+				}
+
+				foreach ($legendPropertyNames as $legendName => $propertyNames) {
+					$additive      = false;
+					$subtractive   = false;
+					$insert        = false;
+					$refLegendName = null;
+
+					if ($extended) {
+						// add properties to existing legend
+						if ($legendName[0] == '+') {
+							$additive   = true;
+							$legendName = substr($legendName, 1);
 						}
-						// add subselect properties
-						if (isset($subSelectPalettes[$propertyName])) {
-							$legend->addProperties($subSelectPalettes[$propertyName]);
+						// subtract properties from existing legend
+						else if ($legendName[0] == '-') {
+							$subtractive = true;
+							$legendName  = substr($legendName, 1);
+						}
+
+						if (preg_match('#^(\w+) (before|after) (\w+)$#', $legendName, $matches)) {
+							$legendName    = $matches[1];
+							$insert        = $matches[2];
+							$refLegendName = $matches[3];
 						}
 					}
 
-					$palette->addLegend($legend);
+					if ($palette->hasLegend($legendName)) {
+						$legend = $palette->getLegend($legendName);
+					}
+					else {
+						$legend = new Legend($legendName);
+
+						// insert a legend before or after another one
+						if ($insert) {
+							$existingLegends = $palette->getLegends();
+							$refLegend       = null;
+
+							// search the referenced legend
+							/** @var \DcGeneral\DataDefinition\Palette\LegendInterface $existingLegend */
+							reset($existingLegends);
+							while ($existingLegend = next($existingLegends)) {
+								if ($existingLegend->getName() == $refLegendName) {
+									if ($insert == 'after') {
+										// if insert after, get to next
+										$refLegend = next($existingLegends);
+									}
+									else {
+										$refLegend = $existingLegend;
+									}
+									break;
+								}
+							}
+
+							$palette->addLegend($legend, $refLegend);
+						}
+
+						// just append the legend
+						else {
+							$palette->addLegend($legend);
+						}
+					}
+
+					// if extend a palette, but not add or remove fields, clear the legend
+					if ($extended && !($additive || $subtractive)) {
+						$legend->clearProperties();
+					}
+
+					foreach ($propertyNames as $propertyName) {
+						if ($propertyName[0] == ':') {
+							// skip modifiers
+							continue;
+						}
+
+						if ($additive || $subtractive) {
+							$action      = $additive ? 'add' : 'sub';
+							$insert      = false;
+							$refPropertyName = null;
+
+							if ($propertyName[0] == '+') {
+								$action       = 'add';
+								$propertyName = substr($propertyName, 1);
+							}
+							else if ($propertyName[0] == '-') {
+								$action       = 'sub';
+								$propertyName = substr($propertyName, 1);
+							}
+
+							if (preg_match('#^(\w+) (before|after) (\w+)$#', $propertyName, $matches)) {
+								$propertyName = $matches[1];
+								$insert       = $matches[2];
+								$refPropertyName  = $matches[3];
+							}
+
+							if ($action == 'add') {
+								$property = new Property($propertyName);
+
+								if ($insert) {
+									$existingProperties = $legend->getProperties();
+									$refProperty = null;
+
+									reset($existingProperties);
+									/** @var \DcGeneral\DataDefinition\Palette\PropertyInterface $existingProperty */
+									while ($existingProperty = next($existingProperties)) {
+										if ($existingProperty->getName() == $refPropertyName) {
+											if ($insert == 'after') {
+												$refProperty = next($existingProperties);
+											}
+											else {
+												$refProperty = $existingProperty;
+											}
+										}
+									}
+
+									$legend->addProperty($property, $refProperty);
+								}
+								else {
+									$legend->addProperty($property);
+								}
+							}
+							else {
+								/** @var \DcGeneral\DataDefinition\Definition\Palette\PropertyInterface $property */
+								foreach ($legend->getProperties() as $property) {
+									if ($property->getName() == $propertyName) {
+										$legend->removeProperty($property);
+										break;
+									}
+								}
+							}
+						}
+						else {
+							$property = new Property($propertyName);
+							$legend->addProperty($property);
+
+							// add subpalette properties
+							if (isset($subPalettes[$propertyName])) {
+								$legend->addProperties($subPalettes[$propertyName]);
+							}
+							// add subselect properties
+							if (isset($subSelectPalettes[$propertyName])) {
+								$legend->addProperties($subSelectPalettes[$propertyName]);
+							}
+						}
+					}
 				}
 
-				$palettes[] = $palette;
+				$palettes[$selector] = $palette;
 			}
 		}
 
