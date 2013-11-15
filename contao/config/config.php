@@ -40,5 +40,5 @@ $GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('MetaPalettes', 'generatePal
 
 $GLOBALS['TL_EVENTS']['dc-general.factory.build-data-definition'][] = array(
 	'MetaPalettesBuilder::process',
-	\MetaPalettesBuilder::PRIORITY
+	200
 );
