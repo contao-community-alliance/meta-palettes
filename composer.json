@@ -32,6 +32,9 @@
 	"replace":{
 		"contao-legacy/metapalettes":"self.version"
 	},
+	"conflict":{
+		"metamodels/dc_general":"<1"
+	},
 	"autoload":{
 		"classmap": ["src/"]
 	},

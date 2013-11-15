@@ -250,6 +250,11 @@ class MetaPalettes extends System
 	 */
 	public function generatePalettes($strTable)
 	{
+		if ($GLOBALS['TL_DCA'][$strTable]['config']['dataContainer'] == 'General') {
+			// The MetaPalettesBuilder is used for DC_General
+			return;
+		}
+
 		// check if palette callback is registered
 		if (isset($GLOBALS['TL_DCA'][$strTable]['config']['palettes_callback']) && is_array($GLOBALS['TL_DCA'][$strTable]['config']['palettes_callback'])) {
 			// call callbacks

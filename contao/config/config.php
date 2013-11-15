@@ -37,3 +37,8 @@
  * Hooks
  */
 $GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('MetaPalettes', 'generatePalettes');
+
+$GLOBALS['TL_EVENTS']['dc-general.factory.build-data-definition'][] = array(
+	'MetaPalettesBuilder::process',
+	\MetaPalettesBuilder::PRIORITY
+);
