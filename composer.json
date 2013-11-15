@@ -33,7 +33,7 @@
 		"contao-legacy/metapalettes":"self.version"
 	},
 	"conflict":{
-		"metamodels/dc_general":"<1"
+		"metamodels/dc_general":"<1-dev"
 	},
 	"autoload":{
 		"classmap": ["src/"]
