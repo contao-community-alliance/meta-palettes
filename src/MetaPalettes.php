@@ -254,12 +254,12 @@ class MetaPalettes extends System
 		if (isset($GLOBALS['TL_DCA'][$strTable]['config']['palettes_callback']) && is_array($GLOBALS['TL_DCA'][$strTable]['config']['palettes_callback'])) {
 			// call callbacks
 			foreach ($GLOBALS['TL_DCA'][$strTable]['config']['palettes_callback'] as $callback) {
-				if (is_callable($callback)) {
-					call_user_func($callback);
-				}
-				else {
+				if (is_array($callback) && count($callback) == 2 && is_string($callback[0]) && is_string($callback[1])) {
 					$this->import($callback[0]);
 					$this->$callback[0]->$callback[1]();
+				}
+				else if (is_callable($callback)) {
+					call_user_func($callback);
 				}
 			}
 		}
