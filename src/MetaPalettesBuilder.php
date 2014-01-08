@@ -189,8 +189,8 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 						}
 					}
 
-					// if extend a palette, but not add or remove fields, clear the legend
-					if ($extended && !($additive || $subtractive)) {
+					// if extend a palette, but not add or remove fields, clear the legend but only when we have fields.
+					if ($extended && !($additive || $subtractive) && count($propertyNames)) {
 						$legend->clearProperties();
 					}
 
@@ -228,16 +228,25 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 									$refProperty = null;
 
 									reset($existingProperties);
+									$existingProperty = current($existingProperties);
 									/** @var \DcGeneral\DataDefinition\Palette\PropertyInterface $existingProperty */
-									while ($existingProperty = next($existingProperties)) {
+									while ($existingProperty !== false) {
 										if ($existingProperty->getName() == $refPropertyName) {
 											if ($insert == 'after') {
 												$refProperty = next($existingProperties);
+
+												if ($refProperty === false) {
+													$refProperty = null;
+												}
 											}
 											else {
 												$refProperty = $existingProperty;
 											}
+
+											break;
 										}
+
+										$existingProperty = next($existingProperties);
 									}
 
 									$legend->addProperty($property, $refProperty);

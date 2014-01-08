@@ -357,4 +357,128 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertPropertyDependantValue($properties[0], 'field_four', 'field_two', 'value');
 	}
+
+	/**
+	 * Test that extending an palette with an empty palette will create a copy of the original palette.
+	 *
+	 * @return void
+	 */
+	public function testExtendPaletteAlias()
+	{
+		$palettes = $this->parsePalette(array(
+			'metapalettes' => array(
+				'default' => array(
+					'legend' => array('field_one'),
+				),
+				'palette2 extends default' => array()
+			)
+		));
+
+		$array = $palettes->getPalettes();
+
+		$this->assertCount(2, $array, 'Amount of palettes.');
+
+		/** @var Palette $palette */
+		$palette = $array[1];
+
+		$this->assertCount(1, $palette->getLegends(), 'Amount of legends.');
+
+		$legends = $palette->getLegends();
+
+		/** @var Legend $legend */
+		$legend = $legends[0];
+		$this->assertEquals('legend', $legend->getName());
+
+		$properties = $legend->getProperties();
+		$this->assertCount(1, $properties, 'Amount of properties ' . $legend->getName());
+
+		$this->assertProperty(
+			$properties[0],
+			'field_one'
+		);
+	}
+
+	public function testAddBefore()
+	{
+		$palettes = $this->parsePalette(array(
+			'metapalettes' => array(
+				'default' => array(
+					'legend' => array('nop1', 'field_one', 'nop2'),
+				),
+				'palette2 extends default' => array(
+					'+legend' => array('field_two before field_one')
+				)
+			)
+		));
+
+		$array = $palettes->getPalettes();
+
+		$this->assertCount(2, $array, 'Amount of palettes.');
+
+		/** @var Palette $palette */
+		$palette = $array[1];
+
+		$this->assertCount(1, $palette->getLegends(), 'Amount of legends.');
+
+		$legends = $palette->getLegends();
+
+		/** @var Legend $legend */
+		$legend = $legends[0];
+		$this->assertEquals('legend', $legend->getName());
+
+		$properties = $legend->getProperties();
+		$this->assertCount(4, $properties, 'Amount of properties ' . $legend->getName());
+
+		$this->assertProperty(
+			$properties[1],
+			'field_two'
+		);
+
+		$this->assertProperty(
+			$properties[2],
+			'field_one'
+		);
+	}
+
+	public function testAddAfter()
+	{
+		$palettes = $this->parsePalette(array(
+			'metapalettes' => array(
+				'default' => array(
+					'legend' => array('nop1', 'field_one', 'nop2'),
+				),
+				'palette2 extends default' => array(
+					'+legend' => array('field_two after field_one')
+				)
+			)
+		));
+
+		$array = $palettes->getPalettes();
+
+		$this->assertCount(2, $array, 'Amount of palettes.');
+
+		/** @var Palette $palette */
+		$palette = $array[1];
+
+		$this->assertCount(1, $palette->getLegends(), 'Amount of legends.');
+
+		$legends = $palette->getLegends();
+
+		/** @var Legend $legend */
+		$legend = $legends[0];
+		$this->assertEquals('legend', $legend->getName());
+
+		$properties = $legend->getProperties();
+		$this->assertCount(4, $properties, 'Amount of properties ' . $legend->getName());
+
+		$this->assertProperty(
+			$properties[1],
+			'field_one'
+		);
+
+		$this->assertProperty(
+			$properties[2],
+			'field_two'
+		);
+	}
 }
