@@ -259,20 +259,40 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 						else {
 							$property = new Property($propertyName);
 							$legend->addProperty($property);
+						}
 
-							// add subpalette properties
-							if (isset($subPalettes[$propertyName])) {
-								$legend->addProperties($subPalettes[$propertyName]);
-							}
-							// add subselect properties
-							if (isset($subSelectPalettes[$propertyName])) {
-								$legend->addProperties($subSelectPalettes[$propertyName]);
-							}
+						// add sub palette properties
+						if (isset($subPalettes[$propertyName])) {
+							$legend->addProperties($subPalettes[$propertyName]);
+						}
+
+						// add sub select properties for unspecified legend names.
+						if (isset($subSelectPalettes[$propertyName][''])) {
+							$legend->addProperties($subSelectPalettes[$propertyName]['']);
 						}
 					}
 				}
 
 				$palettes[$selector] = $palette;
+			}
+		}
+
+		// now add sub select properties that are for specific legend names.
+		foreach ($subSelectPalettes as $legendInformation) {
+			foreach ($legendInformation as $legendName => $properties) {
+				if ($legendName === '') {
+					continue;
+				}
+
+				foreach ($palettes as $palette) {
+					/** @var Palette $palette */
+					if ($palette->hasLegend($legendName)) {
+						/** @var Legend $legend */
+						$legend = $palette->getLegend($legendName);
+
+						$legend->addProperties($properties);
+					}
+				}
 			}
 		}
 
@@ -306,6 +326,15 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 		return $subPalettes;
 	}
 
+	/**
+	 * Parse the sub select palettes into a list of properties and set the corresponding condition.
+	 *
+	 * @param array $subSelectPalettesDca The sub select palettes.
+	 *
+	 * @return array
+	 *
+	 * @throws InvalidArgumentException
+	 */
 	protected function parseSubSelectPalettes(array $subSelectPalettesDca)
 	{
 		$subSelectPalettes = array();
@@ -329,10 +358,20 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 						$condition = new NotCondition($condition);
 					}
 
-					foreach ($propertyNames as $propertyName) {
-						$property = new Property($propertyName);
-						$property->setVisibleCondition(clone $condition);
-						$properties[] = $property;
+					foreach ($propertyNames as $key => $propertyName) {
+						// Check if it is a legend information, if so add it to that one - use the empty legend name
+						// otherwise.
+						if (is_array($propertyName)) {
+							foreach ($propertyName as $propName) {
+								$property = new Property($propName);
+								$property->setVisibleCondition(clone $condition);
+								$properties[$key][] = $property;
+							}
+						} else {
+							$property = new Property($propertyName);
+							$property->setVisibleCondition(clone $condition);
+							$properties[''][] = $property;
+						}
 					}
 				}
 
