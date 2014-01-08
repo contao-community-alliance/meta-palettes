@@ -120,10 +120,8 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 						throw new RuntimeException('Parent palette ' . $parentSelector . ' does not exists');
 					}
 
-					// if the parent is the default palette, we MUST NOT retain the DefaultPaletteCondition.
-					if ($palette->getCondition() instanceof DefaultPaletteCondition) {
-						$palette->setCondition($parser->createPaletteCondition($selector, $selectorFieldNames));
-					}
+					// We MUST NOT retain the DefaultPaletteCondition.
+					$palette->setCondition($parser->createPaletteCondition($selector, $selectorFieldNames));
 
 					$extended = true;
 				}
