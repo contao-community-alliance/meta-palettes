@@ -247,7 +247,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 								}
 							}
 							else {
-								/** @var \DcGeneral\DataDefinition\Definition\Palette\PropertyInterface $property */
+								/** @var \DcGeneral\DataDefinition\Palette\PropertyInterface $property */
 								foreach ($legend->getProperties() as $property) {
 									if ($property->getName() == $propertyName) {
 										$legend->removeProperty($property);
