@@ -311,6 +311,14 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 				$properties = array();
 
 				foreach ($propertyNames as $propertyName) {
+
+					// Check if it is a valid property name.
+					if (!is_string($propertyName)) {
+						throw new InvalidArgumentException(
+							'Invalid property name in sub palette: ' . var_export($propertyName, true)
+						);
+					}
+
 					$property = new Property($propertyName);
 					$property->setVisibleCondition(new PropertyTrueCondition($selector));
 					$properties[] = $property;
