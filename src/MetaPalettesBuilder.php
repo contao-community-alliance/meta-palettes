@@ -299,8 +299,11 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 		return $palettes;
 	}
 
-	protected function parseSubPalettes(LegacyPalettesParser $parser, array $subPalettesDca, array $selectorFieldNames)
-	{
+	protected function parseSubPalettes(
+		LegacyPalettesParser $parser,
+		array $subPalettesDca,
+		array $selectorFieldNames
+	) {
 		$subPalettes = array();
 
 		if (is_array($subPalettesDca)) {
