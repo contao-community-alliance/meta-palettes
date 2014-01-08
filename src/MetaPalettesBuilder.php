@@ -189,8 +189,8 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 						}
 					}
 
-					// if extend a palette, but not add or remove fields, clear the legend
-					if ($extended && !($additive || $subtractive)) {
+					// if extend a palette, but not add or remove fields, clear the legend but only when we have fields.
+					if ($extended && !($additive || $subtractive) && count($propertyNames)) {
 						$legend->clearProperties();
 					}
 
