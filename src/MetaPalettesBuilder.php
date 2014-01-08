@@ -108,9 +108,19 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 
 					if (isset($palettes[$parentSelector])) {
 						$palette = clone $palettes[$parentSelector];
+
+						// if the parent is the default palette, we MUST NOT retain the DefaultPaletteCondition.
+						if ($palette->getCondition instanceof DefaultPaletteCondition) {
+							$palette->setCondition($parser->createPaletteCondition($selector, $selectorFieldNames));
+						}
 					}
 					else if ($palettesDefinition->hasPaletteByName($parentSelector)) {
 						$palette = clone $palettesDefinition->getPaletteByName($parentSelector);
+
+						// if the parent is the default palette, we MUST NOT retain the DefaultPaletteCondition.
+						if ($palette->getCondition instanceof DefaultPaletteCondition) {
+							$palette->setCondition($parser->createPaletteCondition($selector, $selectorFieldNames));
+						}
 					}
 					else {
 						$palette = null;
