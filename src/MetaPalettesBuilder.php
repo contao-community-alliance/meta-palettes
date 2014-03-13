@@ -131,7 +131,14 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 					$extended = false;
 				}
 
+				$paletteCallbacks = array();
+
 				foreach ($legendPropertyNames as $legendName => $propertyNames) {
+					if ($propertyNames instanceof Closure) {
+						$paletteCallbacks[] = $propertyNames;
+						continue;
+					}
+
 					$additive      = false;
 					$subtractive   = false;
 					$insert        = false;
@@ -197,7 +204,14 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 						$legend->clearProperties();
 					}
 
+					$legendCallbacks = array();
+
 					foreach ($propertyNames as $propertyName) {
+						if ($propertyName instanceof Closure) {
+							$legendCallbacks[] = $propertyName;
+							continue;
+						}
+
 						if ($propertyName[0] == ':') {
 							// skip modifiers
 							continue;
@@ -283,6 +297,14 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 							$legend->addProperties($subSelectPalettes[$propertyName]['']);
 						}
 					}
+
+					foreach ($legendCallbacks as $callback) {
+						call_user_func($callback, $legendName, $legend, $palette, $palettesDefinition);
+					}
+				}
+
+				foreach ($paletteCallbacks as $callback) {
+					call_user_func($callback, $palette, $palettesDefinition);
 				}
 
 				$palettes[$selector] = $palette;
@@ -291,6 +313,14 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 
 		// now add sub select properties that are for specific legend names.
 		foreach ($subSelectPalettes as $legendInformation) {
+			$subpaletteCallbacks = array();
+
+			foreach ($legendInformation as $properties) {
+				if ($properties instanceof Closure) {
+					$subpaletteCallbacks[] = $properties;
+				}
+			}
+
 			foreach ($legendInformation as $legendName => $properties) {
 				if ($legendName === '') {
 					continue;
@@ -303,6 +333,10 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 						$legend = $palette->getLegend($legendName);
 
 						$legend->addProperties($properties);
+
+						foreach ($subpaletteCallbacks as $callback) {
+							call_user_func($callback, $legendName, $properties, $legend, $palette, $palettesDefinition);
+						}
 					}
 				}
 			}
