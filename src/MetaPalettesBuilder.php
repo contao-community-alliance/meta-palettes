@@ -10,18 +10,18 @@
  * @license   LGPL-3.0+
  */
 
-use DcGeneral\Contao\Dca\Builder\Legacy\DcaReadingDataDefinitionBuilder;
-use DcGeneral\Contao\Dca\Palette\LegacyPalettesParser;
-use DcGeneral\DataDefinition\ContainerInterface;
-use DcGeneral\DataDefinition\Definition\DefaultPalettesDefinition;
-use DcGeneral\DataDefinition\Definition\PalettesDefinitionInterface;
-use DcGeneral\DataDefinition\Palette\Legend;
-use DcGeneral\DataDefinition\Palette\Palette;
-use DcGeneral\DataDefinition\Palette\Property;
-use DcGeneral\DataDefinition\Palette\Condition\Property\NotCondition;
-use DcGeneral\DataDefinition\Palette\Condition\Property\PropertyTrueCondition;
-use DcGeneral\DataDefinition\Palette\Condition\Property\PropertyValueCondition;
-use DcGeneral\Factory\Event\BuildDataDefinitionEvent;
+use ContaoCommunityAlliance\DcGeneral\Contao\Dca\Builder\Legacy\DcaReadingDataDefinitionBuilder;
+use ContaoCommunityAlliance\DcGeneral\Contao\Dca\Palette\LegacyPalettesParser;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\ContainerInterface;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Definition\DefaultPalettesDefinition;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Definition\PalettesDefinitionInterface;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Legend;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Palette;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Property;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\NotCondition;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyTrueCondition;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyValueCondition;
+use ContaoCommunityAlliance\DcGeneral\Factory\Event\BuildDataDefinitionEvent;
 
 /**
  * Class MetaPalettesBuilder
@@ -39,7 +39,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 	/**
 	 * Build a data definition and store it into the environments container.
 	 *
-	 * @param \DcGeneral\DataDefinition\ContainerInterface $container
+	 * @param \ContaoCommunityAlliance\DcGeneral\DataDefinition\ContainerInterface $container
 	 *
 	 * @return void
 	 */
@@ -175,7 +175,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 							$refLegend       = null;
 
 							// search the referenced legend
-							/** @var \DcGeneral\DataDefinition\Palette\LegendInterface $existingLegend */
+							/** @var \ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\LegendInterface $existingLegend */
 							reset($existingLegends);
 							while ($existingLegend = next($existingLegends)) {
 								if ($existingLegend->getName() == $refLegendName) {
@@ -246,7 +246,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 
 									reset($existingProperties);
 									$existingProperty = current($existingProperties);
-									/** @var \DcGeneral\DataDefinition\Palette\PropertyInterface $existingProperty */
+									/** @var \ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\PropertyInterface $existingProperty */
 									while ($existingProperty !== false) {
 										if ($existingProperty->getName() == $refPropertyName) {
 											if ($insert == 'after') {
@@ -273,7 +273,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 								}
 							}
 							else {
-								/** @var \DcGeneral\DataDefinition\Palette\PropertyInterface $property */
+								/** @var \ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\PropertyInterface $property */
 								foreach ($legend->getProperties() as $property) {
 									if ($property->getName() == $propertyName) {
 										$legend->removeProperty($property);
