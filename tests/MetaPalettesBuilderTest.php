@@ -10,11 +10,11 @@
  */
 
 
-use DcGeneral\DataDefinition\DefaultContainer;
-use DcGeneral\DataDefinition\Palette\Legend;
-use DcGeneral\DataDefinition\Palette\Palette;
-use DcGeneral\DataDefinition\Palette\Property;
-use DcGeneral\Factory\Event\BuildDataDefinitionEvent;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\DefaultContainer;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Legend;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Palette;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Property;
+use ContaoCommunityAlliance\DcGeneral\Factory\Event\BuildDataDefinitionEvent;
 
 /**
  * Test the meta palettes builder.
@@ -53,7 +53,7 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
 	 *
 	 * @param array $dca The dca to absorb.
 	 *
-	 * @return \DcGeneral\DataDefinition\Definition\PalettesDefinitionInterface
+	 * @return \ContaoCommunityAlliance\DcGeneral\DataDefinition\Definition\PalettesDefinitionInterface
 	 */
 	protected function parsePalette($dca)
 	{
@@ -116,7 +116,7 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertProperty(
 			$property,
 			$name,
-			'\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyValueCondition'
+			'\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyValueCondition'
 		);
 
 		$this->assertAttributeEquals(
@@ -216,7 +216,7 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertProperty(
 			$properties[2],
 			'field_three',
-			'\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyTrueCondition'
+			'\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyTrueCondition'
 		);
 
 		$this->assertAttributeEquals(
@@ -229,7 +229,7 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertProperty(
 			$properties[3],
 			'field_four',
-			'\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyTrueCondition'
+			'\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyTrueCondition'
 		);
 
 		$this->assertAttributeEquals(
