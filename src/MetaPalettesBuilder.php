@@ -19,8 +19,10 @@ use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Legend;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Palette;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Property;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\NotCondition;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyConditionChain;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyTrueCondition;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyValueCondition;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyVisibleCondition;
 use ContaoCommunityAlliance\DcGeneral\Factory\Event\BuildDataDefinitionEvent;
 
 /**
@@ -365,8 +367,12 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 						);
 					}
 
+					$and = new PropertyConditionChain();
+					$and->addCondition(new PropertyTrueCondition($selector));
+					$and->addCondition(new PropertyVisibleCondition($selector));
+
 					$property = new Property($propertyName);
-					$property->setVisibleCondition(new PropertyTrueCondition($selector));
+					$property->setVisibleCondition($and);
 					$properties[] = $property;
 				}
 
@@ -415,18 +421,22 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 						$condition = new NotCondition($condition);
 					}
 
+					$and = new PropertyConditionChain();
+					$and->addCondition($condition);
+					$and->addCondition(new PropertyVisibleCondition($selectPropertyName));
+
 					foreach ($propertyNames as $key => $propertyName) {
 						// Check if it is a legend information, if so add it to that one - use the empty legend name
 						// otherwise.
 						if (is_array($propertyName)) {
 							foreach ($propertyName as $propName) {
 								$property = new Property($propName);
-								$property->setVisibleCondition(clone $condition);
+								$property->setVisibleCondition(clone $and);
 								$properties[$key][] = $property;
 							}
 						} else {
 							$property = new Property($propertyName);
-							$property->setVisibleCondition(clone $condition);
+							$property->setVisibleCondition(clone $and);
 							$properties[''][] = $property;
 						}
 					}
