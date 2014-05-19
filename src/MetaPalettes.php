@@ -259,13 +259,23 @@ class MetaPalettes extends System
 		if (isset($GLOBALS['TL_DCA'][$strTable]['config']['palettes_callback']) && is_array($GLOBALS['TL_DCA'][$strTable]['config']['palettes_callback'])) {
 			// call callbacks
 			foreach ($GLOBALS['TL_DCA'][$strTable]['config']['palettes_callback'] as $callback) {
-				if (is_array($callback) && count($callback) == 2 && is_string($callback[0]) && is_string($callback[1])) {
-					$this->import($callback[0]);
-					$this->$callback[0]->$callback[1]();
+				if (is_array($callback) && count($callback) == 2) {
+					if (!is_object($callback[0])) {
+						$class  = new \ReflectionClass($callback[0]);
+						$method = $class->getMethod($callback[1]);
+
+						if (!$method->isStatic()) {
+							if ($class->hasMethod('getInstance')) {
+								$callback[0] = $class->getMethod('getInstance')->invoke(null);
+							}
+							else {
+								$callback[0] = $class->newInstance();
+							}
+						}
+					}
 				}
-				else if (is_callable($callback)) {
-					call_user_func($callback);
-				}
+
+				call_user_func($callback);
 			}
 		}
 
