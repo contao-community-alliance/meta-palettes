@@ -129,6 +129,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 				}
 				else {
 					$palette = new Palette();
+					$palette->setName($selector);
 					$palette->setCondition($parser->createPaletteCondition($selector, $selectorFieldNames));
 					$extended = false;
 				}
