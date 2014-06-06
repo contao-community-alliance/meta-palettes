@@ -110,6 +110,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 
 					if (isset($palettes[$parentSelector])) {
 						$palette = clone $palettes[$parentSelector];
+						$palette->setName($selector);
 					}
 					else if ($palettesDefinition->hasPaletteByName($parentSelector)) {
 						$palette = clone $palettesDefinition->getPaletteByName($parentSelector);
