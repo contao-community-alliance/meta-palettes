@@ -15,6 +15,7 @@ use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Legend;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Palette;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Property;
 use ContaoCommunityAlliance\DcGeneral\Factory\Event\BuildDataDefinitionEvent;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Test the meta palettes builder.
@@ -60,6 +61,7 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
 		$builder   = $this->mockBuilder($dca);
 		$container = new DefaultContainer(uniqid('MetaPalettesBuilderTest-', true));
 		$event     = new BuildDataDefinitionEvent($container);
+		$event->setDispatcher(new EventDispatcher());
 
 		$builder->build($container, $event);
 
@@ -83,7 +85,11 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
 	 */
 	protected function assertProperty($property, $name, $visibleConditionClass = null, $editableConditionClass = null)
 	{
-		$this->assertEquals($name, $property->getName());
+		$this->assertEquals(
+			$name,
+			$property->getName(),
+			'property name mismatch'
+		);
 
 		if ($visibleConditionClass === null) {
 			$this->assertNull($property->getVisibleCondition());
@@ -116,21 +122,41 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertProperty(
 			$property,
 			$name,
-			'\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyValueCondition'
+			'\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyConditionChain'
+		);
+
+		$conditions = $property->getVisibleCondition()->getConditions();
+
+		$this->assertInstanceOf(
+			'\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyValueCondition',
+			$conditions[0]
 		);
 
 		$this->assertAttributeEquals(
 			$dependsOn,
 			'propertyName',
-			$property->getVisibleCondition(),
+			$conditions[0],
 			$property->getName() . ' getVisibleCondition() check dependant field'
 		);
 
 		$this->assertAttributeEquals(
 			$dependedValue,
 			'propertyValue',
-			$property->getVisibleCondition(),
+			$conditions[0],
 			$property->getName() . ' getVisibleCondition() check dependant value'
+		);
+
+		$this->assertInstanceOf(
+			'\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyVisibleCondition',
+			$conditions[1],
+			$property->getName() . ' getVisibleCondition() check dependant field'
+		);
+
+		$this->assertAttributeEquals(
+			$dependsOn,
+			'propertyName',
+			$conditions[1],
+			$property->getName() . ' getVisibleCondition() check dependant field'
 		);
 	}
 
@@ -216,27 +242,67 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertProperty(
 			$properties[2],
 			'field_three',
-			'\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyTrueCondition'
+			'\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyConditionChain'
+		);
+
+		$conditions = $properties[2]->getVisibleCondition()->getConditions();
+
+		$this->assertInstanceOf(
+			'\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyTrueCondition',
+			$conditions[0]
 		);
 
 		$this->assertAttributeEquals(
 			'field_two',
 			'propertyName',
-			$properties[2]->getVisibleCondition(),
+			$conditions[0],
+			'field_three getVisibleCondition() check dependant field'
+		);
+
+		$this->assertInstanceOf(
+			'\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyVisibleCondition',
+			$conditions[1],
+			'field_three getVisibleCondition() check dependant field'
+		);
+
+		$this->assertAttributeEquals(
+			'field_two',
+			'propertyName',
+			$conditions[1],
 			'field_three getVisibleCondition() check dependant field'
 		);
 
 		$this->assertProperty(
 			$properties[3],
 			'field_four',
-			'\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyTrueCondition'
+			'\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyConditionChain'
+		);
+
+		$conditions = $properties[3]->getVisibleCondition()->getConditions();
+
+		$this->assertInstanceOf(
+			'\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyTrueCondition',
+			$conditions[0]
 		);
 
 		$this->assertAttributeEquals(
 			'field_two',
 			'propertyName',
-			$properties[3]->getVisibleCondition(),
-			'field_three getVisibleCondition() check dependant field'
+			$conditions[0],
+			'field_four getVisibleCondition() check dependant field'
+		);
+
+		$this->assertInstanceOf(
+			'\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyVisibleCondition',
+			$conditions[1],
+			'field_four getVisibleCondition() check dependant field'
+		);
+
+		$this->assertAttributeEquals(
+			'field_two',
+			'propertyName',
+			$conditions[1],
+			'field_four getVisibleCondition() check dependant field'
 		);
 	}
 
@@ -356,6 +422,126 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertCount(1, $properties, 'Amount of properties ' . $legend->getName());
 
 		$this->assertPropertyDependantValue($properties[0], 'field_four', 'field_two', 'value');
+	}
+
+	/**
+	 * Test sub palettes with anonymous legends depending on each other.
+	 *
+	 * @return void
+	 */
+	public function testRecursiveSubSelectPalette()
+	{
+		$palettes = $this->parsePalette(array(
+			'metapalettes' => array(
+				'default' => array(
+					'legend1' => array('field_one', 'field_two'),
+				)
+			),
+			'metasubselectpalettes' => array(
+				'field_two' => array(
+					'value1' => array(
+						'field_three',
+					)
+				),
+				'field_three' => array(
+					'value2' => array(
+						'field_four'
+					)
+				),
+			)
+		));
+
+		$array = $palettes->getPalettes();
+
+		$this->assertCount(1, $array, 'Amount of palettes.');
+
+		/** @var Palette $palette */
+		$palette = $array[0];
+
+		$this->assertCount(1, $palette->getLegends(), 'Amount of legends.');
+
+		$legends = $palette->getLegends();
+
+		/** @var Legend $legend */
+		$legend = $legends[0];
+		$this->assertEquals('legend1', $legend->getName());
+
+		$properties = $legend->getProperties();
+		$this->assertCount(4, $properties, 'Amount of properties ' . $legend->getName());
+
+		$this->assertProperty(
+			$properties[0],
+			'field_one'
+		);
+
+		$this->assertProperty(
+			$properties[1],
+			'field_two'
+		);
+
+		$this->assertPropertyDependantValue($properties[2], 'field_three', 'field_two', 'value1');
+
+		$this->assertPropertyDependantValue($properties[3], 'field_four', 'field_three', 'value2');
+	}
+
+
+	/**
+	 * Test sub palettes with anonymous legends depending on each other.
+	 *
+	 * @return void
+	 */
+	public function testRecursiveSubSelectPaletteWithPosition()
+	{
+		$palettes = $this->parsePalette(array(
+			'metapalettes' => array(
+				'default' => array(
+					'legend1' => array('field_one', 'field_two'),
+				)
+			),
+			'metasubselectpalettes' => array(
+				'field_two' => array(
+					'value1' => array(
+						'legend1 after field_one' => array('field_three'),
+					)
+				),
+				'field_three' => array(
+					'value2' => array(
+						'field_four'
+					)
+				),
+			)
+		));
+
+		$array = $palettes->getPalettes();
+
+		$this->assertCount(1, $array, 'Amount of palettes.');
+
+		/** @var Palette $palette */
+		$palette = $array[0];
+
+		$this->assertCount(1, $palette->getLegends(), 'Amount of legends.');
+
+		$legends = $palette->getLegends();
+		/** @var Legend $legend */
+		$legend = $legends[0];
+		$this->assertEquals('legend1', $legend->getName());
+
+		$properties = $legend->getProperties();
+		$this->assertCount(4, $properties, 'Amount of properties ' . $legend->getName());
+
+		$this->assertProperty(
+			$properties[0],
+			'field_one'
+		);
+
+		$this->assertProperty(
+			$properties[2],
+			'field_two'
+		);
+
+		$this->assertPropertyDependantValue($properties[1], 'field_three', 'field_two', 'value1');
+
+		$this->assertPropertyDependantValue($properties[3], 'field_four', 'field_three', 'value2');
 	}
 
 	/**

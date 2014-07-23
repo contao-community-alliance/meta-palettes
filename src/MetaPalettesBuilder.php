@@ -297,9 +297,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 						}
 
 						// add sub select properties for unspecified legend names.
-						if (isset($subSelectPalettes[$propertyName][''])) {
-							$legend->addProperties($subSelectPalettes[$propertyName]['']);
-						}
+						$this->addSubSelectProperties($legend, $subSelectPalettes, $propertyName);
 					}
 
 					foreach ($legendCallbacks as $callback) {
@@ -316,7 +314,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 		}
 
 		// now add sub select properties that are for specific legend names.
-		foreach ($subSelectPalettes as $legendInformation) {
+		foreach ($subSelectPalettes as $propertyName => $legendInformation) {
 			$subpaletteCallbacks = array();
 
 			foreach ($legendInformation as $properties) {
@@ -325,18 +323,28 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 				}
 			}
 
-			foreach ($legendInformation as $legendName => $properties) {
-				if ($legendName === '') {
+			foreach ($legendInformation as $fullLegendName => $properties) {
+				if ($fullLegendName === '') {
 					continue;
 				}
 
 				foreach ($palettes as $palette) {
+					if (preg_match('#^(\w+) (before|after) (\w+)$#', $fullLegendName, $matches)) {
+						$legendName = $matches[1];
+						$insert     = $matches[2];
+						$refName    = $matches[3];
+					}
+					else {
+						$legendName = $fullLegendName;
+						$insert     = '';
+						$refName    = null;
+					}
+
 					/** @var Palette $palette */
 					if ($palette->hasLegend($legendName)) {
 						/** @var Legend $legend */
 						$legend = $palette->getLegend($legendName);
-
-						$legend->addProperties($properties);
+						$this->addSubSelectProperties($legend, $subSelectPalettes, $propertyName, $fullLegendName, $insert, $refName);
 
 						foreach ($subpaletteCallbacks as $callback) {
 							call_user_func($callback, $legendName, $properties, $legend, $palette, $palettesDefinition);
@@ -347,6 +355,64 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 		}
 
 		return $palettes;
+	}
+
+	/**
+	 * Recursively add all subselect properties to their parent. Even when they are member of a subselect themselves.
+	 *
+	 * @param Legend $legend            The legend to add the properties to.
+	 *
+	 * @param array  $subSelectPalettes All subselect palettes.
+	 *
+	 * @param string $propertyName      The name of the property for which all dependant properties shall get added.
+	 *
+	 * @param string $legendName        The name of the legend for which properties shall get retrieved.
+	 */
+	protected function addSubSelectProperties(
+		Legend $legend,
+		$subSelectPalettes,
+		$propertyName,
+		$legendName = '',
+		$insert = 'before',
+		$reference = null
+	)
+	{
+		if (!isset($subSelectPalettes[$propertyName][$legendName]))
+		{
+			return;
+		}
+
+		$position = null;
+		if ($insert && $reference) {
+			$properties = $legend->getProperties();
+			$property = current($properties);
+			do {
+				if ($property->getName() == $reference) {
+					if ($insert == 'before') {
+						$position = $property;
+					} elseif ($insert == 'after') {
+						$position = next($properties);
+					}
+					break;
+				}
+			}
+			while ($property = next($properties));
+		}
+
+		$legend->addProperties($subSelectPalettes[$propertyName][$legendName], $position);
+		foreach ((array)$subSelectPalettes[$propertyName][$legendName] as $property)
+		{
+			/** @var Property $property */
+			// Add anonymous legends for this property.
+			if (isset($subSelectPalettes[$property->getName()]['']))
+			{
+				$legend->addProperties($subSelectPalettes[$property->getName()]['']);
+			}
+			if (isset($subSelectPalettes[$property->getName()][$legendName]))
+			{
+				$this->addSubSelectProperties($legend, $subSelectPalettes, $property->getName(), $legendName, $insert, $reference);
+			}
+		}
 	}
 
 	protected function parseSubPalettes(
