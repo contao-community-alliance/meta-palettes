@@ -484,6 +484,66 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
 		$this->assertPropertyDependantValue($properties[3], 'field_four', 'field_three', 'value2');
 	}
 
+
+	/**
+	 * Test sub palettes with anonymous legends depending on each other.
+	 *
+	 * @return void
+	 */
+	public function testRecursiveSubSelectPaletteWithPosition()
+	{
+		$palettes = $this->parsePalette(array(
+			'metapalettes' => array(
+				'default' => array(
+					'legend1' => array('field_one', 'field_two'),
+				)
+			),
+			'metasubselectpalettes' => array(
+				'field_two' => array(
+					'value1' => array(
+						'legend1 after field_one' => array('field_three'),
+					)
+				),
+				'field_three' => array(
+					'value2' => array(
+						'field_four'
+					)
+				),
+			)
+		));
+
+		$array = $palettes->getPalettes();
+
+		$this->assertCount(1, $array, 'Amount of palettes.');
+
+		/** @var Palette $palette */
+		$palette = $array[0];
+
+		$this->assertCount(1, $palette->getLegends(), 'Amount of legends.');
+
+		$legends = $palette->getLegends();
+		/** @var Legend $legend */
+		$legend = $legends[0];
+		$this->assertEquals('legend1', $legend->getName());
+
+		$properties = $legend->getProperties();
+		$this->assertCount(4, $properties, 'Amount of properties ' . $legend->getName());
+
+		$this->assertProperty(
+			$properties[0],
+			'field_one'
+		);
+
+		$this->assertProperty(
+			$properties[2],
+			'field_two'
+		);
+
+		$this->assertPropertyDependantValue($properties[1], 'field_three', 'field_two', 'value1');
+
+		$this->assertPropertyDependantValue($properties[3], 'field_four', 'field_three', 'value2');
+	}
+
 	/**
 	 * Test that extending an palette with an empty palette will create a copy of the original palette.
 	 *
