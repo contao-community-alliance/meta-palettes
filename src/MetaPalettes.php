@@ -1,32 +1,12 @@
-<?php if (!defined('TL_ROOT')) die('You can not access this file directly!');
+<?php
 
 /**
  * htaccess Generator
  * Copyright (C) 2011 Tristan Lins
  *
- * Extension for:
- * Contao Open Source CMS
- * Copyright (C) 2005-2011 Leo Feyer
- *
- * Formerly known as TYPOlight Open Source CMS.
- *
- * This program is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation, either
- * version 3 of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program. If not, please visit the Free
- * Software Foundation website at <http://www.gnu.org/licenses/>.
- *
  * PHP version 5
- * @copyright  InfinitySoft 2011
- * @author     Tristan Lins <tristan.lins@infinitysoft.de>
+ * @copyright  bit3 UG 2013, 2014
+ * @author     Tristan Lins <tristan.lins@bit3.de>
  * @package    MetaPalettes
  * @license    LGPL
  * @filesource
@@ -38,8 +18,8 @@
  *
  * Generates the palettes from the meta information.
  *
- * @copyright  InfinitySoft 2011
- * @author     Tristan Lins <tristan.lins@infinitysoft.de>
+ * @copyright  bit3 UG 2013, 2014
+ * @author     Tristan Lins <tristan.lins@bit3.de>
  * @package    MetaPalettes
  */
 class MetaPalettes extends System
@@ -241,6 +221,45 @@ class MetaPalettes extends System
 		} else {
 			self::appendTo($strTable, $varArg1, array($varArg2 => $varArg3));
 		}
+	}
+
+	/**
+	 * Dynamic prepend fields to a group in the palette definition.
+	 *
+	 * @static
+	 *
+	 * @param string $strTable
+	 * The table name.
+	 * @param mixed $varArg1
+	 * The palette name or the list of fields to remove. In last case, the fields will be removed from the default palette.
+	 * @param mixed $varArg2
+	 * List of fields to remove.
+	 *
+	 * @return void
+	 */
+	public static function removeFields($strTable, $varArg1, $varArg2 = null)
+	{
+		if (is_array($varArg1)) {
+			$varArg2 = $varArg1;
+			$varArg1 = 'default';
+		}
+
+		$varArg2 = array_map(
+			function($item) {
+				return preg_quote($item, '#');
+			},
+			$varArg2
+		);
+
+		$strRegexp = sprintf('#[,;](%s)([,;]|$)#Ui', implode('|', $varArg2));
+
+		$strPalette = $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1];
+
+		do {
+			$strPalette = preg_replace($strRegexp, '$2', $strPalette, -1, $count);
+		} while ($count);
+
+		$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = $strPalette;
 	}
 
 	/**
