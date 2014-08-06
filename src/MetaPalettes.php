@@ -224,6 +224,45 @@ class MetaPalettes extends System
 	}
 
 	/**
+	 * Dynamic prepend fields to a group in the palette definition.
+	 *
+	 * @static
+	 *
+	 * @param string $strTable
+	 * The table name.
+	 * @param mixed $varArg1
+	 * The palette name or the list of fields to remove. In last case, the fields will be removed from the default palette.
+	 * @param mixed $varArg2
+	 * List of fields to remove.
+	 *
+	 * @return void
+	 */
+	public static function removeFields($strTable, $varArg1, $varArg2 = null)
+	{
+		if (is_array($varArg1)) {
+			$varArg2 = $varArg1;
+			$varArg1 = 'default';
+		}
+
+		$varArg2 = array_map(
+			function($item) {
+				return preg_quote($item, '#');
+			},
+			$varArg2
+		);
+
+		$strRegexp = sprintf('#[,;](%s)([,;]|$)#Ui', implode('|', $varArg2));
+
+		$strPalette = $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1];
+
+		do {
+			$strPalette = preg_replace($strRegexp, '$2', $strPalette, -1, $count);
+		} while ($count);
+
+		$GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = $strPalette;
+	}
+
+	/**
 	 * @param $strTable
 	 *
 	 * @return void
