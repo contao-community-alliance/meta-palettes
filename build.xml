@@ -16,6 +16,27 @@
 		</exec>
 	</target>
 
+	<target name="branch-alias">
+		<property name="script">
+$composer = json_decode(file_get_contents("composer.json"), true);
+foreach ($composer["extra"]["branch-alias"] as $branch => $alias) {
+	$simpleBranch = substr($branch, 4);
+	$simpleAlias = preg_replace("~(\.x)?-dev~", "", $alias);
+	$tag = trim(shell_exec("git describe " . escapeshellarg($simpleBranch)));
+
+	if (version_compare($tag, $simpleAlias, ">")) {
+		echo "The branch alias $branch $alias is behind the latest branch tag $tag!";
+		exit(1);
+	}
+}
+		</property>
+		<exec dir="${basedir}" executable="/usr/bin/env" failonerror="true">
+			<arg value="php" />
+			<arg value="-r" />
+			<arg value="${script}" />
+		</exec>
+	</target>
+
 	<!-- <target name="test" depends="phpunit,phpcs,phpmd"/> -->
-	<target name="test" depends="phpunit"/>
+	<target name="test" depends="phpunit,branch-alias"/>
 </project>
