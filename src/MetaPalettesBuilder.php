@@ -399,6 +399,10 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 			while ($property = next($properties));
 		}
 
+		if ($position === false) {
+			$position = null;
+		}
+
 		$legend->addProperties($subSelectPalettes[$propertyName][$legendName], $position);
 		foreach ((array)$subSelectPalettes[$propertyName][$legendName] as $property)
 		{
