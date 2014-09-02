@@ -22,9 +22,13 @@ $composer = json_decode(file_get_contents("composer.json"), true);
 foreach ($composer["extra"]["branch-alias"] as $branch => $alias) {
 	$simpleBranch = substr($branch, 4);
 	$simpleAlias = preg_replace("~(\.x)?-dev~", "", $alias);
+	$versionLevel = count(explode('.', $simpleAlias));
 	$tag = trim(shell_exec("git describe " . escapeshellarg($simpleBranch)));
+	$reducedTag = explode('.', $tag);
+	$reducedTag = array_slice($reducedTag, 0, $versionLevel);
+	$reducedTag = implode('.', $reducedTag);
 
-	if (version_compare($tag, $simpleAlias, ">")) {
+	if (version_compare($reducedTag, $simpleAlias, ">")) {
 		echo "The branch alias $branch $alias is behind the latest branch tag $tag!";
 		exit(1);
 	}
