@@ -31,11 +31,11 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function mockBuilder($dca)
 	{
-		$builder = $this->getMockBuilder('\MetaPalettesBuilder')
+		$builder = $this->getMockBuilder('Bit3\Contao\MetaPalettes\MetaPalettesBuilder')
 		->setMethods(array('loadDca'))
 		->getMock();
 
-		$reflection = new ReflectionProperty('\MetaPalettesBuilder', 'dca');
+		$reflection = new ReflectionProperty('Bit3\Contao\MetaPalettes\MetaPalettesBuilder', 'dca');
 
 		$reflection->setAccessible(true);
 
