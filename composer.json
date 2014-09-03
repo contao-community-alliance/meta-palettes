@@ -25,7 +25,7 @@
         "source": "https://github.com/bit3/contao-meta-palettes"
     },
     "require": {
-        "php": ">=5.3",
+        "php": ">=5.4",
         "contao/core": ">=2.11,<4",
         "contao-community-alliance/composer-plugin": "~2.0"
     },
