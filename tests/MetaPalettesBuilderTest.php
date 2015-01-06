@@ -36,10 +36,16 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
 		->getMock();
 
 		$reflection = new ReflectionProperty('\MetaPalettesBuilder', 'dca');
-
 		$reflection->setAccessible(true);
-
 		$reflection->setValue($builder, $dca);
+
+		$reflection = new ReflectionProperty('\MetaPalettesBuilder', 'eventName');
+		$reflection->setAccessible(true);
+		$reflection->setValue($builder, BuildDataDefinitionEvent::NAME);
+
+		$reflection = new ReflectionProperty('\MetaPalettesBuilder', 'dispatcher');
+		$reflection->setAccessible(true);
+		$reflection->setValue($builder, new EventDispatcher());
 
 		$builder
 			->expects($this->any())
@@ -61,7 +67,6 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
 		$builder   = $this->mockBuilder($dca);
 		$container = new DefaultContainer(uniqid('MetaPalettesBuilderTest-', true));
 		$event     = new BuildDataDefinitionEvent($container);
-		$event->setDispatcher(new EventDispatcher());
 
 		$builder->build($container, $event);
 
