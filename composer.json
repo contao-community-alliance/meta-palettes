@@ -47,6 +47,11 @@
             "Bit3\\Contao\\MetaPalettes\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Bit3\\Contao\\MetaPalettes\\Test\\": "tests/"
+        }
+    },
     "extra": {
         "contao": {
             "sources": {

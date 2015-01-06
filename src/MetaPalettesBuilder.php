@@ -48,6 +48,8 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
      * @param \ContaoCommunityAlliance\DcGeneral\DataDefinition\ContainerInterface $container
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function build(
         ContainerInterface $container,
