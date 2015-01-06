@@ -53,7 +53,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
         ContainerInterface $container,
         BuildDataDefinitionEvent $event
     ) {
-        if (!$this->loadDca($container->getName(), $event->getDispatcher())) {
+        if (!$this->loadDca($container->getName(), $this->getDispatcher())) {
             return;
         }
 

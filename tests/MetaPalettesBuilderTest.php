@@ -27,7 +27,7 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
 	 *
 	 * @param array $dca The DCA to inject into the builder.
 	 *
-	 * @return \MetaPalettesBuilder
+	 * @return Bit3\Contao\MetaPalettes\MetaPalettesBuilder
 	 */
 	public function mockBuilder($dca)
 	{
@@ -36,10 +36,16 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
 		->getMock();
 
 		$reflection = new ReflectionProperty('Bit3\Contao\MetaPalettes\MetaPalettesBuilder', 'dca');
-
 		$reflection->setAccessible(true);
-
 		$reflection->setValue($builder, $dca);
+
+		$reflection = new ReflectionProperty('Bit3\Contao\MetaPalettes\MetaPalettesBuilder', 'eventName');
+		$reflection->setAccessible(true);
+		$reflection->setValue($builder, BuildDataDefinitionEvent::NAME);
+
+		$reflection = new ReflectionProperty('Bit3\Contao\MetaPalettes\MetaPalettesBuilder', 'dispatcher');
+		$reflection->setAccessible(true);
+		$reflection->setValue($builder, new EventDispatcher());
 
 		$builder
 			->expects($this->any())
@@ -61,7 +67,6 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
 		$builder   = $this->mockBuilder($dca);
 		$container = new DefaultContainer(uniqid('MetaPalettesBuilderTest-', true));
 		$event     = new BuildDataDefinitionEvent($container);
-		$event->setDispatcher(new EventDispatcher());
 
 		$builder->build($container, $event);
 
