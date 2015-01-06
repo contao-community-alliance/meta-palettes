@@ -48,12 +48,14 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
      * @param \ContaoCommunityAlliance\DcGeneral\DataDefinition\ContainerInterface $container
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function build(
         ContainerInterface $container,
         BuildDataDefinitionEvent $event
     ) {
-        if (!$this->loadDca($container->getName(), $event->getDispatcher())) {
+        if (!$this->loadDca($container->getName(), $this->getDispatcher())) {
             return;
         }
 
