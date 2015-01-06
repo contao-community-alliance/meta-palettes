@@ -1,56 +1,68 @@
 {
-	"name":"bit3/contao-meta-palettes",
-	"description":"MetaPalettes extension for Contao OpenSource CMS",
-	"keywords":["contao", "page", "title"],
-	"type":"contao-module",
-	"homepage":"http://bit3.de",
-	"license":"LGPL-3.0+",
-	"authors":[
-		{
-			"name":"Tristan Lins",
-			"email":"tristan.lins@bit3.de",
-			"homepage":"http://bit3.de",
-			"role":"Developer"
-		}
-	],
-	"support":{
-		"email":"info@bit3.de",
-		"issues":"https://github.com/bit3/contao-meta-palettes/issues",
-		"wiki":"https://github.com/bit3/contao-meta-palettes/wiki",
-		"irc":"irc://irc.freenode.org/contao.dev",
-		"source":"https://github.com/bit3/contao-meta-palettes"
-	},
-	"require":{
-		"php":">=5.3",
-		"contao/core":">=2.11,<4",
-		"contao-community-alliance/composer-plugin":"~2.0"
-	},
-	"require-dev":{
-		"squizlabs/php_codesniffer":"1.*",
-		"bit3/php-coding-standard":"@dev",
-		"phpunit/phpunit": ">=3.7.10,<4-dev",
-		"contao-community-alliance/dc-general": "~2.0.0@dev"
-	},
-	"replace":{
-		"contao-legacy/metapalettes":"self.version"
-	},
-	"conflict":{
-		"metamodels/dc_general":"<1-dev"
-	},
-	"autoload":{
-		"classmap": ["src/"]
-	},
-	"extra":{
-		"contao": {
-			"sources":{
-				"contao":"system/modules/metapalettes"
-			}
-		},
-		"branch-alias": {
-			"dev-master": "1.8.x-dev",
-			"dev-develop": "1.9.x-dev"
-		}
-	},
-	"minimum-stability": "dev",
-	"prefer-stable": true
+    "name": "bit3/contao-meta-palettes",
+    "description": "MetaPalettes extension for Contao OpenSource CMS",
+    "keywords": [
+        "contao",
+        "page",
+        "title"
+    ],
+    "type": "contao-module",
+    "homepage": "http://bit3.de",
+    "license": "LGPL-3.0+",
+    "authors": [
+        {
+            "name": "Tristan Lins",
+            "email": "tristan.lins@bit3.de",
+            "homepage": "http://bit3.de",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "info@bit3.de",
+        "issues": "https://github.com/bit3/contao-meta-palettes/issues",
+        "wiki": "https://github.com/bit3/contao-meta-palettes/wiki",
+        "irc": "irc://irc.freenode.org/contao.dev",
+        "source": "https://github.com/bit3/contao-meta-palettes"
+    },
+    "require": {
+        "php": ">=5.4",
+        "contao/core": ">=2.11,<4",
+        "contao-community-alliance/composer-plugin": "~2.0"
+    },
+    "require-dev": {
+        "bit3/php-coding-standard": "@dev",
+        "phpunit/phpunit": ">=3.7.10,<4-dev",
+        "squizlabs/php_codesniffer": "~1.0",
+        "phpmd/phpmd": "~2.0",
+        "contao-community-alliance/dc-general": "~2.0.0@dev"
+    },
+    "replace": {
+        "contao-legacy/metapalettes": "self.version"
+    },
+    "conflict": {
+        "metamodels/dc_general": "<1-dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "Bit3\\Contao\\MetaPalettes\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Bit3\\Contao\\MetaPalettes\\Test\\": "tests/"
+        }
+    },
+    "extra": {
+        "contao": {
+            "sources": {
+                "contao": "system/modules/metapalettes"
+            }
+        },
+        "branch-alias": {
+            "dev-master": "1.8.x-dev",
+            "dev-develop": "1.9.x-dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

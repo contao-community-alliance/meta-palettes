@@ -36,9 +36,15 @@
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('MetaPalettes', 'generatePalettes');
+$GLOBALS['TL_HOOKS']['loadDataContainer'][] = ['Bit3\Contao\MetaPalettes\MetaPalettes', 'generatePalettes'];
 
-$GLOBALS['TL_EVENTS']['dc-general.factory.build-data-definition'][] = array(
-	'MetaPalettesBuilder::process',
+$GLOBALS['TL_EVENTS']['dc-general.factory.build-data-definition'][] = [
+	'Bit3\Contao\MetaPalettes\MetaPalettesBuilder::process',
 	200
-);
+];
+
+/**
+ * Backwards compatibility
+ */
+class_alias('Bit3\Contao\MetaPalettes\MetaPalettes', 'MetaPalettes');
+class_alias('Bit3\Contao\MetaPalettes\MetaPalettesBuilder', 'MetaPalettesBuilder');
