@@ -46,5 +46,10 @@ $GLOBALS['TL_EVENTS']['dc-general.factory.build-data-definition'][] = [
 /**
  * Backwards compatibility
  */
-class_alias('Bit3\Contao\MetaPalettes\MetaPalettes', 'MetaPalettes');
-class_alias('Bit3\Contao\MetaPalettes\MetaPalettesBuilder', 'MetaPalettesBuilder');
+spl_autoload_register(function($class) {
+	if ('MetaPalettes' === $class) {
+		class_alias('Bit3\Contao\MetaPalettes\MetaPalettes', 'MetaPalettes');
+		return true;
+	}
+	return false;
+});
