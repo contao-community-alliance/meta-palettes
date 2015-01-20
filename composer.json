@@ -1,5 +1,5 @@
 {
-    "name": "bit3/contao-meta-palettes",
+    "name": "contao-community-alliance/meta-palettes",
     "description": "MetaPalettes extension for Contao OpenSource CMS",
     "keywords": [
         "contao",
@@ -11,9 +11,9 @@
     "license": "LGPL-3.0+",
     "authors": [
         {
-            "name": "Tristan Lins",
-            "email": "tristan.lins@bit3.de",
-            "homepage": "http://bit3.de",
+            "name": "Christian Schiffler",
+            "email": "c.schiffler@cyberspectrum.de",
+            "homepage": "http://www.cyberspectrum.de",
             "role": "Developer"
         }
     ],
@@ -59,8 +59,8 @@
             }
         },
         "branch-alias": {
-            "dev-master": "1.8.x-dev",
-            "dev-develop": "1.9.x-dev"
+            "dev-master": "1.9.x-dev",
+            "dev-develop": "1.10.x-dev"
         }
     },
     "minimum-stability": "dev",
