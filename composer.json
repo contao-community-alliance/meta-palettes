@@ -59,8 +59,8 @@
             }
         },
         "branch-alias": {
-            "dev-master": "1.8.x-dev",
-            "dev-develop": "1.9.x-dev"
+            "dev-master": "1.9.x-dev",
+            "dev-develop": "1.10.x-dev"
         }
     },
     "minimum-stability": "dev",
