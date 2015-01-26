@@ -16,8 +16,6 @@
 namespace Bit3\Contao\MetaPalettes;
 
 /**
- * Class MetaPalettes
- *
  * Generates the palettes from the meta information.
  *
  * @copyright  bit3 UG 2013, 2014
@@ -26,7 +24,6 @@ namespace Bit3\Contao\MetaPalettes;
  */
 class MetaPalettes extends \System
 {
-
     /**
      * @var MetaPalettes
      */
@@ -187,7 +184,7 @@ class MetaPalettes extends \System
                 $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1]
             );
         } else {
-            self::appendTo($strTable, $varArg1, [$varArg2 => $varArg3]);
+            self::appendTo($strTable, $varArg1, array($varArg2 => $varArg3));
         }
     }
 
@@ -226,7 +223,7 @@ class MetaPalettes extends \System
                 $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1]
             );
         } else {
-            self::appendTo($strTable, $varArg1, [$varArg2 => $varArg3]);
+            self::appendTo($strTable, $varArg1, array($varArg2 => $varArg3));
         }
     }
 
@@ -339,7 +336,7 @@ class MetaPalettes extends \System
                     if (is_array($arrFields) && count($arrFields) > 0) {
                         // generate subpalettes selectors
                         if (!is_array($GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
-                            $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'] = [$strPalette];
+                            $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'] = array($strPalette);
                         } else {
                             if (!in_array($strPalette, $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
                                 $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'][] = $strPalette;
@@ -356,10 +353,10 @@ class MetaPalettes extends \System
         if (!empty($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes'])) {
             // add callback to generate subselect palettes
             $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] = array_merge(
-                [['MetaPalettes', 'generateSubSelectPalettes']],
+                array(array('MetaPalettes', 'generateSubSelectPalettes')),
                 (isset($GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']) && is_array(
                     $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']
-                ) ? $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] : [])
+                ) ? $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] : array())
             );
         }
     }
@@ -389,7 +386,7 @@ class MetaPalettes extends \System
                     $strGroup    = $arrMatch[2];
 
                     if (empty($arrBaseMeta[$strGroup])) {
-                        $arrBaseMeta[$strGroup] = [];
+                        $arrBaseMeta[$strGroup] = array();
                     }
 
                     foreach ($arrFields as $strField) {
@@ -430,7 +427,7 @@ class MetaPalettes extends \System
 
                                     $arrBaseMeta[$strGroup] = array_merge(
                                         array_slice($arrBaseMeta[$strGroup], 0, $intPos),
-                                        [$strField],
+                                        array($strField),
                                         array_slice($arrBaseMeta[$strGroup], $intPos)
                                     );
                                 }
@@ -466,9 +463,9 @@ class MetaPalettes extends \System
 
                             $arrBaseMeta = array_merge(
                                 array_slice($arrBaseMeta, 0, $intPos),
-                                [
+                                array(
                                     $strGroup => $arrFields
-                                ],
+                                ),
                                 array_slice($arrBaseMeta, $intPos)
                             );
                         }
@@ -587,7 +584,7 @@ class MetaPalettes extends \System
                                                 if ($k == '__selector__') {
                                                     continue;
                                                 }
-                                                MetaPalettes::appendFields($strTable, $k, $strLegend, [$arrValue]);
+                                                self::appendFields($strTable, $k, $strLegend, array($arrValue));
                                             }
                                         }
                                     } else {
@@ -654,7 +651,7 @@ class MetaPalettes extends \System
 
     protected static function generatePalette($arrMeta)
     {
-        $arrBuffer = [];
+        $arrBuffer = array();
         // walk over the chapters
         foreach ($arrMeta as $strLegend => $arrFields) {
             if (is_array($arrFields)) {
@@ -662,7 +659,7 @@ class MetaPalettes extends \System
                 $strBuffer = sprintf('{%s_legend%s},', $strLegend, in_array(':hide', $arrFields) ? ':hide' : '');
 
                 // filter meta description (fields starting with ":")
-                $arrFields = array_filter($arrFields, [self::getInstance(), 'filterFields']);
+                $arrFields = array_filter($arrFields, array(self::getInstance(), 'filterFields'));
 
                 // only generate chapter if there are any fields
                 if (count($arrFields) > 0) {
