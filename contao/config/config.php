@@ -36,20 +36,20 @@
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['loadDataContainer'][] = ['Bit3\Contao\MetaPalettes\MetaPalettes', 'generatePalettes'];
+$GLOBALS['TL_HOOKS']['loadDataContainer'][] = array('Bit3\Contao\MetaPalettes\MetaPalettes', 'generatePalettes');
 
-$GLOBALS['TL_EVENTS']['dc-general.factory.build-data-definition'][] = [
-	'Bit3\Contao\MetaPalettes\MetaPalettesBuilder::process',
-	200
-];
+$GLOBALS['TL_EVENTS']['dc-general.factory.build-data-definition'][] = array(
+    'Bit3\Contao\MetaPalettes\MetaPalettesBuilder::process',
+    200
+);
 
 /**
  * Backwards compatibility
  */
 spl_autoload_register(function($class) {
-	if ('MetaPalettes' === $class) {
-		class_alias('Bit3\Contao\MetaPalettes\MetaPalettes', 'MetaPalettes');
-		return true;
-	}
-	return false;
+    if ('MetaPalettes' === $class) {
+        class_alias('Bit3\Contao\MetaPalettes\MetaPalettes', 'MetaPalettes');
+        return true;
+    }
+    return false;
 });

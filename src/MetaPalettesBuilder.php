@@ -105,7 +105,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
         array $subSelectPalettes,
         array $selectorFieldNames
     ) {
-        $palettes = [];
+        $palettes = array();
 
         if (is_array($palettesDca)) {
             foreach ($palettesDca as $selector => $legendPropertyNames) {
@@ -139,7 +139,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
                     $extended = false;
                 }
 
-                $paletteCallbacks = [];
+                $paletteCallbacks = array();
 
                 foreach ($legendPropertyNames as $legendName => $propertyNames) {
                     if ($propertyNames instanceof \Closure) {
@@ -209,7 +209,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
                         $legend->clearProperties();
                     }
 
-                    $legendCallbacks = [];
+                    $legendCallbacks = array();
 
                     foreach ($propertyNames as $propertyName) {
                         if ($propertyName instanceof \Closure) {
@@ -313,7 +313,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 
         // now add sub select properties that are for specific legend names.
         foreach ($subSelectPalettes as $propertyName => $legendInformation) {
-            $subpaletteCallbacks = [];
+            $subpaletteCallbacks = array();
 
             foreach ($legendInformation as $properties) {
                 if ($properties instanceof \Closure) {
@@ -429,11 +429,11 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
         array $subPalettesDca,
         array $selectorFieldNames
     ) {
-        $subPalettes = [];
+        $subPalettes = array();
 
         if (is_array($subPalettesDca)) {
             foreach ($subPalettesDca as $selector => $propertyNames) {
-                $properties = [];
+                $properties = array();
 
                 foreach ($propertyNames as $propertyName) {
 
@@ -477,11 +477,11 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
      */
     protected function parseSubSelectPalettes(array $subSelectPalettesDca)
     {
-        $subSelectPalettes = [];
+        $subSelectPalettes = array();
 
         if (is_array($subSelectPalettesDca)) {
             foreach ($subSelectPalettesDca as $selectPropertyName => $valuePropertyNames) {
-                $properties = [];
+                $properties = array();
 
                 foreach ($valuePropertyNames as $value => $propertyNames) {
                     if ($value[0] == '!') {
