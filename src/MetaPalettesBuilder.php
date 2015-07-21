@@ -338,21 +338,23 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
                     }
 
                     /** @var Palette $palette */
-                    if ($palette->hasLegend($legendName)) {
-                        /** @var Legend $legend */
-                        $legend = $palette->getLegend($legendName);
-                        $this->addSubSelectProperties(
-                            $legend,
-                            $subSelectPalettes,
-                            $propertyName,
-                            $fullLegendName,
-                            $insert,
-                            $refName
-                        );
+                    if (!$palette->hasLegend($legendName)) {
+                        $palette->addLegend(new Legend($legendName));
+                    }
 
-                        foreach ($subpaletteCallbacks as $callback) {
-                            call_user_func($callback, $legendName, $properties, $legend, $palette, $palettesDefinition);
-                        }
+                    /** @var Legend $legend */
+                    $legend = $palette->getLegend($legendName);
+                    $this->addSubSelectProperties(
+                        $legend,
+                        $subSelectPalettes,
+                        $propertyName,
+                        $fullLegendName,
+                        $insert,
+                        $refName
+                    );
+
+                    foreach ($subpaletteCallbacks as $callback) {
+                        call_user_func($callback, $legendName, $properties, $legend, $palette, $palettesDefinition);
                     }
                 }
             }
