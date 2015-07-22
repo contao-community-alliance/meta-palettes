@@ -389,17 +389,19 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
         $position = null;
         if ($insert && $reference) {
             $properties = $legend->getProperties();
-            $property   = current($properties);
-            do {
-                if ($property->getName() == $reference) {
-                    if ($insert == 'before') {
-                        $position = $property;
-                    } elseif ($insert == 'after') {
-                        $position = next($properties);
+            if (!empty($properties)) {
+                $property   = current($properties);
+                do {
+                    if ($property->getName() == $reference) {
+                        if ($insert == 'before') {
+                            $position = $property;
+                        } elseif ($insert == 'after') {
+                            $position = next($properties);
+                        }
+                        break;
                     }
-                    break;
-                }
-            } while ($property = next($properties));
+                } while ($property = next($properties));
+            }
         }
 
         if ($position === false) {
