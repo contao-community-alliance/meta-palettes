@@ -274,7 +274,9 @@ class MetaPalettes extends \System
      */
     public function generatePalettes($strTable)
     {
-        if ($GLOBALS['TL_DCA'][$strTable]['config']['dataContainer'] == 'General') {
+        if (isset($GLOBALS['TL_DCA'][$strTable]['config']['dataContainer'])
+            && $GLOBALS['TL_DCA'][$strTable]['config']['dataContainer'] == 'General'
+        ) {
             // The MetaPalettesBuilder is used for DC_General
             return;
         }
