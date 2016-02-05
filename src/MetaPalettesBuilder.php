@@ -218,7 +218,10 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
                         }
 
                         if ($propertyName[0] == ':') {
-                            // skip modifiers
+                            if ('hide' === substr($propertyName, 1)) {
+                                $legend->setInitialVisibility(false);
+                            }
+                            // skip other modifiers
                             continue;
                         }
 
