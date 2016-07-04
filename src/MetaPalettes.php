@@ -568,10 +568,10 @@ class MetaPalettes extends \System
                             foreach ($callbacks as $callback) {
                                 if (is_array($callback)) {
                                     $this->import($callback[0]);
-                                    $this->{$callback[0]}->{$callback[1]}($strValue, $dataContainer);
+                                    $strValue = $this->{$callback[0]}->{$callback[1]}($strValue, $dataContainer);
                                 }
                                 elseif (is_callable($callback)) {
-                                    $callback($strValue, $dataContainer);
+                                    $strValue = $callback($strValue, $dataContainer);
                                 }
                             }
                         }
