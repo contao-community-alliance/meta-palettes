@@ -558,7 +558,7 @@ class MetaPalettes extends \System
                             continue;
                         }
 
-                        // call onload callback if the value is not result of a submit.
+                        // call load callback if the value is not result of a submit.
                         if (
                             (\Input::getInstance()->post('FORM_SUBMIT') != $strTable)
                             && isset($GLOBALS['TL_DCA'][$strTable]['fields'][$strSelector]['load_callback'])
@@ -566,8 +566,13 @@ class MetaPalettes extends \System
                         ) {
                             $callbacks = $GLOBALS['TL_DCA'][$strTable]['fields'][$strSelector]['load_callback'];
                             foreach ($callbacks as $callback) {
-                                $this->import($callback[0]);
-                                $strValue = $this->$callback[0]->{$callback[1]}($strValue, $dataContainer);
+                                if (is_array($callback)) {
+                                    $this->import($callback[0]);
+                                    $strValue = $this->{$callback[0]}->{$callback[1]}($strValue, $dataContainer);
+                                }
+                                elseif (is_callable($callback)) {
+                                    $strValue = $callback($strValue, $dataContainer);
+                                }
                             }
                         }
 
