@@ -19,10 +19,10 @@
     ],
     "support": {
         "email": "info@bit3.de",
-        "issues": "https://github.com/bit3/contao-meta-palettes/issues",
-        "wiki": "https://github.com/bit3/contao-meta-palettes/wiki",
+        "issues": "https://github.com/contao-community-alliance/meta-palettes/issues",
+        "wiki": "https://github.com/contao-community-alliance/meta-palettes/wiki",
         "irc": "irc://irc.freenode.org/contao.dev",
-        "source": "https://github.com/bit3/contao-meta-palettes"
+        "source": "https://github.com/contao-community-alliance/meta-palettes"
     },
     "require": {
         "php": ">=5.3",
