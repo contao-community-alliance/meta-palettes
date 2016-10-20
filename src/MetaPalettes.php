@@ -567,7 +567,7 @@ class MetaPalettes extends \System
                             $callbacks = $GLOBALS['TL_DCA'][$strTable]['fields'][$strSelector]['load_callback'];
                             foreach ($callbacks as $callback) {
                                 $this->import($callback[0]);
-                                $strValue = $this->$callback[0]->$callback[1]($strValue, $dataContainer);
+                                $strValue = $this->$callback[0]->{$callback[1]}($strValue, $dataContainer);
                             }
                         }
 
