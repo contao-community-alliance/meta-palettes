@@ -569,8 +569,7 @@ class MetaPalettes extends \System
                                 if (is_array($callback)) {
                                     $this->import($callback[0]);
                                     $strValue = $this->{$callback[0]}->{$callback[1]}($strValue, $dataContainer);
-                                }
-                                elseif (is_callable($callback)) {
+                                } elseif (is_callable($callback)) {
                                     $strValue = $callback($strValue, $dataContainer);
                                 }
                             }
