@@ -290,16 +290,7 @@ class MetaPalettes extends \System
             foreach ($GLOBALS['TL_DCA'][$strTable]['config']['palettes_callback'] as $callback) {
                 if (is_array($callback) && count($callback) == 2) {
                     if (!is_object($callback[0])) {
-                        $class  = new \ReflectionClass($callback[0]);
-                        $method = $class->getMethod($callback[1]);
-
-                        if (!$method->isStatic()) {
-                            if ($class->hasMethod('getInstance')) {
-                                $callback[0] = $class->getMethod('getInstance')->invoke(null);
-                            } else {
-                                $callback[0] = $class->newInstance();
-                            }
-                        }
+                        $callback[0] = \System::importStatic($callback[0]);
                     }
                 }
 
