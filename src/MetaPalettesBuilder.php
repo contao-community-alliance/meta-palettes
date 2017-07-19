@@ -10,7 +10,7 @@
  * @license   LGPL-3.0+
  */
 
-namespace Bit3\Contao\MetaPalettes;
+namespace ContaoCommunityAlliance\MetaPalettes;
 
 use ContaoCommunityAlliance\DcGeneral\Contao\Dca\Builder\Legacy\DcaReadingDataDefinitionBuilder;
 use ContaoCommunityAlliance\DcGeneral\Contao\Dca\Palette\LegacyPalettesParser;

@@ -9,7 +9,7 @@
  * @license   LGPL-3.0+
  */
 
-namespace Bit3\Contao\MetaPalettes\Test;
+namespace ContaoCommunityAlliance\MetaPalettes\Test;
 
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\DefaultContainer;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Legend;
@@ -28,7 +28,7 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
      *
      * @param array $dca The DCA to inject into the builder.
      *
-     * @return \Bit3\Contao\MetaPalettes\MetaPalettesBuilder
+     * @return \ContaoCommunityAlliance\MetaPalettes\MetaPalettesBuilder
      */
     public function mockBuilder($dca)
     {

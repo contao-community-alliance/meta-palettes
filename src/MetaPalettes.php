@@ -13,7 +13,7 @@
  * @filesource
  */
 
-namespace Bit3\Contao\MetaPalettes;
+namespace ContaoCommunityAlliance\MetaPalettes;
 
 /**
  * Generates the palettes from the meta information.
@@ -346,7 +346,7 @@ class MetaPalettes extends \System
         if (!empty($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes'])) {
             // add callback to generate subselect palettes
             $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] = array_merge(
-                array(array('MetaPalettes', 'generateSubSelectPalettes')),
+                array(array('ContaoCommunityAlliance\MetaPalettes\MetaPalettes', 'generateSubSelectPalettes')),
                 (isset($GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']) && is_array(
                     $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']
                 ) ? $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] : array())

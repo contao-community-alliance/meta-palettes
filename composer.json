@@ -45,12 +45,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Bit3\\Contao\\MetaPalettes\\": "src/"
+            "ContaoCommunityAlliance\\MetaPalettes\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Bit3\\Contao\\MetaPalettes\\Test\\": "tests/"
+            "ContaoCommunityAlliance\\MetaPalettes\\Test\\": "tests/"
         }
     },
     "extra": {
