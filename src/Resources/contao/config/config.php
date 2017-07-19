@@ -21,14 +21,3 @@ $GLOBALS['TL_EVENTS']['dc-general.factory.build-data-definition'][] = array(
     'ContaoCommunityAlliance\MetaPalettes\MetaPalettesBuilder::process',
     200
 );
-
-/**
- * Backwards compatibility
- */
-spl_autoload_register(function($class) {
-    if ('MetaPalettes' === $class) {
-        class_alias('ContaoCommunityAlliance\MetaPalettes\MetaPalettes', 'MetaPalettes');
-        return true;
-    }
-    return false;
-});
