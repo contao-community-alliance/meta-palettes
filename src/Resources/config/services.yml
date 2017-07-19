@@ -1,0 +1,3 @@
+services:
+  cca.meta_palettes.listener.hook_listener:
+    class: ContaoCommunityAlliance\MetaPalettes\Listener\HookListener
