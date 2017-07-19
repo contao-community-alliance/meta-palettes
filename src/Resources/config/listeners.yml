@@ -1,0 +1,5 @@
+services:
+  cca.meta_palettes.listeners.meta_models_builders:
+    class: ContaoCommunityAlliance\MetaPalettes\MetaPalettesBuilder
+    tags:
+      - { name: 'kernel.event_listener', event: 'dc-general.factory.build-data-definition', method: 'process', priority: 200 }

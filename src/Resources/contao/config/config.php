@@ -16,8 +16,3 @@
  * Hooks
  */
 $GLOBALS['TL_HOOKS']['loadDataContainer'][] = ['cca.meta_palettes.listener.hook_listener', 'generatePalettes'];
-
-$GLOBALS['TL_EVENTS']['dc-general.factory.build-data-definition'][] = array(
-    'ContaoCommunityAlliance\MetaPalettes\MetaPalettesBuilder::process',
-    200
-);
