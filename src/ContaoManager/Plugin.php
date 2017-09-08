@@ -11,7 +11,6 @@
  * @license   LGPL-3.0+
  */
 
-
 namespace ContaoCommunityAlliance\MetaPalettes\ContaoManager;
 
 use Contao\CoreBundle\ContaoCoreBundle;
