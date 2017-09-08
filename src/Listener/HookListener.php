@@ -15,8 +15,10 @@ namespace ContaoCommunityAlliance\MetaPalettes\Listener;
 
 use ContaoCommunityAlliance\MetaPalettes\MetaPalettes;
 
-
-class HookListener extends \System
+/**
+ * Hook listener
+ */
+class HookListener
 {
     /**
      * @param $strTable
