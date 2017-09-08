@@ -3,3 +3,6 @@ services:
     class: ContaoCommunityAlliance\MetaPalettes\MetaPalettesBuilder
     tags:
       - { name: 'kernel.event_listener', event: 'dc-general.factory.build-data-definition', method: 'process', priority: 200 }
+
+  cca.meta_palettes.listener.hook_listener:
+    class: ContaoCommunityAlliance\MetaPalettes\Listener\HookListener
