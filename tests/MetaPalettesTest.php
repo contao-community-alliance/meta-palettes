@@ -345,10 +345,4 @@ class MetaPalettesTest extends TestCase
             )
         );
     }
-
-    function testFilterFields()
-    {
-        $this->assertFalse(MetaPalettes::filterFields(':hide'));
-        $this->assertTrue(MetaPalettes::filterFields('hide'));
-    }
 }

@@ -232,36 +232,21 @@ class MetaPalettes
 
     public static function generatePalette($arrMeta)
     {
-        $arrBuffer = array();
-        // walk over the chapters
+        $manipulator = PaletteManipulator::create();
+
         foreach ($arrMeta as $strLegend => $arrFields) {
-            if (is_array($arrFields)) {
-                // generate palettes legend
-                $strBuffer = sprintf('{%s_legend%s},', $strLegend, in_array(':hide', $arrFields) ? ':hide' : '');
-
-                // filter meta description (fields starting with ":")
-                $arrFields = array_filter($arrFields, array(__CLASS__, 'filterFields'));
-
-                // only generate chapter if there are any fields
-                if (count($arrFields) > 0) {
-                    $strBuffer .= implode(',', $arrFields);
-                    $arrBuffer[] = $strBuffer;
+            $hide      = in_array(':hide', $arrFields);
+            $arrFields = array_filter(
+                $arrFields,
+                function ($strField) {
+                    return $strField[0] != ':';
                 }
-            }
+            );
+
+            $manipulator->addLegend($strLegend . '_legend', null, $manipulator::POSITION_APPEND, $hide);
+            $manipulator->addField($arrFields, $strLegend . '_legend', $manipulator::POSITION_APPEND);
         }
 
-        return implode(';', $arrBuffer);
-    }
-
-    /**
-     * Filter meta fields, starting with ":" from an array.
-     *
-     * @param $strField string
-     *
-     * @return bool
-     */
-    public static function filterFields($strField)
-    {
-        return $strField[0] != ':';
+        return $manipulator->applyToString('');
     }
 }
