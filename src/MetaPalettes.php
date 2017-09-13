@@ -14,6 +14,8 @@
 
 namespace ContaoCommunityAlliance\MetaPalettes;
 
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
+
 /**
  * Generates the palettes from the meta information.
  */
@@ -40,7 +42,16 @@ class MetaPalettes
             $varArg1 = 'default';
         }
 
-        $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] .= ';' . self::generatePalette($varArg2);
+        $manipulator = PaletteManipulator::create();
+
+        foreach ($varArg2 as $legend => $fields) {
+            $legend .= '_legend';
+
+            $manipulator->addLegend($legend, null);
+            $manipulator->addField($fields, $legend);
+        }
+
+        $manipulator->applyToPalette($varArg1, $strTable);
     }
 
     /**
@@ -68,17 +79,17 @@ class MetaPalettes
             $varArg1 = 'default';
         }
 
-        $strRegexp = sprintf('#\{%s_legend(?::hide)?\}(.*?;|.*)#i', $varArg2);
+        $manipulator  = PaletteManipulator::create();
+        $varArg2     .= '_legend';
 
-        if (preg_match($strRegexp, $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1])) {
-            $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = preg_replace(
-                $strRegexp,
-                sprintf('%s;$0', self::generatePalette($varArg3)),
-                $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1]
-            );
-        } else {
-            self::appendTo($strTable, $varArg1, $varArg3);
+        foreach ($varArg3 as $legend => $fields) {
+            $legend .= '_legend';
+
+            $manipulator->addLegend($legend, $varArg2, $manipulator::POSITION_BEFORE);
+            $manipulator->addField($fields, $legend, $manipulator::POSITION_APPEND);
         }
+
+        $manipulator->applyToPalette($varArg1, $strTable);
     }
 
     /**
@@ -106,16 +117,17 @@ class MetaPalettes
             $varArg1 = 'default';
         }
 
-        $strRegexp = sprintf('#\{%s_legend(?::hide)?\}(.*?;|.*)#i', $varArg2);
-        if (preg_match($strRegexp, $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1])) {
-            $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = preg_replace(
-                $strRegexp,
-                sprintf('$0;%s', self::generatePalette($varArg3)),
-                $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1]
-            );
-        } else {
-            self::appendTo($strTable, $varArg1, $varArg3);
+        $manipulator  = PaletteManipulator::create();
+        $varArg2     .= '_legend';
+
+        foreach ($varArg3 as $legend => $fields) {
+            $legend .= '_legend';
+
+            $manipulator->addLegend($legend, $varArg2, $manipulator::POSITION_APPEND);
+            $manipulator->addField($fields, $legend, $manipulator::POSITION_APPEND);
         }
+
+        $manipulator->applyToPalette($varArg1, $strTable);
     }
 
     /**
@@ -143,18 +155,9 @@ class MetaPalettes
             $varArg1 = 'default';
         }
 
-        $strFields = implode(',', $varArg3);
-        $strRegexp = sprintf('#(\{%s_legend(?::hide)?\})((.*?);|.*)#i', $varArg2);
-
-        if (preg_match($strRegexp, $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1], $match)) {
-            $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = preg_replace(
-                $strRegexp,
-                sprintf(isset($match[3]) ? '$1$3,%s;' : '$1$2,%s', $strFields),
-                $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1]
-            );
-        } else {
-            self::appendTo($strTable, $varArg1, array($varArg2 => $varArg3));
-        }
+        PaletteManipulator::create()
+            ->addField($varArg3, $varArg2 . '_legend', PaletteManipulator::POSITION_APPEND)
+            ->applyToPalette($varArg1, $strTable);
     }
 
     /**
@@ -182,18 +185,9 @@ class MetaPalettes
             $varArg1 = 'default';
         }
 
-        $strFields = implode(',', $varArg3);
-        $strRegexp = sprintf('#(\{%s_legend(?::hide)?\})(.*);?#i', $varArg2);
-
-        if (preg_match($strRegexp, $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1])) {
-            $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = preg_replace(
-                $strRegexp,
-                sprintf('$1,%s$2', $strFields),
-                $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1]
-            );
-        } else {
-            self::appendTo($strTable, $varArg1, array($varArg2 => $varArg3));
-        }
+        PaletteManipulator::create()
+            ->addField($varArg3, $varArg2 . '_legend', PaletteManipulator::POSITION_PREPEND)
+            ->applyToPalette($varArg1, $strTable);
     }
 
     /**
