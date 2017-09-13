@@ -181,6 +181,8 @@ class SubSelectPalettesListener
      * @param string        $strValue      Selector value.
      *
      * @return mixed
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
      */
     protected function invokeLoadCallback($dataContainer, $strTable, $strSelector, $strValue)
     {
@@ -211,6 +213,8 @@ class SubSelectPalettesListener
      * @param string $strTable    Data container table name.
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
      */
     protected function buildPalette($arrPalettes, $strValue, $strTable)
     {
@@ -218,15 +222,14 @@ class SubSelectPalettesListener
 
         foreach ($arrPalettes as $strSelectValue => $arrSelectPalette) {
             // add palette if value is selected or not
-            if (!count($arrSelectPalette) &&
-                ($strSelectValue == $strValue ||
-                    $strSelectValue[0] == '!' && substr($strSelectValue, 1) != $strValue)
+            if (!count($arrSelectPalette)
+                && $this->isValueSelected($strValue, $strSelectValue)
             ) {
                 foreach ($arrSelectPalette as $strLegend => $mixSub) {
                     if (is_array($mixSub)) {
                         // supporting sub sub palettes :)
                         foreach ($mixSub as $arrValue) {
-                            foreach ($GLOBALS['TL_DCA'][$strTable]['palettes'] as $k => $v) {
+                            foreach (array_keys($GLOBALS['TL_DCA'][$strTable]['palettes']) as $k) {
                                 if ($k == '__selector__') {
                                     continue;
                                 }
@@ -323,5 +326,18 @@ class SubSelectPalettesListener
         }
 
         return null;
+    }
+
+    /**
+     * Check if value is selected.
+     *
+     * @param string $strValue       Actual value.
+     * @param string $strSelectValue Select value definition.
+     *
+     * @return bool
+     */
+    protected function isValueSelected($strValue, $strSelectValue)
+    {
+        return ($strSelectValue == $strValue || $strSelectValue[0] == '!' && substr($strSelectValue, 1) != $strValue);
     }
 }
