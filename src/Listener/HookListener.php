@@ -150,7 +150,8 @@ class HookListener
                             $intPos = array_search($strField, $arrBaseMeta[$strGroup]);
 
                             if ($intPos !== false) {
-                                $arrBaseMeta[$strGroup] = array_delete($arrBaseMeta[$strGroup], $intPos);
+                                unset($arrBaseMeta[$strGroup][$intPos]);
+                                $arrBaseMeta[$strGroup] = array_values($arrBaseMeta[$strGroup]);
                             }
                         } else {
                             // insert at position
