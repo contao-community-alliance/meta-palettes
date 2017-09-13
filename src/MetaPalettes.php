@@ -3,15 +3,15 @@
 /**
  * MetaPalettes for the Contao Open Source CMS
  *
- * @link      https://github.com/bit3/contao-meta-palettes
- * @copyright 2013-2014 bit3 UG
- * @copyright 2015-2017 Contao Community Alliance.
+ * @package   MetaPalettes
  * @author    Christian Schiffler <c.schiffler@cyberspectrum.de>
  * @author    Richard Henkenjohann <richardhenkenjohann@googlemail.com>
  * @author    David Molineus <david.molineus@netzmacht.de>
  * @author    Tristan Lins <tristan.lins@bit3.de>
- * @package   MetaPalettes
- * @license   LGPL-3.0+
+ * @copyright 2013-2014 bit3 UG
+ * @copyright 2015-2017 Contao Community Alliance.
+ * @license   LGPL-3.0+ https://github.com/contao-community-alliance/meta-palettes/license
+ * @link      https://github.com/bit3/contao-meta-palettes
  */
 
 namespace ContaoCommunityAlliance\MetaPalettes;
@@ -26,14 +26,10 @@ class MetaPalettes
     /**
      * Dynamic append a meta palette definition to the dca.
      *
-     * @static
-     *
-     * @param string $strTable
-     * The table name.
-     * @param mixed  $varArg1
-     * The palette name or the meta definition. In last case, the meta will be appended to the default palette.
-     * @param mixed  $varArg2
-     * The meta definition, only needed if the palette name is given as second parameter.
+     * @param string $strTable The table name.
+     * @param mixed  $varArg1  The palette name or the meta definition. In last case, the meta will be appended to the
+     *                         default palette.
+     * @param mixed  $varArg2  The meta definition, only needed if the palette name is given as second parameter.
      *
      * @return void
      */
@@ -59,17 +55,12 @@ class MetaPalettes
     /**
      * Dynamic append a meta palette definition to the dca, before a block.
      *
-     * @static
-     *
-     * @param string $strTable
-     * The table name.
-     * @param mixed  $varArg1
-     * The palette name or the legend name (without trailing _legend, e.a. title and NOT title_legend) the palette
-     * should appended after. In last case, the meta will be appended to the default palette.
-     * @param mixed  $varArg2
-     * The legend name the palette should appended after or the meta definition.
-     * @param mixed  $varArg3
-     * The meta definition, only needed if the palette name is given as third parameter.
+     * @param string $strTable The table name.
+     * @param mixed  $varArg1  The palette name or the legend name (without trailing _legend, e.a. title and NOT
+     *                         title_legend) the palette should appended after. In last case, the meta will be appended
+     *                         to the default palette.
+     * @param mixed  $varArg2  The legend name the palette should appended after or the meta definition.
+     * @param mixed  $varArg3  The meta definition, only needed if the palette name is given as third parameter.
      *
      * @return void
      */
@@ -81,8 +72,8 @@ class MetaPalettes
             $varArg1 = 'default';
         }
 
-        $manipulator  = PaletteManipulator::create();
-        $varArg2     .= '_legend';
+        $manipulator = PaletteManipulator::create();
+        $varArg2    .= '_legend';
 
         foreach ($varArg3 as $legend => $fields) {
             $legend .= '_legend';
@@ -97,17 +88,12 @@ class MetaPalettes
     /**
      * Dynamic append a meta palette definition to the dca, after a block.
      *
-     * @static
-     *
-     * @param string $strTable
-     * The table name.
-     * @param mixed  $varArg1
-     * The palette name or the legend name (without trailing _legend, e.a. title and NOT title_legend) the palette
-     * should appended after. In last case, the meta will be appended to the default palette.
-     * @param mixed  $varArg2
-     * The legend name the palette should appended after or the meta definition.
-     * @param mixed  $varArg3
-     * The meta definition, only needed if the palette name is given as third parameter.
+     * @param string $strTable The table name.
+     * @param mixed  $varArg1  The palette name or the legend name (without trailing _legend, e.a. title and NOT
+     *                         title_legend) the palette should appended after. In last case, the meta will be appended
+     *                         to the default palette.
+     * @param mixed  $varArg2  The legend name the palette should appended after or the meta definition.
+     * @param mixed  $varArg3  The meta definition, only needed if the palette name is given as third parameter.
      *
      * @return void
      */
@@ -119,8 +105,8 @@ class MetaPalettes
             $varArg1 = 'default';
         }
 
-        $manipulator  = PaletteManipulator::create();
-        $varArg2     .= '_legend';
+        $manipulator = PaletteManipulator::create();
+        $varArg2    .= '_legend';
 
         foreach ($varArg3 as $legend => $fields) {
             $legend .= '_legend';
@@ -135,17 +121,11 @@ class MetaPalettes
     /**
      * Dynamic append fields to a group in the palette definition.
      *
-     * @static
-     *
-     * @param string $strTable
-     * The table name.
-     * @param mixed  $varArg1
-     * The palette name or the legend name (without trailing _legend, e.a. title and NOT title_legend). In last case,
-     * the meta will be appended to the default palette.
-     * @param mixed  $varArg2
-     * The legend name the fields should appended or the list of fields.
-     * @param mixed  $varArg3
-     * List of fields to append.
+     * @param string $strTable The table name.
+     * @param mixed  $varArg1  The palette name or the legend name (without trailing _legend, e.a. title and NOT
+     *                         title_legend). In last case,the meta will be appended to the default palette.
+     * @param mixed  $varArg2  The legend name the fields should appended or the list of fields.
+     * @param mixed  $varArg3  List of fields to append.
      *
      * @return void
      */
@@ -165,17 +145,11 @@ class MetaPalettes
     /**
      * Dynamic prepend fields to a group in the palette definition.
      *
-     * @static
-     *
-     * @param string $strTable
-     * The table name.
-     * @param mixed  $varArg1
-     * The palette name or the legend name (without trailing _legend, e.a. title and NOT title_legend). In last case,
-     * the meta will be appended to the default palette.
-     * @param mixed  $varArg2
-     * The legend name the fields should appended or the list of fields.
-     * @param mixed  $varArg3
-     * List of fields to append.
+     * @param string $strTable The table name.
+     * @param mixed  $varArg1  The palette name or the legend name (without trailing _legend, e.a. title and NOT
+     *                         title_legend). In last case, the meta will be appended to the default palette.
+     * @param mixed  $varArg2  The legend name the fields should appended or the list of fields.
+     * @param mixed  $varArg3  List of fields to append.
      *
      * @return void
      */
@@ -195,17 +169,14 @@ class MetaPalettes
     /**
      * Dynamic prepend fields to a group in the palette definition.
      *
-     * @static
-     *
-     * @param string $strTable
-     * The table name.
-     * @param mixed  $varArg1
-     * The palette name or the list of fields to remove. In last case, the fields will be removed from the default
-     * palette.
-     * @param mixed  $varArg2
-     * List of fields to remove.
+     * @param string $strTable The table name.
+     * @param mixed  $varArg1  The palette name or the list of fields to remove. In last case, the fields will be
+     *                         removed from the default palette.
+     * @param mixed  $varArg2  List of fields to remove.
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
      */
     public static function removeFields($strTable, $varArg1, $varArg2 = null)
     {
@@ -221,8 +192,7 @@ class MetaPalettes
             $varArg2
         );
 
-        $strRegexp = sprintf('#[,;](%s)([,;]|$)#Ui', implode('|', $varArg2));
-
+        $strRegexp  = sprintf('#[,;](%s)([,;]|$)#Ui', implode('|', $varArg2));
         $strPalette = $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1];
 
         do {
@@ -232,6 +202,13 @@ class MetaPalettes
         $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = $strPalette;
     }
 
+    /**
+     * Generate a palette.
+     *
+     * @param array $arrMeta Palette definition.
+     *
+     * @return string
+     */
     public static function generatePalette($arrMeta)
     {
         $manipulator = PaletteManipulator::create();

@@ -3,17 +3,20 @@
 /**
  * MetaPalettes for the Contao Open Source CMS
  *
- * @link      https://github.com/bit3/contao-meta-palettes
- * @copyright 2013-2014 bit3 UG
- * @copyright 2015-2017 Contao Community Alliance
+ * @package   MetaPalettes
  * @author    Tristan Lins <tristan.lins@infinitysoft.de>
  * @author    Christian Schiffler <c.schiffler@cyberspectrum.de>
  * @author    David Molineus <david.molineus@netzmacht.de>
- * @package   MetaPalettes
- * @license   LGPL-3.0+
+ * @copyright 2013-2014 bit3 UG
+ * @copyright 2015-2017 Contao Community Alliance
+ * @license   LGPL-3.0+ https://github.com/contao-community-alliance/meta-palettes/license
+ * @link      https://github.com/bit3/contao-meta-palettes
  */
 
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['loadDataContainer'][] = ['cca.meta_palettes.listener.build_palettes_listener', 'onLoadDataContainer'];
+$GLOBALS['TL_HOOKS']['loadDataContainer'][] = [
+    'cca.meta_palettes.listener.build_palettes_listener',
+    'onLoadDataContainer',
+];

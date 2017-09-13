@@ -3,12 +3,12 @@
 /**
  * MetaPalettes for the Contao Open Source CMS
  *
- * @link      https://github.com/bit3/contao-meta-palettes
- * @copyright 2013-2014 bit3 UG
- * @copyright 2015-2017 Contao Community Alliance.
- * @author    David Molineus <david.molineus@netzmacht.de>
  * @package   MetaPalettes
- * @license   LGPL-3.0+
+ * @author    David Molineus <david.molineus@netzmacht.de>
+ * @copyright 2013-2014 bit3 UG
+ * @copyright 2015-2017 Contao Community Alliance
+ * @license   LGPL-3.0+ https://github.com/contao-community-alliance/meta-palettes/license
+ * @link      https://github.com/bit3/contao-meta-palettes
  */
 
 namespace ContaoCommunityAlliance\MetaPalettes\ContaoManager;
@@ -32,12 +32,7 @@ class Plugin implements BundlePluginInterface
         return [
             BundleConfig::create(CcaMetaPalettesBundle::class)
                 ->setReplace(['metaplettes'])
-                ->setLoadAfter(
-                    [
-                        ContaoCoreBundle::class
-                        // TODO: ADD DCG
-                    ]
-                )
+                ->setLoadAfter([ContaoCoreBundle::class])
         ];
     }
 }

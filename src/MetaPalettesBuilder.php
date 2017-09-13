@@ -3,15 +3,15 @@
 /**
  * MetaPalettes for the Contao Open Source CMS
  *
- * @link      https://github.com/bit3/contao-meta-palettes
- * @copyright 2013-2014 bit3 UG
- * @copyright 2015-2017 Contao Community Alliance.
+ * @package   MetaPalettes
  * @author    Christian Schiffler <c.schiffler@cyberspectrum.de>
  * @author    Tristan Lins <tristan@lins.io>
  * @author    Stefan Heimes <stefan_heimes@hotmail.com>
  * @author    David Molineus <david.molineus@netzmacht.de>
- * @package   MetaPalettes
- * @license   LGPL-3.0+
+ * @copyright 2013-2014 bit3 UG
+ * @copyright 2015-2017 Contao Community Alliance.
+ * @license   LGPL-3.0+ https://github.com/contao-community-alliance/meta-palettes/license
+ * @link      https://github.com/contao-community-alliance/meta-palettes
  */
 
 namespace ContaoCommunityAlliance\MetaPalettes;
@@ -49,7 +49,8 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
     /**
      * Build a data definition and store it into the environments container.
      *
-     * @param \ContaoCommunityAlliance\DcGeneral\DataDefinition\ContainerInterface $container
+     * @param ContainerInterface       $container Definition container.
+     * @param BuildDataDefinitionEvent $event     Build data definition event.
      *
      * @return void
      *
@@ -101,6 +102,20 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
         $palettesDefinition->addPalettes($palettes);
     }
 
+    /**
+     * Parse the palettes.
+     *
+     * @param PalettesDefinitionInterface $palettesDefinition Palettes definition.
+     * @param LegacyPalettesParser        $parser             Legacy palettes parser.
+     * @param array                       $palettesDca        Palettes dca.
+     * @param array                       $subPalettes        Sub palettes dca.
+     * @param array                       $subSelectPalettes  Sub select palettes.
+     * @param array                       $selectorFieldNames List of the selector field names.
+     *
+     * @return array
+     *
+     * @throws \RuntimeException When parent palette does not exists.
+     */
     protected function parsePalettes(
         PalettesDefinitionInterface $palettesDefinition,
         LegacyPalettesParser $parser,
@@ -109,7 +124,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
         array $subSelectPalettes,
         array $selectorFieldNames
     ) {
-        $palettes = array();
+        $palettes = [];
 
         if (is_array($palettesDca)) {
             foreach ($palettesDca as $selector => $legendPropertyNames) {
@@ -143,7 +158,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
                     $extended = false;
                 }
 
-                $paletteCallbacks = array();
+                $paletteCallbacks = [];
 
                 foreach ($legendPropertyNames as $legendName => $propertyNames) {
                     if ($propertyNames instanceof \Closure) {
@@ -213,7 +228,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
                         $legend->clearProperties();
                     }
 
-                    $legendCallbacks = array();
+                    $legendCallbacks = [];
 
                     foreach ($propertyNames as $propertyName) {
                         if ($propertyName instanceof \Closure) {
@@ -320,7 +335,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 
         // now add sub select properties that are for specific legend names.
         foreach ($subSelectPalettes as $propertyName => $legendInformation) {
-            $subpaletteCallbacks = array();
+            $subpaletteCallbacks = [];
 
             foreach ($legendInformation as $properties) {
                 if ($properties instanceof \Closure) {
@@ -373,13 +388,15 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
     /**
      * Recursively add all subselect properties to their parent. Even when they are member of a subselect themselves.
      *
-     * @param Legend $legend            The legend to add the properties to.
+     * @param Legend      $legend            The legend to add the properties to.
+     * @param array       $subSelectPalettes All subselect palettes.
+     * @param string      $propertyName      The name of the property for which all dependant properties shall get
+     *                                       added.
+     * @param string      $legendName        The name of the legend for which properties shall get retrieved.
+     * @param string      $insert            Position where to insert the properties.
+     * @param string|null $reference         Reference.
      *
-     * @param array  $subSelectPalettes All subselect palettes.
-     *
-     * @param string $propertyName      The name of the property for which all dependant properties shall get added.
-     *
-     * @param string $legendName        The name of the legend for which properties shall get retrieved.
+     * @return void
      */
     protected function addSubSelectProperties(
         Legend $legend,
@@ -397,7 +414,8 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
         if ($insert && $reference) {
             $properties = $legend->getProperties();
             if (!empty($properties)) {
-                $property   = current($properties);
+                $property = current($properties);
+
                 do {
                     if ($property->getName() == $reference) {
                         if ($insert == 'before') {
@@ -435,19 +453,29 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
         }
     }
 
+    /**
+     * Parse the subpalettes.
+     *
+     * @param LegacyPalettesParser $parser             Legacy palette parser.
+     * @param array                $subPalettesDca     Sub palettes dca.
+     * @param array                $selectorFieldNames List of the selector fields.
+     *
+     * @return array
+     *
+     * @throws \InvalidArgumentException When an invalid property name is given.
+     */
     protected function parseSubPalettes(
         LegacyPalettesParser $parser,
         array $subPalettesDca,
         array $selectorFieldNames
     ) {
-        $subPalettes = array();
+        $subPalettes = [];
 
         if (is_array($subPalettesDca)) {
             foreach ($subPalettesDca as $selector => $propertyNames) {
-                $properties = array();
+                $properties = [];
 
                 foreach ($propertyNames as $propertyName) {
-
                     // Check if it is a valid property name.
                     if (!is_string($propertyName)) {
                         throw new \InvalidArgumentException(
@@ -465,10 +493,11 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
                 }
 
                 if (count($properties)) {
-                    $selectorPropertyName               = $parser->createSubpaletteSelectorFieldName(
+                    $selectorPropertyName = $parser->createSubpaletteSelectorFieldName(
                         $selector,
                         $selectorFieldNames
                     );
+
                     $subPalettes[$selectorPropertyName] = $properties;
                 }
             }
@@ -484,15 +513,15 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
      *
      * @return array
      *
-     * @throws \InvalidArgumentException
+     * @throws \InvalidArgumentException When an invalid subselect palette definition is given.
      */
     protected function parseSubSelectPalettes(array $subSelectPalettesDca)
     {
-        $subSelectPalettes = array();
+        $subSelectPalettes = [];
 
         if (is_array($subSelectPalettesDca)) {
             foreach ($subSelectPalettesDca as $selectPropertyName => $valuePropertyNames) {
-                $properties = array();
+                $properties = [];
 
                 foreach ($valuePropertyNames as $value => $propertyNames) {
                     if ($value[0] == '!') {

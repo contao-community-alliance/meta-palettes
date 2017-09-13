@@ -1,16 +1,19 @@
 <?php
 
 /**
- * @package    meta-palettes
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2017 netzmacht David Molineus. All rights reserved.
- * @filesource
+ * MetaPalettes for the Contao Open Source CMS
  *
+ * @package   MetaPalettes
+ * @author    David Molineus <david.molineus@netzmacht.de>
+ * @copyright 2013-2014 bit3 UG
+ * @copyright 2015-2017 Contao Community Alliance.
+ * @license   LGPL-3.0+ https://github.com/contao-community-alliance/meta-palettes/license
+ * @link      https://github.com/bit3/contao-meta-palettes
  */
-
 
 namespace ContaoCommunityAlliance\MetaPalettes\Listener;
 
+use Contao\DataContainer;
 use Contao\Input;
 use Contao\System;
 use ContaoCommunityAlliance\MetaPalettes\MetaPalettes;
@@ -23,12 +26,18 @@ use ContaoCommunityAlliance\MetaPalettes\MetaPalettes;
 class SubSelectPalettesListener
 {
     /**
-     * @param null $dataContainer
+     * Handle the onlaod callback.
+     *
+     * @param DataContainer|null $dataContainer Data container driver.
+     *
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
      */
     public function onLoad($dataContainer = null)
     {
         // Break if no data container driver is given.
-        if (!$dataContainer instanceof \DataContainer) {
+        if (!$dataContainer instanceof DataContainer) {
             return;
         }
 
@@ -41,7 +50,7 @@ class SubSelectPalettesListener
 
         // Trigger the error.
         if (!is_array($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes'])) {
-            $this->triggerInvalidSubselectPalettesError($strTable);
+            $this->triggerInvalidSubSelectPalettesError($strTable);
 
             return;
         }
@@ -64,9 +73,15 @@ class SubSelectPalettesListener
     }
 
     /**
-     * @param $strTable
+     * Trigger the sub select palette error.
+     *
+     * @param string $strTable Table name.
+     *
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
      */
-    protected function triggerInvalidSubselectPalettesError($strTable)
+    protected function triggerInvalidSubSelectPalettesError($strTable)
     {
         trigger_error(
             sprintf(
@@ -80,9 +95,13 @@ class SubSelectPalettesListener
     }
 
     /**
-     * @param $strTable
-     * @param $strSelector
-     * @param $arrPalettes
+     * Trigger the subselect palette error.
+     *
+     * @param string $strTable    Table name.
+     * @param string $strSelector Selector field name.
+     * @param array  $arrPalettes Given palettes value.
+     *
+     * @return void
      */
     protected function triggerSubselectPaletteError($strTable, $strSelector, $arrPalettes)
     {
@@ -99,11 +118,15 @@ class SubSelectPalettesListener
     }
 
     /**
-     * @param $dataContainer
-     * @param $strTable
-     * @param $strSelector
+     * Get the value.
+     *
+     * @param DataContainer $dataContainer Data container driver.
+     * @param string        $strTable      Table name.
+     * @param string        $strSelector   Selector field name.
      *
      * @return mixed|null
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
      */
     private function getValue($dataContainer, $strTable, $strSelector)
     {
@@ -146,12 +169,11 @@ class SubSelectPalettesListener
         }
 
         // or break, when unable to handle data container
-        if (
-            $dataContainer instanceof \DC_Table
+        if ($dataContainer instanceof \DC_Table
             && \Database::getInstance()->tableExists($dataContainer->table)
         ) {
             $objRecord = \Database::getInstance()
-                ->prepare("SELECT $strSelector FROM {$dataContainer->table} WHERE id=?")
+                ->prepare(sprintf('SELECT %s FROM %s WHERE id=?', $strSelector, $dataContainer->table))
                 ->limit(1)
                 ->execute($dataContainer->id);
             if ($objRecord->next()) {
@@ -163,10 +185,12 @@ class SubSelectPalettesListener
     }
 
     /**
-     * @param $dataContainer
-     * @param $strTable
-     * @param $strSelector
-     * @param $strValue
+     * Invoke the load callbacks.
+     *
+     * @param DataContainer $dataContainer Data container driver.
+     * @param string        $strTable      Data container table name.
+     * @param string        $strSelector   Selector field name.
+     * @param string        $strValue      Selector value.
      *
      * @return mixed
      */
@@ -192,9 +216,11 @@ class SubSelectPalettesListener
     }
 
     /**
-     * @param $arrPalettes
-     * @param $strValue
-     * @param $strTable
+     * Build the sub select palette.
+     *
+     * @param array  $arrPalettes Sub select palettes definitions.
+     * @param string $strValue    Selector value.
+     * @param string $strTable    Data container table name.
      *
      * @return string
      */
@@ -230,6 +256,17 @@ class SubSelectPalettesListener
         return $strPalette;
     }
 
+    /**
+     * Apply generated subselect palette to the palettes.
+     *
+     * @param string $strTable    Name of the data container table.
+     * @param string $strSelector Selector field name.
+     * @param string $strPalette  Palette which should be applied.
+     *
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
     private function applyPalette($strTable, $strSelector, $strPalette)
     {
         if (!strlen($strPalette)) {
