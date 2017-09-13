@@ -110,7 +110,7 @@ class MetaPalettes
         if (preg_match($strRegexp, $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1])) {
             $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = preg_replace(
                 $strRegexp,
-                sprintf('$0%s;', self::generatePalette($varArg3)),
+                sprintf('$0;%s', self::generatePalette($varArg3)),
                 $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1]
             );
         } else {
