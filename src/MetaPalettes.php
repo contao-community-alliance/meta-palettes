@@ -183,12 +183,12 @@ class MetaPalettes
         }
 
         $strFields = implode(',', $varArg3);
-        $strRegexp = sprintf('#(\{%s_legend(?::hide)?\})(.*);#Ui', $varArg2);
+        $strRegexp = sprintf('#(\{%s_legend(?::hide)?\})(.*);?#i', $varArg2);
 
         if (preg_match($strRegexp, $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1])) {
             $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = preg_replace(
                 $strRegexp,
-                sprintf('$1,%s$2;', $strFields),
+                sprintf('$1,%s$2', $strFields),
                 $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1]
             );
         } else {
