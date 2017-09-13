@@ -32,12 +32,12 @@
     },
     "require": {
         "php": ">=5.6",
-        "contao/core-bundle": "~4.4",
-        "contao-community-alliance/composer-plugin": "~3.0"
+        "contao/core-bundle": "~4.4"
     },
     "require-dev": {
         "contao/manager-plugin": "^2.0.0",
-        "phpcq/all-tasks": "~1.0"
+        "phpcq/all-tasks": "~1.0",
+        "contao-community-alliance/dc-general": "dev-feature/contao4"
     },
     "conflict": {
         "metamodels/dc_general": "<1-dev"

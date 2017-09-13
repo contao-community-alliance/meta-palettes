@@ -16,6 +16,7 @@ use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Legend;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Palette;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Property;
 use ContaoCommunityAlliance\DcGeneral\Factory\Event\BuildDataDefinitionEvent;
+use ContaoCommunityAlliance\MetaPalettes\MetaPalettesBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
@@ -32,7 +33,7 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
      */
     public function mockBuilder($dca)
     {
-        $builder = $this->getMockBuilder('Bit3\Contao\MetaPalettes\MetaPalettesBuilder')
+        $builder = $this->getMockBuilder(MetaPalettesBuilder::class)
             ->setMethods(array('loadDca'))
             ->getMock();
 
