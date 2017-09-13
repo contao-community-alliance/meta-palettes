@@ -257,14 +257,7 @@ class BuildPalettesListener
             if (!isset($GLOBALS['TL_DCA'][$strTable]['subpalettes'][$strPalette]) && is_array($arrFields)) {
                 // only generate if there are any fields
                 if (is_array($arrFields) && count($arrFields) > 0) {
-                    // generate subpalettes selectors
-                    if (!is_array($GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
-                        $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'] = [$strPalette];
-                    } else {
-                        if (!in_array($strPalette, $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
-                            $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'][] = $strPalette;
-                        }
-                    }
+                    $this->addSelector($strTable, $strPalette);
 
                     // set the palette
                     $GLOBALS['TL_DCA'][$strTable]['subpalettes'][$strPalette] = implode(',', $arrFields);
@@ -292,6 +285,28 @@ class BuildPalettesListener
                     $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']
                 ) ? $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] : [])
             );
+        }
+    }
+
+    /**
+     * Add a selector.
+     *
+     * @param string $strTable   Data container table name.
+     * @param string $strPalette Palette selector field.
+     *
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
+    private function addSelector($strTable, $strPalette)
+    {
+        // generate subpalettes selectors
+        if (!is_array($GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
+            $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'] = [$strPalette];
+        } else {
+            if (!in_array($strPalette, $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
+                $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'][] = $strPalette;
+            }
         }
     }
 }
