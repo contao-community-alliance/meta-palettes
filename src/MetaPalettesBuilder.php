@@ -3,9 +3,13 @@
 /**
  * MetaPalettes for the Contao Open Source CMS
  *
- * @link      https://github.com/bit3/contao-meta-palettes SCM
- * @copyright 2013 bit3 UG
- * @author    Tristan Lins <tristan.lins@bit3.de>
+ * @link      https://github.com/bit3/contao-meta-palettes
+ * @copyright 2013-2014 bit3 UG
+ * @copyright 2015-2017 Contao Community Alliance.
+ * @author    Christian Schiffler <c.schiffler@cyberspectrum.de>
+ * @author    Tristan Lins <tristan@lins.io>
+ * @author    Stefan Heimes <stefan_heimes@hotmail.com>
+ * @author    David Molineus <david.molineus@netzmacht.de>
  * @package   MetaPalettes
  * @license   LGPL-3.0+
  */

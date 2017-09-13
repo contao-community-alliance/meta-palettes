@@ -6,6 +6,8 @@
  * @link      https://github.com/bit3/contao-meta-palettes
  * @copyright 2013-2014 bit3 UG
  * @copyright 2015-2017 Contao Community Alliance.
+ * @author    Christian Schiffler <c.schiffler@cyberspectrum.de>
+ * @author    Richard Henkenjohann <richardhenkenjohann@googlemail.com>
  * @author    David Molineus <david.molineus@netzmacht.de>
  * @author    Tristan Lins <tristan.lins@bit3.de>
  * @package   MetaPalettes
