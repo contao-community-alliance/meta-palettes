@@ -245,27 +245,29 @@ class BuildPalettesListener
     private function buildSubPalettes($strTable)
     {
         // check if any meta palette information exists
-        if (isset($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'])
-            && is_array($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'])
+        if (!isset($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'])
+            || !is_array($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'])
         ) {
-            // walk over the meta palette
-            foreach ($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'] as $strPalette => $arrFields) {
-                // only generate if not palette exists
-                if (!isset($GLOBALS['TL_DCA'][$strTable]['subpalettes'][$strPalette]) && is_array($arrFields)) {
-                    // only generate if there are any fields
-                    if (is_array($arrFields) && count($arrFields) > 0) {
-                        // generate subpalettes selectors
-                        if (!is_array($GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
-                            $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'] = [$strPalette];
-                        } else {
-                            if (!in_array($strPalette, $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
-                                $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'][] = $strPalette;
-                            }
-                        }
+            return;
+        }
 
-                        // set the palette
-                        $GLOBALS['TL_DCA'][$strTable]['subpalettes'][$strPalette] = implode(',', $arrFields);
+        // walk over the meta palette
+        foreach ($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'] as $strPalette => $arrFields) {
+            // only generate if not palette exists
+            if (!isset($GLOBALS['TL_DCA'][$strTable]['subpalettes'][$strPalette]) && is_array($arrFields)) {
+                // only generate if there are any fields
+                if (is_array($arrFields) && count($arrFields) > 0) {
+                    // generate subpalettes selectors
+                    if (!is_array($GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
+                        $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'] = [$strPalette];
+                    } else {
+                        if (!in_array($strPalette, $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
+                            $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'][] = $strPalette;
+                        }
                     }
+
+                    // set the palette
+                    $GLOBALS['TL_DCA'][$strTable]['subpalettes'][$strPalette] = implode(',', $arrFields);
                 }
             }
         }
