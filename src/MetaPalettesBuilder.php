@@ -410,25 +410,7 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
             return;
         }
 
-        $position = null;
-        if ($insert && $reference) {
-            $properties = $legend->getProperties();
-            if (!empty($properties)) {
-                $property = current($properties);
-
-                do {
-                    if ($property->getName() == $reference) {
-                        if ($insert == 'before') {
-                            $position = $property;
-                        } elseif ($insert == 'after') {
-                            $position = next($properties);
-                        }
-                        break;
-                    }
-                } while ($property = next($properties));
-            }
-        }
-
+        $position = $this->calculateInsertPosition($legend, $insert, $reference);
         if ($position === false) {
             $position = null;
         }
@@ -471,35 +453,28 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
     ) {
         $subPalettes = [];
 
-        if (is_array($subPalettesDca)) {
-            foreach ($subPalettesDca as $selector => $propertyNames) {
-                $properties = [];
+        foreach ($subPalettesDca as $selector => $propertyNames) {
+            $properties = [];
 
-                foreach ($propertyNames as $propertyName) {
-                    // Check if it is a valid property name.
-                    if (!is_string($propertyName)) {
-                        throw new \InvalidArgumentException(
-                            'Invalid property name in sub palette: ' . var_export($propertyName, true)
-                        );
-                    }
+            foreach ($propertyNames as $propertyName) {
+                $this->guardValidPropertyName($propertyName);
 
-                    $and = new PropertyConditionChain();
-                    $and->addCondition(new PropertyTrueCondition($selector));
-                    $and->addCondition(new PropertyVisibleCondition($selector));
+                $and = new PropertyConditionChain();
+                $and->addCondition(new PropertyTrueCondition($selector));
+                $and->addCondition(new PropertyVisibleCondition($selector));
 
-                    $property = new Property($propertyName);
-                    $property->setVisibleCondition($and);
-                    $properties[] = $property;
-                }
+                $property = new Property($propertyName);
+                $property->setVisibleCondition($and);
+                $properties[] = $property;
+            }
 
-                if (count($properties)) {
-                    $selectorPropertyName = $parser->createSubpaletteSelectorFieldName(
-                        $selector,
-                        $selectorFieldNames
-                    );
+            if (count($properties)) {
+                $selectorPropertyName = $parser->createSubpaletteSelectorFieldName(
+                    $selector,
+                    $selectorFieldNames
+                );
 
-                    $subPalettes[$selectorPropertyName] = $properties;
-                }
+                $subPalettes[$selectorPropertyName] = $properties;
             }
         }
 
@@ -519,51 +494,102 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
     {
         $subSelectPalettes = [];
 
-        if (is_array($subSelectPalettesDca)) {
-            foreach ($subSelectPalettesDca as $selectPropertyName => $valuePropertyNames) {
-                $properties = [];
+        foreach ($subSelectPalettesDca as $selectPropertyName => $valuePropertyNames) {
+            $properties = [];
 
-                foreach ($valuePropertyNames as $value => $propertyNames) {
-                    if ($value[0] == '!') {
-                        $negate = true;
-                        $value  = substr($value, 1);
-                    } else {
-                        $negate = false;
-                    }
+            foreach ($valuePropertyNames as $value => $propertyNames) {
+                if ($value[0] == '!') {
+                    $negate = true;
+                    $value  = substr($value, 1);
+                } else {
+                    $negate = false;
+                }
 
-                    $condition = new PropertyValueCondition($selectPropertyName, $value);
+                $condition = new PropertyValueCondition($selectPropertyName, $value);
 
-                    if ($negate) {
-                        $condition = new NotCondition($condition);
-                    }
+                if ($negate) {
+                    $condition = new NotCondition($condition);
+                }
 
-                    $and = new PropertyConditionChain();
-                    $and->addCondition($condition);
-                    $and->addCondition(new PropertyVisibleCondition($selectPropertyName));
+                $and = new PropertyConditionChain();
+                $and->addCondition($condition);
+                $and->addCondition(new PropertyVisibleCondition($selectPropertyName));
 
-                    foreach ($propertyNames as $key => $propertyName) {
-                        // Check if it is a legend information, if so add it to that one - use the empty legend name
-                        // otherwise.
-                        if (is_array($propertyName)) {
-                            foreach ($propertyName as $propName) {
-                                $property = new Property($propName);
-                                $property->setVisibleCondition(clone $and);
-                                $properties[$key][] = $property;
-                            }
-                        } else {
-                            $property = new Property($propertyName);
+                foreach ($propertyNames as $key => $propertyName) {
+                    // Check if it is a legend information, if so add it to that one - use the empty legend name
+                    // otherwise.
+                    if (is_array($propertyName)) {
+                        foreach ($propertyName as $propName) {
+                            $property = new Property($propName);
                             $property->setVisibleCondition(clone $and);
-                            $properties[''][] = $property;
+                            $properties[$key][] = $property;
                         }
+                    } else {
+                        $property = new Property($propertyName);
+                        $property->setVisibleCondition(clone $and);
+                        $properties[''][] = $property;
                     }
                 }
+            }
 
-                if (count($properties)) {
-                    $subSelectPalettes[$selectPropertyName] = $properties;
-                }
+            if (count($properties)) {
+                $subSelectPalettes[$selectPropertyName] = $properties;
             }
         }
 
         return $subSelectPalettes;
+    }
+
+    /**
+     * Guard that the property name is valid.
+     *
+     * @param mixed $propertyName Given value.
+     *
+     * @return void
+     *
+     * @throws \InvalidArgumentException When property name is no string.
+     */
+    protected function guardValidPropertyName($propertyName)
+    {
+        // Check if it is a valid property name.
+        if (!is_string($propertyName)) {
+            throw new \InvalidArgumentException(
+                'Invalid property name in sub palette: ' . var_export($propertyName, true)
+            );
+        }
+    }
+
+    /**
+     * Calculate the insert position.
+     *
+     * @param Legend $legend    Legend definition.
+     * @param string $insert    Insert mode.
+     * @param string $reference Reference column.
+     *
+     * @return int|null|false
+     */
+    protected function calculateInsertPosition(Legend $legend, $insert, $reference)
+    {
+        $position = null;
+
+        if ($insert && $reference) {
+            $properties = $legend->getProperties();
+            if (!empty($properties)) {
+                $property = current($properties);
+
+                do {
+                    if ($property->getName() == $reference) {
+                        if ($insert == 'before') {
+                            $position = $property;
+                        } elseif ($insert == 'after') {
+                            $position = next($properties);
+                        }
+                        break;
+                    }
+                } while ($property = next($properties));
+            }
+        }
+
+        return $position;
     }
 }
