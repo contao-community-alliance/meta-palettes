@@ -114,7 +114,7 @@ class HookListener
      *
      * @return void
      */
-    public function extendPalette($strTable, &$strPalette, array &$arrMeta)
+    private function extendPalette($strTable, &$strPalette, array &$arrMeta)
     {
         if (preg_match('#^(\w+) extends (\w+)$#', $strPalette, $arrMatch)) {
             if (!is_array($GLOBALS['TL_DCA'][$strTable]['metapalettes'][$arrMatch[2]])) {
