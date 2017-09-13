@@ -13,6 +13,7 @@
 
 namespace ContaoCommunityAlliance\MetaPalettes\Listener;
 
+use Contao\Config;
 use Contao\DataContainer;
 use Contao\Input;
 use Contao\System;
@@ -160,7 +161,7 @@ class SubSelectPalettesListener
 
         // support for TL_CONFIG data container
         if ($dataContainer instanceof \DC_File) {
-            return $GLOBALS['TL_CONFIG'][$strSelector];
+            return Config::get($strSelector);
         }
 
         // try getting activeRecord value
@@ -172,13 +173,7 @@ class SubSelectPalettesListener
         if ($dataContainer instanceof \DC_Table
             && \Database::getInstance()->tableExists($dataContainer->table)
         ) {
-            $objRecord = \Database::getInstance()
-                ->prepare(sprintf('SELECT %s FROM %s WHERE id=?', $strSelector, $dataContainer->table))
-                ->limit(1)
-                ->execute($dataContainer->id);
-            if ($objRecord->next()) {
-                return $objRecord->$strSelector;
-            }
+            return $this->fetchValueFromDatabase($dataContainer, $strSelector);
         }
 
         return $strValue;
@@ -296,5 +291,27 @@ class SubSelectPalettesListener
                 $GLOBALS['TL_DCA'][$strTable]['subpalettes'][$k]
             );
         }
+    }
+
+    /**
+     * Fetch value from database.
+     *
+     * @param DataContainer $dataContainer Data container driver.
+     * @param string        $strSelector   Selector field name.
+     *
+     * @return mixed
+     */
+    private function fetchValueFromDatabase($dataContainer, $strSelector)
+    {
+        $objRecord = \Database::getInstance()
+            ->prepare(sprintf('SELECT %s FROM %s WHERE id=?', $strSelector, $dataContainer->table))
+            ->limit(1)
+            ->execute($dataContainer->id);
+
+        if ($objRecord->next()) {
+            return $objRecord->$strSelector;
+        }
+
+        return null;
     }
 }
