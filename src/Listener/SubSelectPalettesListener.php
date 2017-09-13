@@ -22,6 +22,9 @@ use ContaoCommunityAlliance\MetaPalettes\MetaPalettes;
  */
 class SubSelectPalettesListener
 {
+    /**
+     * @param null $dataContainer
+     */
     public function onLoad($dataContainer = null)
     {
         // Break if no data container driver is given.
@@ -54,57 +57,9 @@ class SubSelectPalettesListener
                 continue;
             }
 
-            $strValue = $this->invokeLoadCallback($dataContainer, $strTable, $strSelector, $strValue);
-            $strPalette = '';
-
-            foreach ($arrPalettes as $strSelectValue => $arrSelectPalette) {
-                // add palette if value is selected or not
-                if (!count($arrSelectPalette) &&
-                    ($strSelectValue == $strValue ||
-                        $strSelectValue[0] == '!' && substr($strSelectValue, 1) != $strValue)
-                ) {
-                    foreach ($arrSelectPalette as $strLegend => $mixSub) {
-                        if (is_array($mixSub)) {
-                            // supporting sub sub palettes :)
-                            foreach ($mixSub as $arrValue) {
-                                foreach ($GLOBALS['TL_DCA'][$strTable]['palettes'] as $k => $v) {
-                                    if ($k == '__selector__') {
-                                        continue;
-                                    }
-                                    MetaPalettes::appendFields($strTable, $k, $strLegend, [$arrValue]);
-                                }
-                            }
-                        } else {
-                            // legacy, simple array of fields.
-                            $strPalette .= ',' . $mixSub;
-                        }
-                    }
-                }
-            }
-
-            if (strlen($strPalette)) {
-                foreach ($GLOBALS['TL_DCA'][$strTable]['palettes'] as $k => $v) {
-                    if ($k != '__selector__') {
-                        $GLOBALS['TL_DCA'][$strTable]['palettes'][$k] = preg_replace(
-                            '#([,;]' . preg_quote($strSelector) . ')([,;].*)?$#',
-                            '$1' . $strPalette . '$2',
-                            $GLOBALS['TL_DCA'][$strTable]['palettes'][$k]
-                        );
-                    }
-                }
-                if (
-                    !empty($GLOBALS['TL_DCA'][$strTable]['subpalettes']) &&
-                    is_array($GLOBALS['TL_DCA'][$strTable]['subpalettes'])
-                ) {
-                    foreach ($GLOBALS['TL_DCA'][$strTable]['subpalettes'] as $k => $v) {
-                        $GLOBALS['TL_DCA'][$strTable]['subpalettes'][$k] = preg_replace(
-                            '#([,;]?' . preg_quote($strSelector) . ')([,;].*)?$#',
-                            '$1' . $strPalette . '$2',
-                            $GLOBALS['TL_DCA'][$strTable]['subpalettes'][$k]
-                        );
-                    }
-                }
-            }
+            $strValue   = $this->invokeLoadCallback($dataContainer, $strTable, $strSelector, $strValue);
+            $strPalette = $this->buildPalette($arrPalettes, $strValue, $strTable);
+            $this->applyPalette($strTable, $strSelector, $strPalette);
         }
     }
 
@@ -226,7 +181,7 @@ class SubSelectPalettesListener
             foreach ($callbacks as $callback) {
                 if (is_array($callback)) {
                     $callback[0] = System::importStatic($callback[0]);
-                    $strValue = $callback[0]->{$callback[1]}($strValue, $dataContainer);
+                    $strValue    = $callback[0]->{$callback[1]}($strValue, $dataContainer);
                 } elseif (is_callable($callback)) {
                     $strValue = $callback($strValue, $dataContainer);
                 }
@@ -234,5 +189,75 @@ class SubSelectPalettesListener
         }
 
         return $strValue;
+    }
+
+    /**
+     * @param $arrPalettes
+     * @param $strValue
+     * @param $strTable
+     *
+     * @return string
+     */
+    protected function buildPalette($arrPalettes, $strValue, $strTable)
+    {
+        $strPalette = '';
+
+        foreach ($arrPalettes as $strSelectValue => $arrSelectPalette) {
+            // add palette if value is selected or not
+            if (!count($arrSelectPalette) &&
+                ($strSelectValue == $strValue ||
+                    $strSelectValue[0] == '!' && substr($strSelectValue, 1) != $strValue)
+            ) {
+                foreach ($arrSelectPalette as $strLegend => $mixSub) {
+                    if (is_array($mixSub)) {
+                        // supporting sub sub palettes :)
+                        foreach ($mixSub as $arrValue) {
+                            foreach ($GLOBALS['TL_DCA'][$strTable]['palettes'] as $k => $v) {
+                                if ($k == '__selector__') {
+                                    continue;
+                                }
+                                MetaPalettes::appendFields($strTable, $k, $strLegend, [$arrValue]);
+                            }
+                        }
+                    } else {
+                        // legacy, simple array of fields.
+                        $strPalette .= ',' . $mixSub;
+                    }
+                }
+            }
+        }
+
+        return $strPalette;
+    }
+
+    private function applyPalette($strTable, $strSelector, $strPalette)
+    {
+        if (!strlen($strPalette)) {
+            return;
+        }
+
+        foreach ($GLOBALS['TL_DCA'][$strTable]['palettes'] as $k => $v) {
+            if ($k != '__selector__') {
+                $GLOBALS['TL_DCA'][$strTable]['palettes'][$k] = preg_replace(
+                    '#([,;]' . preg_quote($strSelector) . ')([,;].*)?$#',
+                    '$1' . $strPalette . '$2',
+                    $GLOBALS['TL_DCA'][$strTable]['palettes'][$k]
+                );
+            }
+        }
+
+        if (empty($GLOBALS['TL_DCA'][$strTable]['subpalettes'])
+            || !is_array($GLOBALS['TL_DCA'][$strTable]['subpalettes'])
+        ) {
+            return;
+        }
+
+        foreach ($GLOBALS['TL_DCA'][$strTable]['subpalettes'] as $k => $v) {
+            $GLOBALS['TL_DCA'][$strTable]['subpalettes'][$k] = preg_replace(
+                '#([,;]?' . preg_quote($strSelector) . ')([,;].*)?$#',
+                '$1' . $strPalette . '$2',
+                $GLOBALS['TL_DCA'][$strTable]['subpalettes'][$k]
+            );
+        }
     }
 }
