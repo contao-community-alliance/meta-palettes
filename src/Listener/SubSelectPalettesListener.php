@@ -17,6 +17,7 @@ use Contao\Config;
 use Contao\DataContainer;
 use Contao\Input;
 use Contao\System;
+use ContaoCommunityAlliance\DcGeneral\Data\ModelInterface;
 use ContaoCommunityAlliance\MetaPalettes\MetaPalettes;
 
 /**
@@ -138,20 +139,12 @@ class SubSelectPalettesListener
         // has already updated the current model.
         if (method_exists($dataContainer, 'getEnvironment')) {
             $objModel = $dataContainer->getEnvironment()->getCurrentModel();
-            if ($objModel) {
-                $strValue = $objModel->getProperty($strSelector);
-            }
-
-            return $strValue;
+            return $this->getValueFromDcGeneralModel($objModel, $strSelector);
         }
 
         if (method_exists($dataContainer, 'getCurrentModel')) {
             $objModel = $dataContainer->getCurrentModel();
-            if ($objModel) {
-                $strValue = $objModel->getProperty($strSelector);
-            }
-
-            return $strValue;
+            return $this->getValueFromDcGeneralModel($objModel, $strSelector);
         }
 
         // on post, use new value
@@ -310,6 +303,23 @@ class SubSelectPalettesListener
 
         if ($objRecord->next()) {
             return $objRecord->$strSelector;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the value from the model.
+     *
+     * @param ModelInterface|null $objModel    Data model.
+     * @param string              $strSelector Selector field name.
+     *
+     * @return mixed
+     */
+    private function getValueFromDcGeneralModel($objModel, $strSelector)
+    {
+        if ($objModel) {
+            return $objModel->getProperty($strSelector);
         }
 
         return null;
