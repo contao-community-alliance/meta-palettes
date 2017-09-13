@@ -27,84 +27,18 @@ class HookListener
      */
     public function generatePalettes($strTable)
     {
+        // The MetaPalettesBuilder is used for DC_General
         if (isset($GLOBALS['TL_DCA'][$strTable]['config']['dataContainer'])
             && $GLOBALS['TL_DCA'][$strTable]['config']['dataContainer'] == 'General'
         ) {
-            // The MetaPalettesBuilder is used for DC_General
+
             return;
         }
 
-        // check if palette callback is registered
-        if (
-            isset($GLOBALS['TL_DCA'][$strTable]['config']['palettes_callback'])
-            && is_array($GLOBALS['TL_DCA'][$strTable]['config']['palettes_callback'])
-        ) {
-            // call callbacks
-            foreach ($GLOBALS['TL_DCA'][$strTable]['config']['palettes_callback'] as $callback) {
-                if (is_array($callback) && count($callback) == 2) {
-                    if (!is_object($callback[0])) {
-                        $callback[0] = \System::importStatic($callback[0]);
-                    }
-                }
-
-                call_user_func($callback);
-            }
-        }
-
-        // check if any meta palette information exists
-        if (
-            isset($GLOBALS['TL_DCA'][$strTable]['metapalettes'])
-            && is_array($GLOBALS['TL_DCA'][$strTable]['metapalettes'])
-        ) {
-            // walk over the meta palette
-            foreach ($GLOBALS['TL_DCA'][$strTable]['metapalettes'] as $strPalette => $arrMeta) {
-                // extend palettes
-                $this->extendPalette($strTable, $strPalette, $arrMeta);
-
-                // only generate if not palette exists
-                if (!isset($GLOBALS['TL_DCA'][$strTable]['palettes'][$strPalette]) && is_array($arrMeta)) {
-                    // set the palette
-                    $GLOBALS['TL_DCA'][$strTable]['palettes'][$strPalette] = MetaPalettes::generatePalette($arrMeta);
-                }
-            }
-        }
-
-        // check if any meta palette information exists
-        if (
-            isset($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'])
-            && is_array($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'])
-        ) {
-            // walk over the meta palette
-            foreach ($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'] as $strPalette => $arrFields) {
-                // only generate if not palette exists
-                if (!isset($GLOBALS['TL_DCA'][$strTable]['subpalettes'][$strPalette]) && is_array($arrFields)) {
-                    // only generate if there are any fields
-                    if (is_array($arrFields) && count($arrFields) > 0) {
-                        // generate subpalettes selectors
-                        if (!is_array($GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
-                            $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'] = array($strPalette);
-                        } else {
-                            if (!in_array($strPalette, $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
-                                $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'][] = $strPalette;
-                            }
-                        }
-
-                        // set the palette
-                        $GLOBALS['TL_DCA'][$strTable]['subpalettes'][$strPalette] = implode(',', $arrFields);
-                    }
-                }
-            }
-        }
-
-        if (!empty($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes'])) {
-            // add callback to generate subselect palettes
-            $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] = array_merge(
-                array(array('cca.meta_palettes.listener.hook_listener', 'generateSubSelectPalettes')),
-                (isset($GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']) && is_array(
-                    $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']
-                ) ? $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] : array())
-            );
-        }
+        $this->invokePalettesCallbacks($strTable);
+        $this->buildPalettes($strTable);
+        $this->buildSubPalettes($strTable);
+        $this->registerSubSelectPalettesCallback($strTable);
     }
 
     /**
@@ -385,6 +319,104 @@ class HookListener
                     );
                 }
             }
+        }
+    }
+
+    /**
+     * @param $strTable
+     */
+    private function invokePalettesCallbacks($strTable)
+    {
+        // check if palette callback is registered
+        if (
+            isset($GLOBALS['TL_DCA'][$strTable]['config']['palettes_callback'])
+            && is_array($GLOBALS['TL_DCA'][$strTable]['config']['palettes_callback'])
+        ) {
+            // call callbacks
+            foreach ($GLOBALS['TL_DCA'][$strTable]['config']['palettes_callback'] as $callback) {
+                if (is_array($callback) && count($callback) == 2) {
+                    if (!is_object($callback[0])) {
+                        $callback[0] = \System::importStatic($callback[0]);
+                    }
+                }
+
+                call_user_func($callback);
+            }
+        }
+    }
+
+    /**
+     * @param $strTable
+     *
+     * @return int|string
+     */
+    private function buildPalettes($strTable)
+    {
+        // check if any meta palette information exists
+        if (
+            isset($GLOBALS['TL_DCA'][$strTable]['metapalettes'])
+            && is_array($GLOBALS['TL_DCA'][$strTable]['metapalettes'])
+        ) {
+            // walk over the meta palette
+            foreach ($GLOBALS['TL_DCA'][$strTable]['metapalettes'] as $strPalette => $arrMeta) {
+                // extend palettes
+                $this->extendPalette($strTable, $strPalette, $arrMeta);
+
+                // only generate if not palette exists
+                if (!isset($GLOBALS['TL_DCA'][$strTable]['palettes'][$strPalette]) && is_array($arrMeta)) {
+                    // set the palette
+                    $GLOBALS['TL_DCA'][$strTable]['palettes'][$strPalette] = MetaPalettes::generatePalette($arrMeta);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param $strTable
+     */
+    private function buildSubPalettes($strTable)
+    {
+        // check if any meta palette information exists
+        if (
+            isset($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'])
+            && is_array($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'])
+        ) {
+            // walk over the meta palette
+            foreach ($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'] as $strPalette => $arrFields) {
+                // only generate if not palette exists
+                if (!isset($GLOBALS['TL_DCA'][$strTable]['subpalettes'][$strPalette]) && is_array($arrFields)) {
+                    // only generate if there are any fields
+                    if (is_array($arrFields) && count($arrFields) > 0) {
+                        // generate subpalettes selectors
+                        if (!is_array($GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
+                            $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'] = [$strPalette];
+                        } else {
+                            if (!in_array($strPalette, $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
+                                $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'][] = $strPalette;
+                            }
+                        }
+
+                        // set the palette
+                        $GLOBALS['TL_DCA'][$strTable]['subpalettes'][$strPalette] = implode(',', $arrFields);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param $strTable
+     */
+    private function registerSubSelectPalettesCallback($strTable)
+    {
+        if (!empty($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes'])) {
+            // add callback to generate subselect palettes
+            $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] = array_merge(
+                [['cca.meta_palettes.listener.hook_listener', 'generateSubSelectPalettes']],
+                (isset($GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']) && is_array(
+                    $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']
+                ) ? $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] : [])
+            );
         }
     }
 }
