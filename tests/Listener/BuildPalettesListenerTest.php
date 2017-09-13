@@ -11,15 +11,15 @@
 
 namespace ContaoCommunityAlliance\MetaPalettes\Test\Listener;
 
-use ContaoCommunityAlliance\MetaPalettes\Listener\HookListener;
+use ContaoCommunityAlliance\MetaPalettes\Listener\BuildPalettesListener;
 use PHPUnit\Framework\TestCase;
 
-class HookListenerTest extends TestCase
+class BuildPalettesListenerTest extends TestCase
 {
     private $dca;
 
     /**
-     * @var HookListener
+     * @var BuildPalettesListener
      */
     private $listener;
 
@@ -35,7 +35,7 @@ class HookListenerTest extends TestCase
         ];
 
         $this->dca      =& $GLOBALS['TL_DCA']['tl_test'];
-        $this->listener = new HookListener();
+        $this->listener = new BuildPalettesListener();
     }
 
     function testGeneratePalette()
@@ -45,7 +45,7 @@ class HookListenerTest extends TestCase
             'baz' => [':hide', 'test'],
         ];
 
-        $this->listener->generatePalettes('tl_test');
+        $this->listener->onLoadDataContainer('tl_test');
 
         $this->assertEquals('{foo_legend},bar;{baz_legend:hide},test', $this->dca['palettes']['default']);
     }
@@ -63,7 +63,7 @@ class HookListenerTest extends TestCase
             '+baz' => ['-test', 'test2'],
         ];
 
-        $this->listener->generatePalettes('tl_test');
+        $this->listener->onLoadDataContainer('tl_test');
 
         $this->assertEquals(
             '{foo_legend},bar,aa;{baz_legend:hide},test2;{test_legend},b',
@@ -74,7 +74,7 @@ class HookListenerTest extends TestCase
     function testGenerateSubPalettes()
     {
         $this->dca['metasubpalettes']['foo'] = ['bar', 'baz'];
-        $this->listener->generatePalettes('tl_test');
+        $this->listener->onLoadDataContainer('tl_test');
 
         $this->assertArrayHasKey('foo', $this->dca['subpalettes']);
         $this->assertEquals('bar,baz', $this->dca['subpalettes']['foo']);

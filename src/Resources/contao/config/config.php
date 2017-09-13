@@ -15,4 +15,4 @@
 /**
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['loadDataContainer'][] = ['cca.meta_palettes.listener.hook_listener', 'generatePalettes'];
+$GLOBALS['TL_HOOKS']['loadDataContainer'][] = ['cca.meta_palettes.listener.build_palettes_listener', 'onLoadDataContainer'];

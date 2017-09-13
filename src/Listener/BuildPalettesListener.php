@@ -18,14 +18,14 @@ use ContaoCommunityAlliance\MetaPalettes\MetaPalettes;
 /**
  * Hook listener
  */
-class HookListener
+class BuildPalettesListener
 {
     /**
      * @param $strTable
      *
      * @return void
      */
-    public function generatePalettes($strTable)
+    public function onLoadDataContainer($strTable)
     {
         // The MetaPalettesBuilder is used for DC_General
         if (isset($GLOBALS['TL_DCA'][$strTable]['config']['dataContainer'])

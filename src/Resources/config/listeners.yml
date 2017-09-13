@@ -4,8 +4,8 @@ services:
     tags:
       - { name: 'kernel.event_listener', event: 'dc-general.factory.build-data-definition', method: 'process', priority: 200 }
 
-  cca.meta_palettes.listener.hook_listener:
-    class: ContaoCommunityAlliance\MetaPalettes\Listener\HookListener
+  cca.meta_palettes.listener.build_palettes_listener:
+    class: ContaoCommunityAlliance\MetaPalettes\Listener\BuildPalettesListener
 
   cca.meta_palettes.listener.sub_select_palettes_listener:
     class: ContaoCommunityAlliance\MetaPalettes\Listener\SubSelectPalettesListener
