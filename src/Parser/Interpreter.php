@@ -9,7 +9,7 @@
  */
 
 
-namespace ContaoCommunityAlliance\MetaPalettes\Parser\MetaPalette;
+namespace ContaoCommunityAlliance\MetaPalettes\Parser;
 
 use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
 
@@ -28,7 +28,7 @@ interface Interpreter
      *
      * @return void
      */
-    public function start($tableName, $paletteName);
+    public function startPalette($tableName, $paletteName);
 
     /**
      * Inherit from a parent palette.
@@ -79,5 +79,5 @@ interface Interpreter
      *
      * @return void
      */
-    public function finish();
+    public function finishPalette();
 }

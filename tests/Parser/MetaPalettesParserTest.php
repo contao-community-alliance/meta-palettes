@@ -10,7 +10,7 @@
 
 namespace ContaoCommunityAlliance\MetaPalettes\Test\Parser;
 
-use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPalette\Interpreter;
+use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter;
 use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
 use PHPUnit\Framework\TestCase;
 
@@ -45,7 +45,7 @@ class MetaPalettesParserTest extends TestCase
         $interpreter = $this->getMockBuilder(Interpreter::class)->getMock();
         $interpreter
             ->expects($this->once())
-            ->method('start')
+            ->method('startPalette')
             ->with('tl_test', 'default');
 
         $interpreter
@@ -60,7 +60,7 @@ class MetaPalettesParserTest extends TestCase
 
         $interpreter
             ->expects($this->once())
-            ->method('finish');
+            ->method('finishPalette');
 
         $this->definition['default'] = [
             'foo' => ['bar'],
@@ -84,7 +84,7 @@ class MetaPalettesParserTest extends TestCase
         $interpreter = $this->getMockBuilder(Interpreter::class)->getMock();
         $interpreter
             ->expects($this->once())
-            ->method('start')
+            ->method('startPalette')
             ->with('tl_test', 'default');
 
         $interpreter
@@ -108,7 +108,7 @@ class MetaPalettesParserTest extends TestCase
 
         $interpreter
             ->expects($this->once())
-            ->method('finish');
+            ->method('finishPalette');
 
         $parser  = new MetaPaletteParser();
         $success = $parser->parse('tl_test', $interpreter);
@@ -132,7 +132,7 @@ class MetaPalettesParserTest extends TestCase
         $interpreter = $this->getMockBuilder(Interpreter::class)->getMock();
         $interpreter
             ->expects($this->exactly(2))
-            ->method('start')
+            ->method('startPalette')
             ->withConsecutive(['tl_test', 'default'], ['tl_test', 'test']);
 
         $interpreter
@@ -167,7 +167,7 @@ class MetaPalettesParserTest extends TestCase
 
         $interpreter
             ->expects($this->once())
-            ->method('finish');
+            ->method('finishPalette');
 
         $success = $parser->parse('tl_test', $interpreter);
 

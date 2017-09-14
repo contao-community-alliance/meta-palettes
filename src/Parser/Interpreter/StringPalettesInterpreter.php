@@ -9,9 +9,10 @@
  */
 
 
-namespace ContaoCommunityAlliance\MetaPalettes\Parser\MetaPalette;
+namespace ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter;
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter;
 use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
 
 /**
@@ -45,7 +46,7 @@ class StringPalettesInterpreter implements Interpreter
     /**
      * {@inheritdoc}
      */
-    public function start($tableName, $paletteName)
+    public function startPalette($tableName, $paletteName)
     {
         $this->tableName   = $tableName;
         $this->paletteName = $paletteName;
@@ -129,7 +130,7 @@ class StringPalettesInterpreter implements Interpreter
      *
      * @SuppressWarnings(PHPMD.Superglobals)
      */
-    public function finish()
+    public function finishPalette()
     {
         $GLOBALS['TL_DCA'][$this->tableName]['palettes'][$this->paletteName] = '';
 

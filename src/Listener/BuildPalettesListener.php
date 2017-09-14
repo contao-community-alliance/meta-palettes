@@ -16,7 +16,8 @@
 
 namespace ContaoCommunityAlliance\MetaPalettes\Listener;
 
-use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPalette\StringPalettesInterpreter;
+use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter;
+use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter\StringPalettesInterpreter;
 use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
 
 /**
@@ -32,13 +33,21 @@ class BuildPalettesListener
     private $metaPalettesParser;
 
     /**
+     * Interpreter of the parser.
+     *
+     * @var Interpreter
+     */
+    private $interpreter;
+
+    /**
      * BuildPalettesListener constructor.
      *
      * @param MetaPaletteParser $metaPalettesParser Meta palettes parser.
      */
-    public function __construct(MetaPaletteParser $metaPalettesParser)
+    public function __construct(MetaPaletteParser $metaPalettesParser, Interpreter $interpreter)
     {
         $this->metaPalettesParser = $metaPalettesParser;
+        $this->interpreter        = $interpreter;
     }
 
     /**

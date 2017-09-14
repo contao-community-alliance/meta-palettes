@@ -9,9 +9,9 @@
  */
 
 
-namespace ContaoCommunityAlliance\MetaPalettes\Test\Parser\MetaPalette;
+namespace ContaoCommunityAlliance\MetaPalettes\Test\Parser\Interpreter;
 
-use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPalette\StringPalettesInterpreter;
+use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter\StringPalettesInterpreter;
 use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
 use PHPUnit\Framework\TestCase;
 
@@ -20,12 +20,12 @@ class StringPalettesInterpreterTest extends TestCase
     function testSimplePalette()
     {
         $interpreter = new StringPalettesInterpreter();
-        $interpreter->start('tl_test', 'default');
+        $interpreter->startPalette('tl_test', 'default');
         $interpreter->addLegend('title', true, false);
         $interpreter->addFieldTo('title', 'headline');
         $interpreter->addLegend('config', true, true);
         $interpreter->addFieldTo('config', 'config');
-        $interpreter->finish();
+        $interpreter->finishPalette();
 
         $this->assertEquals(
             '{title_legend},headline;{config_legend:hide},config',
@@ -46,7 +46,7 @@ class StringPalettesInterpreterTest extends TestCase
             ->with('tl_test', 'default', $interpreter, true);
 
 
-        $interpreter->start('tl_test', 'test');
+        $interpreter->startPalette('tl_test', 'test');
         $interpreter->inherit('default', $parser);
 
         // Parent config.
@@ -61,7 +61,7 @@ class StringPalettesInterpreterTest extends TestCase
         $interpreter->addLegend('config', false, null);
         $interpreter->addFieldTo('config', 'config2', MetaPaletteParser::POSITION_BEFORE, 'config');
 
-        $interpreter->finish();
+        $interpreter->finishPalette();
 
         $this->assertEquals(
             '{title_legend:hide},title;{config_legend:hide},config2,config',

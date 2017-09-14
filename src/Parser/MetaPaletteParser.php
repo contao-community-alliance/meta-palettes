@@ -10,8 +10,6 @@
 
 namespace ContaoCommunityAlliance\MetaPalettes\Parser;
 
-use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPalette\Interpreter;
-
 /**
  * Class MetaPaletteParser
  *
@@ -55,7 +53,7 @@ class MetaPaletteParser
             $this->parsePalette($tableName, $palette, $interpreter);
         }
 
-        $interpreter->finish();
+        $interpreter->finishPalette();
         $this->palettes = [];
 
         return true;
@@ -85,7 +83,7 @@ class MetaPaletteParser
         }
 
         if (!$parent) {
-            $interpreter->start($tableName, $paletteName);
+            $interpreter->startPalette($tableName, $paletteName);
         }
 
         foreach ($this->palettes[$tableName][$paletteName]['parents'] as $parent) {
