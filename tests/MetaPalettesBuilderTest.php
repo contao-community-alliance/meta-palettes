@@ -21,12 +21,13 @@ use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Palette;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Property;
 use ContaoCommunityAlliance\DcGeneral\Factory\Event\BuildDataDefinitionEvent;
 use ContaoCommunityAlliance\MetaPalettes\MetaPalettesBuilder;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Test the meta palettes builder.
  */
-class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
+class MetaPalettesBuilderTest extends TestCase
 {
     /**
      * Create a mocking DCA reading builder.
