@@ -16,13 +16,31 @@
 
 namespace ContaoCommunityAlliance\MetaPalettes\Listener;
 
-use ContaoCommunityAlliance\MetaPalettes\MetaPalettes;
+use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPalette\StringPalettesInterpreter;
+use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
 
 /**
  * Hook listener
  */
 class BuildPalettesListener
 {
+    /**
+     * Meta palettes parser.
+     *
+     * @var MetaPaletteParser
+     */
+    private $metaPalettesParser;
+
+    /**
+     * BuildPalettesListener constructor.
+     *
+     * @param MetaPaletteParser $metaPalettesParser Meta palettes parser.
+     */
+    public function __construct(MetaPaletteParser $metaPalettesParser)
+    {
+        $this->metaPalettesParser = $metaPalettesParser;
+    }
+
     /**
      * Listen to the onload data container callback.
      *
@@ -45,135 +63,6 @@ class BuildPalettesListener
         $this->buildPalettes($strTable);
         $this->buildSubPalettes($strTable);
         $this->registerSubSelectPalettesCallback($strTable);
-    }
-
-    /**
-     * Build all palettes.
-     *
-     * @param string $strTable   Data container table name.
-     * @param string $strPalette Extend a palette.
-     * @param array  $arrMeta    Meta definition.
-     *
-     * @return void
-     *
-     * @SuppressWarnings(PHPMD.Superglobals)
-     */
-    private function extendPalette($strTable, &$strPalette, array &$arrMeta)
-    {
-        if (!preg_match('#^(\w+) extends (\w+)$#', $strPalette, $arrMatch)) {
-            return;
-        }
-
-        if (!is_array($GLOBALS['TL_DCA'][$strTable]['metapalettes'][$arrMatch[2]])) {
-            return;
-        }
-
-        $arrBaseMeta = array_slice($GLOBALS['TL_DCA'][$strTable]['metapalettes'][$arrMatch[2]], 0);
-        $this->extendPalette($strTable, $arrMatch[2], $arrBaseMeta);
-        $strPalette = $arrMatch[1];
-
-        // walk over the extending palette
-        foreach ($arrMeta as $strGroup => $arrFields) {
-            // palette should be extended
-            if (preg_match('#^([\+-])(\w+)$#', $strGroup, $arrMatch)) {
-                $strOperator = $arrMatch[1];
-                $strGroup    = $arrMatch[2];
-
-                if (empty($arrBaseMeta[$strGroup])) {
-                    $arrBaseMeta[$strGroup] = [];
-                }
-
-                foreach ($arrFields as $strField) {
-                    // test for field operator
-                    if (preg_match('#^([\+-])#', $strField, $arrMatch)) {
-                        $strFieldOperator = $arrMatch[1];
-                        $strField         = substr($strField, 1);
-                    } else {
-                        // use default operator
-                        $strFieldOperator = $strOperator;
-                    }
-
-                    // remove a field
-                    if ($strFieldOperator == '-') {
-                        $intPos = array_search($strField, $arrBaseMeta[$strGroup]);
-
-                        if ($intPos !== false) {
-                            unset($arrBaseMeta[$strGroup][$intPos]);
-                            $arrBaseMeta[$strGroup] = array_values($arrBaseMeta[$strGroup]);
-                        }
-                    } else {
-                        // insert at position
-                        if (preg_match('#^(\w+) (before|after) (\w+)$#', $strField, $arrMatch)) {
-                            $strPosition = $arrMatch[2];
-                            $strRefField = $arrMatch[3];
-                            $strField    = $arrMatch[1];
-
-                            // search position
-                            $intPos = array_search($strRefField, $arrBaseMeta[$strGroup]);
-
-                            // append because position could not be determinated
-                            if ($intPos === false) {
-                                $arrBaseMeta[$strGroup][] = $strField;
-                            } else {
-                                // insert into position
-                                if ($strPosition == 'after') {
-                                    $intPos++;
-                                }
-
-                                $arrBaseMeta[$strGroup] = array_merge(
-                                    array_slice($arrBaseMeta[$strGroup], 0, $intPos),
-                                    [$strField],
-                                    array_slice($arrBaseMeta[$strGroup], $intPos)
-                                );
-                            }
-                        } else {
-                            // append field
-                            $arrBaseMeta[$strGroup][] = $strField;
-                        }
-                    }
-                }
-            } else {
-                // palette should be inserted at position
-                if (preg_match('#^(\w+) (before|after) (\w+)$#', $strGroup, $arrMatch)) {
-                    $strPosition   = $arrMatch[2];
-                    $strRefPalette = $arrMatch[3];
-                    $strGroup      = $arrMatch[1];
-
-                    // remove existing palette to make it possible to add at a new position
-                    if (isset($arrBaseMeta[$strGroup])) {
-                        unset($arrBaseMeta[$strGroup]);
-                    }
-
-                    // search position and insert
-                    $intPos = array_search($strRefPalette, array_keys($arrBaseMeta));
-
-                    // append because position could not be determinated
-                    if ($intPos === false) {
-                        $arrBaseMeta[$strGroup] = $arrFields;
-                    } else {
-                        // insert into position
-                        if ($strPosition == 'after') {
-                            $intPos++;
-                        }
-
-                        $arrBaseMeta = array_merge(
-                            array_slice($arrBaseMeta, 0, $intPos),
-                            [
-                                $strGroup => $arrFields,
-                            ],
-                            array_slice($arrBaseMeta, $intPos)
-                        );
-                    }
-                } else {
-                    // palette should be appended or overwritten
-                    $arrBaseMeta[$strGroup] = $arrFields;
-                }
-            }
-        }
-
-        $arrMeta = $arrBaseMeta;
-        // keep result for derived palettes to use.
-        $GLOBALS['TL_DCA'][$strTable]['metapalettes'][$strPalette] = $arrMeta;
     }
 
     /**
@@ -215,22 +104,7 @@ class BuildPalettesListener
      */
     private function buildPalettes($strTable)
     {
-        // check if any meta palette information exists
-        if (isset($GLOBALS['TL_DCA'][$strTable]['metapalettes'])
-            && is_array($GLOBALS['TL_DCA'][$strTable]['metapalettes'])
-        ) {
-            // walk over the meta palette
-            foreach ($GLOBALS['TL_DCA'][$strTable]['metapalettes'] as $strPalette => $arrMeta) {
-                // extend palettes
-                $this->extendPalette($strTable, $strPalette, $arrMeta);
-
-                // only generate if not palette exists
-                if (!isset($GLOBALS['TL_DCA'][$strTable]['palettes'][$strPalette]) && is_array($arrMeta)) {
-                    // set the palette
-                    $GLOBALS['TL_DCA'][$strTable]['palettes'][$strPalette] = MetaPalettes::generatePalette($arrMeta);
-                }
-            }
-        }
+        $this->metaPalettesParser->parse($strTable, new StringPalettesInterpreter());
     }
 
     /**

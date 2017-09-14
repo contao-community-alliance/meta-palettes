@@ -12,6 +12,7 @@
 namespace ContaoCommunityAlliance\MetaPalettes\Test\Listener;
 
 use ContaoCommunityAlliance\MetaPalettes\Listener\BuildPalettesListener;
+use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
 use PHPUnit\Framework\TestCase;
 
 class BuildPalettesListenerTest extends TestCase
@@ -35,7 +36,7 @@ class BuildPalettesListenerTest extends TestCase
         ];
 
         $this->dca      =& $GLOBALS['TL_DCA']['tl_test'];
-        $this->listener = new BuildPalettesListener();
+        $this->listener = new BuildPalettesListener(new MetaPaletteParser());
     }
 
     function testGeneratePalette()
