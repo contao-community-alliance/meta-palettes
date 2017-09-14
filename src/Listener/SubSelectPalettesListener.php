@@ -148,8 +148,8 @@ class SubSelectPalettesListener
         }
 
         // on post, use new value
-        if (\Input::getInstance()->post('FORM_SUBMIT') == $strTable) {
-            return \Input::getInstance()->post($strSelector);
+        if (\Input::post('FORM_SUBMIT') == $strTable) {
+            return \Input::post($strSelector);
         }
 
         // support for TL_CONFIG data container
