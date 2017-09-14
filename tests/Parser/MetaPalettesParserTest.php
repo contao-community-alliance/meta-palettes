@@ -82,9 +82,9 @@ class MetaPalettesParserTest extends TestCase
             ->expects($this->exactly(3))
             ->method('addLegend')
             ->withConsecutive(
-                ['foo', true, false],
+                ['foo', false, false],
                 ['baz', true, true],
-                ['legend', true, false]
+                ['legend', false, false]
             );
 
         $interpreter

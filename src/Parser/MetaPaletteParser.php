@@ -50,7 +50,6 @@ class MetaPaletteParser implements Parser
 
             foreach (array_keys($this->palettes[$tableName]) as $palette) {
                 $this->parsePalette($tableName, $palette, $interpreter);
-                $interpreter->finishPalette();
             }
 
             $this->palettes = [];
@@ -74,7 +73,7 @@ class MetaPaletteParser implements Parser
      * @param string      $tableName   Name of the data container table.
      * @param string      $paletteName Table name.
      * @param Interpreter $interpreter Interpreter which converts the definition.
-     * @param bool        $parent      If true palette is parsed as a parent palette.
+     * @param bool        $base        If true palette is parsed as a parent palette.
      *
      * @return void
      *
@@ -82,7 +81,7 @@ class MetaPaletteParser implements Parser
      *
      * @internal
      */
-    public function parsePalette($tableName, $paletteName, Interpreter $interpreter, $parent = false)
+    public function parsePalette($tableName, $paletteName, Interpreter $interpreter, $base = false)
     {
         if (!isset($this->palettes[$tableName][$paletteName])) {
             throw new \InvalidArgumentException(
@@ -90,7 +89,7 @@ class MetaPaletteParser implements Parser
             );
         }
 
-        if (!$parent) {
+        if (!$base) {
             $interpreter->startPalette($tableName, $paletteName);
         }
 
@@ -99,7 +98,11 @@ class MetaPaletteParser implements Parser
         }
 
         foreach ($this->palettes[$tableName][$paletteName]['definition'] as $legend => $fields) {
-            $this->parseLegend($legend, $fields, $parent, $interpreter);
+            $this->parseLegend($legend, $fields, $base, $interpreter);
+        }
+
+        if (!$base) {
+            $interpreter->finishPalette();
         }
     }
 
@@ -145,12 +148,12 @@ class MetaPaletteParser implements Parser
      *
      * @param string      $legend      Raw name of the legend. Can contain the insert mode as first character.
      * @param array       $fields      List of fields.
-     * @param bool        $parent      If true palette is parsed as a parent palette.
+     * @param bool        $base        If true palette is parsed as a parent palette.
      * @param Interpreter $interpreter The parser interpreter.
      *
      * @return void
      */
-    private function parseLegend($legend, array $fields, $parent, Interpreter $interpreter)
+    private function parseLegend($legend, array $fields, $base, Interpreter $interpreter)
     {
         $hide   = in_array(':hide', $fields);
         $fields = array_filter(
@@ -161,7 +164,7 @@ class MetaPaletteParser implements Parser
         );
 
         $mode     = $this->extractInsertMode($legend, static::MODE_OVERRIDE);
-        $override = !$parent || $mode === static::MODE_OVERRIDE;
+        $override = $mode === static::MODE_OVERRIDE;
 
         if (!$override && !$hide) {
             $hide = null;
