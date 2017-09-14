@@ -49,9 +49,9 @@ class MetaPaletteParser
 
         foreach (array_keys($this->palettes[$tableName]) as $palette) {
             $this->parsePalette($tableName, $palette, $interpreter);
+            $interpreter->finishPalette();
         }
 
-        $interpreter->finishPalette();
         $this->palettes = [];
 
         return true;

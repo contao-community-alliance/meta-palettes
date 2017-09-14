@@ -157,7 +157,7 @@ class MetaPalettesParserTest extends TestCase
             ->with('default', $parser);
 
         $interpreter
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('finishPalette');
 
         $success = $parser->parse('tl_test', $this->definition, $interpreter);
