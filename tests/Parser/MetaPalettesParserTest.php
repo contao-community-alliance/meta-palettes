@@ -27,7 +27,7 @@ class MetaPalettesParserTest extends TestCase
     {
         $GLOBALS['TL_DCA']['tl_test']['metapalettes'] = [];
 
-        $this->definition = & $GLOBALS['TL_DCA']['tl_test']['metapalettes'];
+        $this->definition = & $GLOBALS['TL_DCA']['tl_test'];
 
     }
 
@@ -53,7 +53,7 @@ class MetaPalettesParserTest extends TestCase
             ->expects($this->once())
             ->method('finishPalette');
 
-        $this->definition['default'] = [
+        $this->definition['metapalettes']['default'] = [
             'foo' => ['bar'],
             'baz' => [':hide', 'test']
         ];
@@ -66,7 +66,7 @@ class MetaPalettesParserTest extends TestCase
 
     function testInsertModesAreDetected()
     {
-        $this->definition['default'] = [
+        $this->definition['metapalettes']['default'] = [
             '-foo' => ['bar', '+add'],
             'baz' => [':hide', 'test', '-test2'],
             '+legend' => ['field', '-remove'],
@@ -109,12 +109,12 @@ class MetaPalettesParserTest extends TestCase
 
     function testInheritance()
     {
-        $this->definition['default'] = [
+        $this->definition['metapalettes']['default'] = [
             'foo' => ['bar'],
             'title' => ['headline']
         ];
 
-        $this->definition['test extends default'] = [
+        $this->definition['metapalettes']['test extends default'] = [
             '+foo'  => ['baz'],
             'title' => ['title', '-headline']
         ];

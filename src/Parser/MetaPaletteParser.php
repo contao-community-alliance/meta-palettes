@@ -18,7 +18,7 @@ namespace ContaoCommunityAlliance\MetaPalettes\Parser;
  *
  * @package ContaoCommunityAlliance\MetaPalettes\Parser
  */
-class MetaPaletteParser
+class MetaPaletteParser implements Parser
 {
     const POSITION_AFTER  = 'after';
     const POSITION_BEFORE = 'before';
@@ -45,14 +45,25 @@ class MetaPaletteParser
      */
     public function parse($tableName, array $definition, Interpreter $interpreter)
     {
-        $this->preparePalettes($tableName, $definition);
+        if (isset($definition['metapalettes'])) {
+            $this->preparePalettes($tableName, $definition['metapalettes']);
 
-        foreach (array_keys($this->palettes[$tableName]) as $palette) {
-            $this->parsePalette($tableName, $palette, $interpreter);
-            $interpreter->finishPalette();
+            foreach (array_keys($this->palettes[$tableName]) as $palette) {
+                $this->parsePalette($tableName, $palette, $interpreter);
+                $interpreter->finishPalette();
+            }
+
+            $this->palettes = [];
         }
 
-        $this->palettes = [];
+        if (isset($definition['metasubpalettes'])) {
+            // walk over the meta palette
+            foreach ($definition['metasubpalettes'] as $palette => $fields) {
+                if (is_array($fields)) {
+                    $interpreter->addSubPalette($tableName, $palette, $fields);
+                }
+            }
+        }
 
         return true;
     }

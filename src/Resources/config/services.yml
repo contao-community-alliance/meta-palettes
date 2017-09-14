@@ -1,15 +1,6 @@
 services:
-  cca.meta_palettes.parser.data_container:
-    class: ContaoCommunityAlliance\MetaPalettes\Parser\DataContainerParser
-    arguments:
-      - '@cca.meta_palettes.parser.meta_palettes'
-      - '@cca.meta_palettes.parser.meta_sub_palettes'
-
-  cca.meta_palettes.parser.meta_palettes:
+  cca.meta_palettes.parser:
     class: ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser
-
-  cca.meta_palettes.parser.meta_sub_palettes:
-    class: ContaoCommunityAlliance\MetaPalettes\Parser\MetaSubPalettesParser
 
   cca.meta_palettes.interpreter.string_palettes:
     class: ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter\StringPalettesInterpreter

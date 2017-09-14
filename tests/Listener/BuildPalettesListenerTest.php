@@ -12,10 +12,8 @@
 namespace ContaoCommunityAlliance\MetaPalettes\Test\Listener;
 
 use ContaoCommunityAlliance\MetaPalettes\Listener\BuildPalettesListener;
-use ContaoCommunityAlliance\MetaPalettes\Parser\DataContainerParser;
 use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter\StringPalettesInterpreter;
 use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
-use ContaoCommunityAlliance\MetaPalettes\Parser\MetaSubPalettesParser;
 use PHPUnit\Framework\TestCase;
 
 class BuildPalettesListenerTest extends TestCase
@@ -40,10 +38,7 @@ class BuildPalettesListenerTest extends TestCase
 
         $this->dca      =& $GLOBALS['TL_DCA']['tl_test'];
         $this->listener = new BuildPalettesListener(
-            new DataContainerParser(
-                new MetaPaletteParser(),
-                new MetaSubPalettesParser()
-            ),
+            new MetaPaletteParser(),
             new StringPalettesInterpreter()
         );
     }
