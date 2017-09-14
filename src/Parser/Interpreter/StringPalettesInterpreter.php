@@ -65,13 +65,28 @@ class StringPalettesInterpreter implements Interpreter
     /**
      * {@inheritdoc}
      */
-    public function addLegend($name, $override, $hide)
+    public function addLegend($name, $override, $hide, $position = null, $reference = null)
     {
         if (!isset($this->definition[$name])) {
-            $this->definition[$name] = [
+            $legend = [
                 'fields' => [],
                 'hide'   => (bool) $hide,
             ];
+
+            if ($reference) {
+                $referencePosition = array_search($reference, array_keys($this->definition));
+
+                if ($referencePosition !== false) {
+                    if ($position === MetaPaletteParser::POSITION_AFTER) {
+                        $referencePosition++;
+                    }
+                }
+
+                $tail = array_splice($this->definition, $referencePosition);
+                $this->definition += [$name => $legend] + $tail;
+            }
+
+            $this->definition[$name] = $legend;
 
             return;
         }

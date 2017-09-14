@@ -43,13 +43,16 @@ interface Interpreter
     /**
      * Add a new legend.
      *
-     * @param string    $name     Legend name.
-     * @param bool      $override If true existing fields get overridden.
-     * @param bool|null $hide     If true the hide flag is set. Null means inherit from parent.
+     * @param string    $name      Legend name.
+     * @param bool      $override  If true existing fields get overridden.
+     * @param bool|null $hide      If true the hide flag is set. Null means inherit from parent.
+     * @param string    $position  Position. Valid values are MetaPalettesParser::POSITION_BEFORE or
+     *                             MetaPalettesParser::POSITION_AFTER.
+     * @param string    $reference Reference legend for inserting at a position.
      *
      * @return void
      */
-    public function addLegend($name, $override, $hide);
+    public function addLegend($name, $override, $hide, $position = null, $reference = null);
 
     /**
      * Add a field to a legend.
@@ -88,7 +91,7 @@ interface Interpreter
      * @param string $name      Sub palette name.
      * @param array  $fields    List of fields.
      *
-     * @return array
+     * @return void
      */
     public function addSubPalette($tableName, $name, array $fields);
 }

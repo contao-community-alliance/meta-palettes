@@ -156,7 +156,11 @@ class MetaPaletteParser
             $hide = null;
         }
 
-        $interpreter->addLegend($legend, $override, $hide);
+        if (preg_match('#^(\w+) (before|after) (\w+)$#', $legend, $matches)) {
+            $interpreter->addLegend($matches[1], $override, $hide, $matches[2], $matches[3]);
+        } else {
+            $interpreter->addLegend($legend, $override, $hide);
+        }
 
         foreach ($fields as $field) {
             $fieldMode = $this->extractInsertMode($field, $mode);
