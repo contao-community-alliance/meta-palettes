@@ -31,15 +31,6 @@ class MetaPalettesParserTest extends TestCase
 
     }
 
-    function testReturnFalseIfDefinitionNotExist()
-    {
-        $interpreter = $this->getMockBuilder(Interpreter::class)->getMock();
-        $parser      = new MetaPaletteParser();
-        $success     = $parser->parse('tl_example', $interpreter);
-
-        $this->assertFalse($success);
-    }
-
     function testSimplePaletteIsParsed()
     {
         $interpreter = $this->getMockBuilder(Interpreter::class)->getMock();
@@ -68,7 +59,7 @@ class MetaPalettesParserTest extends TestCase
         ];
 
         $parser  = new MetaPaletteParser();
-        $success = $parser->parse('tl_test', $interpreter);
+        $success = $parser->parse('tl_test', $this->definition, $interpreter);
 
         $this->assertTrue($success);
     }
@@ -111,7 +102,7 @@ class MetaPalettesParserTest extends TestCase
             ->method('finishPalette');
 
         $parser  = new MetaPaletteParser();
-        $success = $parser->parse('tl_test', $interpreter);
+        $success = $parser->parse('tl_test', $this->definition, $interpreter);
 
         $this->assertTrue($success);
     }
@@ -169,7 +160,7 @@ class MetaPalettesParserTest extends TestCase
             ->expects($this->once())
             ->method('finishPalette');
 
-        $success = $parser->parse('tl_test', $interpreter);
+        $success = $parser->parse('tl_test', $this->definition, $interpreter);
 
         $this->assertTrue($success);
     }

@@ -6,6 +6,9 @@ services:
 
   cca.meta_palettes.listener.build_palettes_listener:
     class: ContaoCommunityAlliance\MetaPalettes\Listener\BuildPalettesListener
+    arguments:
+      - '@cca.meta_palettes.parser.data_container'
+      - '@cca.meta_palettes.interpreter.string_palettes'
 
   cca.meta_palettes.listener.sub_select_palettes_listener:
     class: ContaoCommunityAlliance\MetaPalettes\Listener\SubSelectPalettesListener

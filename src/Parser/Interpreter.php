@@ -1,17 +1,17 @@
 <?php
 
 /**
- * @package    meta-palettes
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2017 netzmacht David Molineus. All rights reserved.
- * @filesource
+ * MetaPalettes for the Contao Open Source CMS
  *
+ * @package   MetaPalettes
+ * @author    David Molineus <david.molineus@netzmacht.de>
+ * @copyright 2013-2014 bit3 UG
+ * @copyright 2015-2017 Contao Community Alliance.
+ * @license   LGPL-3.0+ https://github.com/contao-community-alliance/meta-palettes/license
+ * @link      https://github.com/bit3/contao-meta-palettes
  */
 
-
 namespace ContaoCommunityAlliance\MetaPalettes\Parser;
-
-use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
 
 /**
  * Interface Interpreter
@@ -57,7 +57,7 @@ interface Interpreter
      * @param string $legend    Legend name.
      * @param string $name      Field name.
      * @param string $position  Position. Valid values are MetaPalettesParser::POSITION_BEFORE or
-     *                          MetaPalettesParser::POSITION_AFTER
+     *                          MetaPalettesParser::POSITION_AFTER.
      * @param string $reference Reference field for inserting at a position.
      *
      * @return void
@@ -67,8 +67,8 @@ interface Interpreter
     /**
      * Remove a field from a legend.
      *
-     * @param string $legend    Legend name.
-     * @param string $name      Field name.
+     * @param string $legend Legend name.
+     * @param string $name   Field name.
      *
      * @return void
      */
@@ -80,4 +80,15 @@ interface Interpreter
      * @return void
      */
     public function finishPalette();
+
+    /**
+     * Add a sub palette.
+     *
+     * @param string $tableName Table name.
+     * @param string $name      Sub palette name.
+     * @param array  $fields    List of fields.
+     *
+     * @return array
+     */
+    public function addSubPalette($tableName, $name, array $fields);
 }

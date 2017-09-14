@@ -1,13 +1,15 @@
 <?php
 
 /**
- * @package    meta-palettes
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2017 netzmacht David Molineus. All rights reserved.
- * @filesource
+ * MetaPalettes for the Contao Open Source CMS
  *
+ * @package   MetaPalettes
+ * @author    David Molineus <david.molineus@netzmacht.de>
+ * @copyright 2013-2014 bit3 UG
+ * @copyright 2015-2017 Contao Community Alliance.
+ * @license   LGPL-3.0+ https://github.com/contao-community-alliance/meta-palettes/license
+ * @link      https://github.com/bit3/contao-meta-palettes
  */
-
 
 namespace ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter;
 
@@ -120,7 +122,7 @@ class StringPalettesInterpreter implements Interpreter
 
         $position = array_search($name, $this->definition[$legend]['fields']);
         if ($position !== false) {
-            unset ($this->definition[$legend]['fields'][$position]);
+            unset($this->definition[$legend]['fields'][$position]);
             $this->definition[$legend]['fields'] = array_values($this->definition[$legend]['fields']);
         }
     }
@@ -146,5 +148,47 @@ class StringPalettesInterpreter implements Interpreter
         $this->tableName   = null;
         $this->paletteName = null;
         $this->definition  = [];
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
+    public function addSubPalette($tableName, $name, array $fields)
+    {
+        // only generate if not palette exists
+        if (isset($GLOBALS['TL_DCA'][$tableName]['subpalettes'][$name])) {
+            return;
+        }
+
+        // only generate if there are any fields
+        if (count($fields) > 0) {
+            $this->addSelector($tableName, $name);
+
+            // set the palette
+            $GLOBALS['TL_DCA'][$tableName]['subpalettes'][$name] = implode(',', $fields);
+        }
+    }
+
+    /**
+     * Add a selector.
+     *
+     * @param string $tableName Data container table name.
+     * @param string $fieldName Palette selector field.
+     *
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
+    private function addSelector($tableName, $fieldName)
+    {
+        // generate subpalettes selectors
+        if (!isset($GLOBALS['TL_DCA'][$tableName]['palettes']['__selector__']) ||
+            !is_array($GLOBALS['TL_DCA'][$tableName]['palettes']['__selector__'])) {
+            $GLOBALS['TL_DCA'][$tableName]['palettes']['__selector__'] = [$fieldName];
+        } elseif (!in_array($fieldName, $GLOBALS['TL_DCA'][$tableName]['palettes']['__selector__'])) {
+            $GLOBALS['TL_DCA'][$tableName]['palettes']['__selector__'][] = $fieldName;
+        }
     }
 }

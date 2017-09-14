@@ -17,8 +17,7 @@
 namespace ContaoCommunityAlliance\MetaPalettes\Listener;
 
 use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter;
-use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter\StringPalettesInterpreter;
-use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
+use ContaoCommunityAlliance\MetaPalettes\Parser\Parser;
 
 /**
  * Hook listener
@@ -28,9 +27,9 @@ class BuildPalettesListener
     /**
      * Meta palettes parser.
      *
-     * @var MetaPaletteParser
+     * @var Parser
      */
-    private $metaPalettesParser;
+    private $parser;
 
     /**
      * Interpreter of the parser.
@@ -42,12 +41,13 @@ class BuildPalettesListener
     /**
      * BuildPalettesListener constructor.
      *
-     * @param MetaPaletteParser $metaPalettesParser Meta palettes parser.
+     * @param Parser      $parser      Meta palettes parser.
+     * @param Interpreter $interpreter Interpreter.
      */
-    public function __construct(MetaPaletteParser $metaPalettesParser, Interpreter $interpreter)
+    public function __construct(Parser $parser, Interpreter $interpreter)
     {
-        $this->metaPalettesParser = $metaPalettesParser;
-        $this->interpreter        = $interpreter;
+        $this->parser      = $parser;
+        $this->interpreter = $interpreter;
     }
 
     /**
@@ -69,8 +69,7 @@ class BuildPalettesListener
         }
 
         $this->invokePalettesCallbacks($strTable);
-        $this->buildPalettes($strTable);
-        $this->buildSubPalettes($strTable);
+        $this->parser->parse($strTable, $GLOBALS['TL_DCA'][$strTable], $this->interpreter);
         $this->registerSubSelectPalettesCallback($strTable);
     }
 
@@ -103,53 +102,6 @@ class BuildPalettesListener
     }
 
     /**
-     * Build all palettes.
-     *
-     * @param string $strTable Data container table name.
-     *
-     * @return void
-     *
-     * @SuppressWarnings(PHPMD.Superglobals)
-     */
-    private function buildPalettes($strTable)
-    {
-        $this->metaPalettesParser->parse($strTable, new StringPalettesInterpreter());
-    }
-
-    /**
-     * Build the sub palettes.
-     *
-     * @param string $strTable Data container table name.
-     *
-     * @return void
-     *
-     * @SuppressWarnings(PHPMD.Superglobals)
-     */
-    private function buildSubPalettes($strTable)
-    {
-        // check if any meta palette information exists
-        if (!isset($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'])
-            || !is_array($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'])
-        ) {
-            return;
-        }
-
-        // walk over the meta palette
-        foreach ($GLOBALS['TL_DCA'][$strTable]['metasubpalettes'] as $strPalette => $arrFields) {
-            // only generate if not palette exists
-            if (!isset($GLOBALS['TL_DCA'][$strTable]['subpalettes'][$strPalette]) && is_array($arrFields)) {
-                // only generate if there are any fields
-                if (is_array($arrFields) && count($arrFields) > 0) {
-                    $this->addSelector($strTable, $strPalette);
-
-                    // set the palette
-                    $GLOBALS['TL_DCA'][$strTable]['subpalettes'][$strPalette] = implode(',', $arrFields);
-                }
-            }
-        }
-    }
-
-    /**
      * Register the subselect palettes callback if any metasubselectpalettes are defined.
      *
      * @param string $strTable Data container table name.
@@ -168,28 +120,6 @@ class BuildPalettesListener
                     $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']
                 ) ? $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] : [])
             );
-        }
-    }
-
-    /**
-     * Add a selector.
-     *
-     * @param string $strTable   Data container table name.
-     * @param string $strPalette Palette selector field.
-     *
-     * @return void
-     *
-     * @SuppressWarnings(PHPMD.Superglobals)
-     */
-    private function addSelector($strTable, $strPalette)
-    {
-        // generate subpalettes selectors
-        if (!is_array($GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
-            $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'] = [$strPalette];
-        } else {
-            if (!in_array($strPalette, $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'])) {
-                $GLOBALS['TL_DCA'][$strTable]['palettes']['__selector__'][] = $strPalette;
-            }
         }
     }
 }

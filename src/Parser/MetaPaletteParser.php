@@ -1,11 +1,14 @@
 <?php
 
 /**
- * @package    meta-palettes
- * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2017 netzmacht David Molineus. All rights reserved.
- * @filesource
+ * MetaPalettes for the Contao Open Source CMS
  *
+ * @package   MetaPalettes
+ * @author    David Molineus <david.molineus@netzmacht.de>
+ * @copyright 2013-2014 bit3 UG
+ * @copyright 2015-2017 Contao Community Alliance.
+ * @license   LGPL-3.0+ https://github.com/contao-community-alliance/meta-palettes/license
+ * @link      https://github.com/bit3/contao-meta-palettes
  */
 
 namespace ContaoCommunityAlliance\MetaPalettes\Parser;
@@ -17,11 +20,11 @@ namespace ContaoCommunityAlliance\MetaPalettes\Parser;
  */
 class MetaPaletteParser
 {
-    const POSITION_AFTER = 'after';
+    const POSITION_AFTER  = 'after';
     const POSITION_BEFORE = 'before';
 
-    const MODE_ADD = 'add';
-    const MODE_REMOVE = 'remove';
+    const MODE_ADD      = 'add';
+    const MODE_REMOVE   = 'remove';
     const MODE_OVERRIDE = 'override';
 
     /**
@@ -35,19 +38,14 @@ class MetaPaletteParser
      * Parse a meta palettes definition.
      *
      * @param string      $tableName   Name of the data container table.
+     * @param array       $definition  Data container definition.
      * @param Interpreter $interpreter Interpreter which converts the definition.
      *
      * @return bool
-     *
-     * @SuppressWarnings(PHPMD.Superglobals)
      */
-    public function parse($tableName, Interpreter $interpreter)
+    public function parse($tableName, array $definition, Interpreter $interpreter)
     {
-        if (!isset($GLOBALS['TL_DCA'][$tableName]['metapalettes'])) {
-            return false;
-        }
-
-        $this->preparePalettes($tableName);
+        $this->preparePalettes($tableName, $definition);
 
         foreach (array_keys($this->palettes[$tableName]) as $palette) {
             $this->parsePalette($tableName, $palette, $interpreter);
@@ -68,14 +66,13 @@ class MetaPaletteParser
      * @param bool        $parent      If true palette is parsed as a parent palette.
      *
      * @return void
+     *
+     * @throws \InvalidArgumentException When meta palette definition does not exist.
+     *
+     * @internal
      */
     public function parsePalette($tableName, $paletteName, Interpreter $interpreter, $parent = false)
     {
-        // Check if palettes for the table are prepared.
-        if (!isset($this->palettes[$tableName])) {
-            $this->preparePalettes($tableName);
-        }
-
         if (!isset($this->palettes[$tableName][$paletteName])) {
             throw new \InvalidArgumentException(
                 sprintf('Metapalette definition of palette "%s" does not exist', $paletteName)
@@ -98,17 +95,16 @@ class MetaPaletteParser
     /**
      * Prepare the palettes.
      *
-     * @param string $tableName Table name.
+     * @param string $tableName    Table name.
+     * @param array  $metaPalettes Data container definition.
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.Superglobals)
      */
-    private function preparePalettes($tableName)
+    private function preparePalettes($tableName, array $metaPalettes)
     {
         $this->palettes[$tableName] = [];
 
-        foreach ($GLOBALS['TL_DCA'][$tableName]['metapalettes'] as $paletteName => $definition) {
+        foreach ($metaPalettes as $paletteName => $definition) {
             $parents = $this->extractParents($paletteName);
 
             $this->palettes[$tableName][$paletteName] = [
@@ -140,6 +136,8 @@ class MetaPaletteParser
      * @param array       $fields      List of fields.
      * @param bool        $parent      If true palette is parsed as a parent palette.
      * @param Interpreter $interpreter The parser interpreter.
+     *
+     * @return void
      */
     private function parseLegend($legend, array $fields, $parent, Interpreter $interpreter)
     {
