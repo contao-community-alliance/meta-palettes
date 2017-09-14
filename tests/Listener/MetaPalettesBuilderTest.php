@@ -13,14 +13,14 @@
  * @license   LGPL-3.0+
  */
 
-namespace ContaoCommunityAlliance\MetaPalettes\Test;
+namespace ContaoCommunityAlliance\MetaPalettes\Test\Listener;
 
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\DefaultContainer;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Legend;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Palette;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Property;
 use ContaoCommunityAlliance\DcGeneral\Factory\Event\BuildDataDefinitionEvent;
-use ContaoCommunityAlliance\MetaPalettes\MetaPalettesBuilder;
+use ContaoCommunityAlliance\MetaPalettes\Listener\MetaPalettesBuilder;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -34,7 +34,7 @@ class MetaPalettesBuilderTest extends TestCase
      *
      * @param array $dca The DCA to inject into the builder.
      *
-     * @return \ContaoCommunityAlliance\MetaPalettes\MetaPalettesBuilder
+     * @return \ContaoCommunityAlliance\MetaPalettes\Listener\MetaPalettesBuilder
      */
     public function mockBuilder($dca)
     {

@@ -14,7 +14,7 @@
  * @link      https://github.com/contao-community-alliance/meta-palettes
  */
 
-namespace ContaoCommunityAlliance\MetaPalettes;
+namespace ContaoCommunityAlliance\MetaPalettes\Listener;
 
 use ContaoCommunityAlliance\DcGeneral\Contao\Dca\Builder\Legacy\DcaReadingDataDefinitionBuilder;
 use ContaoCommunityAlliance\DcGeneral\Contao\Dca\Palette\LegacyPalettesParser;
