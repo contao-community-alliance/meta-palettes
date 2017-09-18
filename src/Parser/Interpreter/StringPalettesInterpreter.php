@@ -83,7 +83,8 @@ class StringPalettesInterpreter implements Interpreter
                 }
 
                 $tail = array_splice($this->definition, $referencePosition);
-                $this->definition += [$name => $legend] + $tail;
+
+                $this->definition += ([$name => $legend] + $tail);
             }
 
             $this->definition[$name] = $legend;
