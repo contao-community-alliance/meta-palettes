@@ -34,6 +34,11 @@ class MetaPalettesParserTest extends TestCase
 
     }
 
+    protected function assertPaletteEquals($expected, $palette = 'default')
+    {
+        $this->assertEquals($expected, $this->definition['palettes'][$palette]);
+    }
+
     function testSimplePaletteIsParsed()
     {
         $interpreter = $this->getMockBuilder(Interpreter::class)->getMock();
@@ -237,5 +242,69 @@ class MetaPalettesParserTest extends TestCase
         $success = $parser->parse('tl_test', $this->definition, $interpreter);
 
         $this->assertTrue($success);
+    }
+
+    function testInheritanceWhereParentClassAlsoInheritFromBaseClass()
+    {
+        // See order. It doesn't matter which palette is defined first.
+
+        $this->definition['metapalettes']['test extends custom'] = [
+            'test'  => ['test'],
+        ];
+
+        $this->definition['metapalettes']['custom extends default'] = [
+            'custom' => ['custom'],
+        ];
+
+        $this->definition['metapalettes']['default'] = [
+            'default' => ['default'],
+        ];
+
+        $parser      = new MetaPaletteParser();
+        $interpreter = $this->getMockBuilder(Interpreter::class)->getMock();
+        $interpreter
+            ->expects($this->exactly(3))
+            ->method('startPalette')
+            ->withConsecutive(['tl_test', 'test'], ['tl_test', 'custom'], ['tl_test', 'default']);
+
+        $interpreter
+            ->expects($this->exactly(3))
+            ->method('addLegend')
+            ->withConsecutive(
+                ['test', true, false],
+                ['custom', true, false],
+                ['default', true, false]
+            );
+
+        $interpreter
+            ->expects($this->exactly(3))
+            ->method('addFieldTo')
+            ->withConsecutive(
+                ['test', 'test'],
+                ['custom', 'custom'],
+                ['default', 'default']
+            );
+
+        $interpreter
+            ->expects($this->exactly(2))
+            ->method('inherit')
+            ->withConsecutive(
+                ['custom', $parser],
+                ['default', $parser]
+            );
+
+        $interpreter
+            ->expects($this->exactly(3))
+            ->method('finishPalette');
+
+        $success = $parser->parse('tl_test', $this->definition, $interpreter);
+
+        $this->assertTrue($success);
+
+        // Add real test
+        $parser->parse('tl_test', $this->definition, new Interpreter\StringPalettesInterpreter());
+        $this->assertPaletteEquals('{default_legend},default', 'default');
+        $this->assertPaletteEquals('{default_legend},default;{custom_legend},custom', 'custom');
+        $this->assertPaletteEquals('{default_legend},default;{custom_legend},custom;{test_legend},test', 'test');
     }
 }
