@@ -25,7 +25,7 @@ use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\PaletteInterface;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Property;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\PropertyInterface;
 use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter;
-use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
+use ContaoCommunityAlliance\MetaPalettes\Parser\Parser;
 
 /**
  * Interpreter class creating the palettes definition used by the DC General.
@@ -129,7 +129,7 @@ class PalettesDefinitionInterpreter implements Interpreter
     /**
      * {@inheritDoc}
      */
-    public function inherit($parent, MetaPaletteParser $parser)
+    public function inherit($parent, Parser $parser)
     {
         $parser->parsePalette($this->tableName, $parent, $this);
     }
@@ -170,7 +170,7 @@ class PalettesDefinitionInterpreter implements Interpreter
         reset($existingLegends);
         while ($existingLegend = next($existingLegends)) {
             if ($existingLegend->getName() === $reference) {
-                if ($position == MetaPaletteParser::POSITION_AFTER) {
+                if ($position == Parser::POSITION_AFTER) {
                     // if insert after, get to next
                     $refLegend = next($existingLegends);
                 } else {
@@ -201,7 +201,7 @@ class PalettesDefinitionInterpreter implements Interpreter
             /** @var PropertyInterface $existingProperty */
             while ($existingProperty !== false) {
                 if ($existingProperty->getName() === $reference) {
-                    if ($position === MetaPaletteParser::POSITION_AFTER) {
+                    if ($position === Parser::POSITION_AFTER) {
                         $refProperty = next($existingProperties);
 
                         if ($refProperty === false) {

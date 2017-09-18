@@ -20,13 +20,6 @@ namespace ContaoCommunityAlliance\MetaPalettes\Parser;
  */
 class MetaPaletteParser implements Parser
 {
-    const POSITION_AFTER  = 'after';
-    const POSITION_BEFORE = 'before';
-
-    const MODE_ADD      = 'add';
-    const MODE_REMOVE   = 'remove';
-    const MODE_OVERRIDE = 'override';
-
     /**
      * Current palettes.
      *
@@ -68,18 +61,9 @@ class MetaPaletteParser implements Parser
     }
 
     /**
-     * Parse a palette.
-     *
-     * @param string      $tableName   Name of the data container table.
-     * @param string      $paletteName Table name.
-     * @param Interpreter $interpreter Interpreter which converts the definition.
-     * @param bool        $base        If true palette is parsed as a parent palette.
-     *
-     * @return void
+     * {@inheritdoc}
      *
      * @throws \InvalidArgumentException When meta palette definition does not exist.
-     *
-     * @internal
      */
     public function parsePalette($tableName, $paletteName, Interpreter $interpreter, $base = false)
     {

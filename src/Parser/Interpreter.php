@@ -33,12 +33,12 @@ interface Interpreter
     /**
      * Inherit from a parent palette.
      *
-     * @param string            $parent Parent palette name.
-     * @param MetaPaletteParser $parser Parser reference.
+     * @param string $parent Parent palette name.
+     * @param Parser $parser Parser reference.
      *
      * @return void
      */
-    public function inherit($parent, MetaPaletteParser $parser);
+    public function inherit($parent, Parser $parser);
 
     /**
      * Add a new legend.

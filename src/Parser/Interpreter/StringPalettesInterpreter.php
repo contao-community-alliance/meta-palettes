@@ -15,7 +15,7 @@ namespace ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter;
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter;
-use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
+use ContaoCommunityAlliance\MetaPalettes\Parser\Parser;
 
 /**
  * The StringPalettesInterpreter converts the meta palette into the string representation used in Contao.
@@ -57,7 +57,7 @@ class StringPalettesInterpreter implements Interpreter
     /**
      * {@inheritdoc}
      */
-    public function inherit($parent, MetaPaletteParser $parser)
+    public function inherit($parent, Parser $parser)
     {
         $parser->parsePalette($this->tableName, $parent, $this, true);
     }
@@ -77,7 +77,7 @@ class StringPalettesInterpreter implements Interpreter
                 $referencePosition = array_search($reference, array_keys($this->definition));
 
                 if ($referencePosition !== false) {
-                    if ($position === MetaPaletteParser::POSITION_AFTER) {
+                    if ($position === Parser::POSITION_AFTER) {
                         $referencePosition++;
                     }
                 }
@@ -114,7 +114,7 @@ class StringPalettesInterpreter implements Interpreter
             $referencePosition = array_search($reference, $this->definition[$legend]['fields']);
 
             if ($referencePosition !== false) {
-                if ($position === MetaPaletteParser::POSITION_BEFORE) {
+                if ($position === Parser::POSITION_BEFORE) {
                     $referencePosition--;
                 }
 
