@@ -14,7 +14,7 @@
 namespace ContaoCommunityAlliance\MetaPalettes\Test\Parser\Interpreter;
 
 use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter\StringPalettesInterpreter;
-use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
+use ContaoCommunityAlliance\MetaPalettes\Parser\Parser;
 use PHPUnit\Framework\TestCase;
 
 class StringPalettesInterpreterTest extends TestCase
@@ -38,8 +38,8 @@ class StringPalettesInterpreterTest extends TestCase
     function testInheritance()
     {
         $interpreter = new StringPalettesInterpreter();
-        $parser = $this->getMockBuilder(MetaPaletteParser::class)
-            ->setMethods(['parsePalette'])
+        $parser = $this->getMockBuilder(Parser::class)
+            ->setMethods(['parse', 'parsePalette'])
             ->getMock();
 
         $parser
@@ -61,12 +61,55 @@ class StringPalettesInterpreterTest extends TestCase
         $interpreter->addLegend('title', true, true);
         $interpreter->addFieldTo('title', 'title');
         $interpreter->addLegend('config', false, null);
-        $interpreter->addFieldTo('config', 'config2', MetaPaletteParser::POSITION_BEFORE, 'config');
+        $interpreter->addFieldTo('config', 'config2', Parser::POSITION_BEFORE, 'config');
 
         $interpreter->finishPalette();
 
         $this->assertEquals(
             '{title_legend:hide},title;{config_legend:hide},config2,config',
+            $GLOBALS['TL_DCA']['tl_test']['palettes']['test']
+        );
+    }
+
+    function testMultipleInheritance()
+    {
+        $interpreter = new StringPalettesInterpreter();
+        $parser = $this->getMockBuilder(Parser::class)
+            ->setMethods(['parse', 'parsePalette'])
+            ->getMock();
+
+        $parser
+            ->expects($this->exactly(2))
+            ->method('parsePalette')
+            ->withConsecutive(
+                ['tl_test', 'default', $interpreter, true],
+                ['tl_test', 'custom', $interpreter, true]
+            );
+
+        $interpreter->startPalette('tl_test', 'test');
+
+        // Parent config.
+        $interpreter->inherit('default', $parser);
+        $interpreter->addLegend('title', true, false);
+        $interpreter->addFieldTo('title', 'headline');
+        $interpreter->addLegend('config', true, true);
+        $interpreter->addFieldTo('config', 'config');
+
+        // 2nd parent config
+        $interpreter->inherit('custom', $parser);
+        $interpreter->addLegend('custom', true, true);
+        $interpreter->addFieldTo('custom', 'customField');
+
+        // Extended config
+        $interpreter->addLegend('title', true, true);
+        $interpreter->addFieldTo('title', 'title');
+        $interpreter->addLegend('config', false, null);
+        $interpreter->addFieldTo('config', 'config2', Parser::POSITION_BEFORE, 'config');
+
+        $interpreter->finishPalette();
+
+        $this->assertEquals(
+            '{title_legend:hide},title;{config_legend:hide},config2,config;{custom_legend:hide},customField',
             $GLOBALS['TL_DCA']['tl_test']['palettes']['test']
         );
     }
