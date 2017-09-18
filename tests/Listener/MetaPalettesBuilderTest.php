@@ -21,6 +21,7 @@ use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Palette;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Property;
 use ContaoCommunityAlliance\DcGeneral\Factory\Event\BuildDataDefinitionEvent;
 use ContaoCommunityAlliance\MetaPalettes\Listener\MetaPalettesBuilder;
+use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -40,6 +41,7 @@ class MetaPalettesBuilderTest extends TestCase
     {
         $builder = $this->getMockBuilder(MetaPalettesBuilder::class)
             ->setMethods(array('loadDca'))
+            ->setConstructorArgs([new MetaPaletteParser()])
             ->getMock();
 
         $reflection = new \ReflectionProperty(

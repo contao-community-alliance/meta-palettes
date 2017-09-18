@@ -26,12 +26,10 @@ use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyTrueCondition;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyValueCondition;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyVisibleCondition;
-use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Legend;
-use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\LegendInterface;
-use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Palette;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Property;
-use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\PropertyInterface;
 use ContaoCommunityAlliance\DcGeneral\Factory\Event\BuildDataDefinitionEvent;
+use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter\PalettesDefinitionInterpreter;
+use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
 
 /**
  * Class MetaPalettesBuilder
@@ -45,6 +43,23 @@ use ContaoCommunityAlliance\DcGeneral\Factory\Event\BuildDataDefinitionEvent;
 class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 {
     const PRIORITY = 200;
+
+    /**
+     * Meta palettes parser.
+     *
+     * @var MetaPaletteParser
+     */
+    private $metaPalettesParser;
+
+    /**
+     * Construct.
+     *
+     * @param MetaPaletteParser $metaPaletteParser Meta palettes parser.
+     */
+    public function __construct(MetaPaletteParser $metaPaletteParser)
+    {
+        $this->metaPalettesParser = $metaPaletteParser;
+    }
 
     /**
      * Build a data definition and store it into the environments container.
@@ -74,7 +89,6 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
         $parser = new LegacyPalettesParser();
 
         $selectorFieldNames   = (array) $this->getFromDca('palettes/__selector__');
-        $palettesDca          = (array) $this->getFromDca('metapalettes');
         $subPalettesDca       = (array) $this->getFromDca('metasubpalettes');
         $subSelectPalettesDca = (array) $this->getFromDca('metasubselectpalettes');
 
@@ -86,353 +100,22 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
 
         $subSelectPalettes = $this->parseSubSelectPalettes($subSelectPalettesDca);
         $subPalettes       = $this->parseSubPalettes($parser, $subPalettesDca, $selectorFieldNames);
-        $palettes          = $this->parsePalettes(
+        $interpreter       = new PalettesDefinitionInterpreter(
             $palettesDefinition,
             $parser,
-            $palettesDca,
+            $selectorFieldNames,
             $subPalettes,
-            $subSelectPalettes,
-            $selectorFieldNames
+            $subSelectPalettes
         );
 
+        $this->metaPalettesParser->parse($container->getName(), $this->dca, $interpreter);
+
+        $palettes = $interpreter->getPalettes();
         if (empty($palettes)) {
             return;
         }
 
         $palettesDefinition->addPalettes($palettes);
-    }
-
-    /**
-     * Parse the palettes.
-     *
-     * @param PalettesDefinitionInterface $palettesDefinition Palettes definition.
-     * @param LegacyPalettesParser        $parser             Legacy palettes parser.
-     * @param array                       $palettesDca        Palettes dca.
-     * @param array                       $subPalettes        Sub palettes dca.
-     * @param array                       $subSelectPalettes  Sub select palettes.
-     * @param array                       $selectorFieldNames List of the selector field names.
-     *
-     * @return array
-     *
-     * @throws \RuntimeException When parent palette does not exists.
-     */
-    protected function parsePalettes(
-        PalettesDefinitionInterface $palettesDefinition,
-        LegacyPalettesParser $parser,
-        array $palettesDca,
-        array $subPalettes,
-        array $subSelectPalettes,
-        array $selectorFieldNames
-    ) {
-        $palettes = [];
-
-        if (is_array($palettesDca)) {
-            foreach ($palettesDca as $selector => $legendPropertyNames) {
-                if (preg_match('#^(\w+) extends (\w+)$#', $selector, $matches)) {
-                    $parentSelector = $matches[2];
-                    $selector       = $matches[1];
-
-                    if (isset($palettes[$parentSelector])) {
-                        $palette = clone $palettes[$parentSelector];
-                        $palette->setName($selector);
-                    } else {
-                        if ($palettesDefinition->hasPaletteByName($parentSelector)) {
-                            $palette = clone $palettesDefinition->getPaletteByName($parentSelector);
-                        } else {
-                            $palette = null;
-                        }
-                    }
-
-                    if (!$palette) {
-                        throw new \RuntimeException('Parent palette ' . $parentSelector . ' does not exists');
-                    }
-
-                    // We MUST NOT retain the DefaultPaletteCondition.
-                    $palette->setCondition($parser->createPaletteCondition($selector, $selectorFieldNames));
-
-                    $extended = true;
-                } else {
-                    $palette = new Palette();
-                    $palette->setName($selector);
-                    $palette->setCondition($parser->createPaletteCondition($selector, $selectorFieldNames));
-                    $extended = false;
-                }
-
-                $paletteCallbacks = [];
-
-                foreach ($legendPropertyNames as $legendName => $propertyNames) {
-                    if ($propertyNames instanceof \Closure) {
-                        $paletteCallbacks[] = $propertyNames;
-                        continue;
-                    }
-
-                    $additive      = false;
-                    $subtractive   = false;
-                    $insert        = false;
-                    $refLegendName = null;
-
-                    if ($extended) {
-                        // add properties to existing legend
-                        if ($legendName[0] == '+') {
-                            $additive   = true;
-                            $legendName = substr($legendName, 1);
-                        } else {
-                            // subtract properties from existing legend
-                            if ($legendName[0] == '-') {
-                                $subtractive = true;
-                                $legendName  = substr($legendName, 1);
-                            }
-                        }
-
-                        if (preg_match('#^(\w+) (before|after) (\w+)$#', $legendName, $matches)) {
-                            $legendName    = $matches[1];
-                            $insert        = $matches[2];
-                            $refLegendName = $matches[3];
-                        }
-                    }
-
-                    if ($palette->hasLegend($legendName)) {
-                        $legend = $palette->getLegend($legendName);
-                    } else {
-                        $legend = new Legend($legendName);
-
-                        // insert a legend before or after another one
-                        if ($insert) {
-                            $existingLegends = $palette->getLegends();
-                            $refLegend       = null;
-
-                            // search the referenced legend
-                            /** @var LegendInterface $existingLegend */
-                            reset($existingLegends);
-                            while ($existingLegend = next($existingLegends)) {
-                                if ($existingLegend->getName() == $refLegendName) {
-                                    if ($insert == 'after') {
-                                        // if insert after, get to next
-                                        $refLegend = next($existingLegends);
-                                    } else {
-                                        $refLegend = $existingLegend;
-                                    }
-                                    break;
-                                }
-                            }
-
-                            $palette->addLegend($legend, $refLegend);
-                        } else {
-                            // just append the legend
-                            $palette->addLegend($legend);
-                        }
-                    }
-
-                    // if extend a palette, but not add or remove fields, clear the legend but only when we have fields.
-                    if ($extended && !($additive || $subtractive) && count($propertyNames)) {
-                        $legend->clearProperties();
-                    }
-
-                    $legendCallbacks = [];
-
-                    foreach ($propertyNames as $propertyName) {
-                        if ($propertyName instanceof \Closure) {
-                            $legendCallbacks[] = $propertyName;
-                            continue;
-                        }
-
-                        if ($propertyName[0] == ':') {
-                            if ('hide' === substr($propertyName, 1)) {
-                                $legend->setInitialVisibility(false);
-                            }
-                            // skip other modifiers
-                            continue;
-                        }
-
-                        if ($additive || $subtractive) {
-                            $action          = $additive ? 'add' : 'sub';
-                            $insert          = false;
-                            $refPropertyName = null;
-
-                            if ($propertyName[0] == '+') {
-                                $action       = 'add';
-                                $propertyName = substr($propertyName, 1);
-                            } else {
-                                if ($propertyName[0] == '-') {
-                                    $action       = 'sub';
-                                    $propertyName = substr($propertyName, 1);
-                                }
-                            }
-
-                            if (preg_match('#^(\w+) (before|after) (\w+)$#', $propertyName, $matches)) {
-                                $propertyName    = $matches[1];
-                                $insert          = $matches[2];
-                                $refPropertyName = $matches[3];
-                            }
-
-                            if ($action == 'add') {
-                                $property = new Property($propertyName);
-
-                                if ($insert) {
-                                    $existingProperties = $legend->getProperties();
-                                    $refProperty        = null;
-
-                                    reset($existingProperties);
-                                    $existingProperty = current($existingProperties);
-                                    /** @var PropertyInterface $existingProperty */
-                                    while ($existingProperty !== false) {
-                                        if ($existingProperty->getName() == $refPropertyName) {
-                                            if ($insert == 'after') {
-                                                $refProperty = next($existingProperties);
-
-                                                if ($refProperty === false) {
-                                                    $refProperty = null;
-                                                }
-                                            } else {
-                                                $refProperty = $existingProperty;
-                                            }
-
-                                            break;
-                                        }
-
-                                        $existingProperty = next($existingProperties);
-                                    }
-
-                                    $legend->addProperty($property, $refProperty);
-                                } else {
-                                    $legend->addProperty($property);
-                                }
-                            } else {
-                                /** @var PropertyInterface $property */
-                                foreach ($legend->getProperties() as $property) {
-                                    if ($property->getName() == $propertyName) {
-                                        $legend->removeProperty($property);
-                                        break;
-                                    }
-                                }
-                            }
-                        } else {
-                            $property = new Property($propertyName);
-                            $legend->addProperty($property);
-                        }
-
-                        // add sub palette properties
-                        if (isset($subPalettes[$propertyName])) {
-                            $legend->addProperties($subPalettes[$propertyName]);
-                        }
-
-                        // add sub select properties for unspecified legend names.
-                        $this->addSubSelectProperties($legend, $subSelectPalettes, $propertyName);
-                    }
-
-                    foreach ($legendCallbacks as $callback) {
-                        call_user_func($callback, $legendName, $legend, $palette, $palettesDefinition);
-                    }
-                }
-
-                foreach ($paletteCallbacks as $callback) {
-                    call_user_func($callback, $palette, $palettesDefinition);
-                }
-
-                $palettes[$selector] = $palette;
-            }
-        }
-
-        // now add sub select properties that are for specific legend names.
-        foreach ($subSelectPalettes as $propertyName => $legendInformation) {
-            $subpaletteCallbacks = [];
-
-            foreach ($legendInformation as $properties) {
-                if ($properties instanceof \Closure) {
-                    $subpaletteCallbacks[] = $properties;
-                }
-            }
-
-            foreach ($legendInformation as $fullLegendName => $properties) {
-                if ($fullLegendName === '') {
-                    continue;
-                }
-
-                foreach ($palettes as $palette) {
-                    if (preg_match('#^(\w+) (before|after) (\w+)$#', $fullLegendName, $matches)) {
-                        $legendName = $matches[1];
-                        $insert     = $matches[2];
-                        $refName    = $matches[3];
-                    } else {
-                        $legendName = $fullLegendName;
-                        $insert     = '';
-                        $refName    = null;
-                    }
-
-                    /** @var Palette $palette */
-                    if (!$palette->hasLegend($legendName)) {
-                        $palette->addLegend(new Legend($legendName));
-                    }
-
-                    /** @var Legend $legend */
-                    $legend = $palette->getLegend($legendName);
-                    $this->addSubSelectProperties(
-                        $legend,
-                        $subSelectPalettes,
-                        $propertyName,
-                        $fullLegendName,
-                        $insert,
-                        $refName
-                    );
-
-                    foreach ($subpaletteCallbacks as $callback) {
-                        call_user_func($callback, $legendName, $properties, $legend, $palette, $palettesDefinition);
-                    }
-                }
-            }
-        }
-
-        return $palettes;
-    }
-
-    /**
-     * Recursively add all subselect properties to their parent. Even when they are member of a subselect themselves.
-     *
-     * @param Legend      $legend            The legend to add the properties to.
-     * @param array       $subSelectPalettes All subselect palettes.
-     * @param string      $propertyName      The name of the property for which all dependant properties shall get
-     *                                       added.
-     * @param string      $legendName        The name of the legend for which properties shall get retrieved.
-     * @param string      $insert            Position where to insert the properties.
-     * @param string|null $reference         Reference.
-     *
-     * @return void
-     */
-    protected function addSubSelectProperties(
-        Legend $legend,
-        $subSelectPalettes,
-        $propertyName,
-        $legendName = '',
-        $insert = 'before',
-        $reference = null
-    ) {
-        if (!isset($subSelectPalettes[$propertyName][$legendName])) {
-            return;
-        }
-
-        $position = $this->calculateInsertPosition($legend, $insert, $reference);
-        if ($position === false) {
-            $position = null;
-        }
-
-        $legend->addProperties($subSelectPalettes[$propertyName][$legendName], $position);
-        foreach ((array) $subSelectPalettes[$propertyName][$legendName] as $property) {
-            /** @var Property $property */
-            // Add anonymous legends for this property.
-            if (isset($subSelectPalettes[$property->getName()][''])) {
-                $legend->addProperties($subSelectPalettes[$property->getName()]['']);
-            }
-            if (isset($subSelectPalettes[$property->getName()][$legendName])) {
-                $this->addSubSelectProperties(
-                    $legend,
-                    $subSelectPalettes,
-                    $property->getName(),
-                    $legendName,
-                    $insert,
-                    $reference
-                );
-            }
-        }
     }
 
     /**
@@ -557,39 +240,5 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
                 'Invalid property name in sub palette: ' . var_export($propertyName, true)
             );
         }
-    }
-
-    /**
-     * Calculate the insert position.
-     *
-     * @param Legend $legend    Legend definition.
-     * @param string $insert    Insert mode.
-     * @param string $reference Reference column.
-     *
-     * @return int|null|false
-     */
-    protected function calculateInsertPosition(Legend $legend, $insert, $reference)
-    {
-        $position = null;
-
-        if ($insert && $reference) {
-            $properties = $legend->getProperties();
-            if (!empty($properties)) {
-                $property = current($properties);
-
-                do {
-                    if ($property->getName() == $reference) {
-                        if ($insert == 'before') {
-                            $position = $property;
-                        } elseif ($insert == 'after') {
-                            $position = next($properties);
-                        }
-                        break;
-                    }
-                } while ($property = next($properties));
-            }
-        }
-
-        return $position;
     }
 }
