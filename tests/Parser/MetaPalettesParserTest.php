@@ -167,4 +167,75 @@ class MetaPalettesParserTest extends TestCase
 
         $this->assertTrue($success);
     }
+
+    function testMultiInheritance()
+    {
+        $this->definition['metapalettes']['base'] = [
+            'config' => ['config']
+        ];
+
+        $this->definition['metapalettes']['default'] = [
+            'foo' => ['bar'],
+            'title' => ['headline']
+        ];
+
+        $this->definition['metapalettes']['test extends default extends base'] = [
+            '+foo'  => ['baz'],
+            'title' => ['title', '-headline']
+        ];
+
+        $parser      = new MetaPaletteParser();
+        $interpreter = $this->getMockBuilder(Interpreter::class)->getMock();
+        $interpreter
+            ->expects($this->exactly(3))
+            ->method('startPalette')
+            ->withConsecutive(
+                ['tl_test', 'base'],
+                ['tl_test', 'default'],
+                ['tl_test', 'test']
+            );
+
+        $interpreter
+            ->expects($this->exactly(5))
+            ->method('addLegend')
+            ->withConsecutive(
+                ['config', true, false],
+                ['foo', true, false],
+                ['title', true, false],
+                ['foo', false, false],
+                ['title', true, false]
+            );
+
+        $interpreter
+            ->expects($this->exactly(5))
+            ->method('addFieldTo')
+            ->withConsecutive(
+                ['config', 'config'],
+                ['foo', 'bar'],
+                ['title', 'headline'],
+                ['foo', 'baz'],
+                ['title', 'title']
+            );
+
+        $interpreter
+            ->expects($this->exactly(1))
+            ->method('removeFieldFrom')
+            ->withConsecutive(['title', 'headline']);
+
+        $interpreter
+            ->expects($this->exactly(2))
+            ->method('inherit')
+            ->withConsecutive(
+                ['base', $parser],
+                ['default', $parser]
+            );
+
+        $interpreter
+            ->expects($this->exactly(3))
+            ->method('finishPalette');
+
+        $success = $parser->parse('tl_test', $this->definition, $interpreter);
+
+        $this->assertTrue($success);
+    }
 }
