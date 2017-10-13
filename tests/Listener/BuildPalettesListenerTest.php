@@ -87,4 +87,17 @@ class BuildPalettesListenerTest extends TestCase
         $this->assertEquals('bar,baz', $this->dca['subpalettes']['foo']);
         $this->assertArraySubset(['foo'], $this->dca['palettes']['__selector__']);
     }
+
+    /**
+     * Test that everything works when no DCA has been defined.
+     *
+     * @return void
+     */
+    function testWorksWithoutDca()
+    {
+        unset($GLOBALS['TL_DCA']['tl_test']);
+
+        $this->listener->onLoadDataContainer('tl_test');
+        $this->assertArrayNotHasKey('tl_test', $GLOBALS['TL_DCA']);
+    }
 }

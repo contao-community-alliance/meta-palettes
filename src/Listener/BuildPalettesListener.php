@@ -61,6 +61,11 @@ class BuildPalettesListener
      */
     public function onLoadDataContainer($strTable)
     {
+        // We can not work without DCA.
+        if (!(isset($GLOBALS['TL_DCA'][$strTable]) && is_array($GLOBALS['TL_DCA'][$strTable]))) {
+            return;
+        }
+
         // The MetaPalettesBuilder is used for DC_General
         if (isset($GLOBALS['TL_DCA'][$strTable]['config']['dataContainer'])
             && $GLOBALS['TL_DCA'][$strTable]['config']['dataContainer'] == 'General'
