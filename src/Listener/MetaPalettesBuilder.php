@@ -54,11 +54,11 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
     /**
      * Construct.
      *
-     * @param MetaPaletteParser $metaPaletteParser Meta palettes parser.
+     * @param null|MetaPaletteParser $metaPaletteParser Meta palettes parser.
      */
-    public function __construct(MetaPaletteParser $metaPaletteParser)
+    public function __construct(MetaPaletteParser $metaPaletteParser = null)
     {
-        $this->metaPalettesParser = $metaPaletteParser;
+        $this->metaPalettesParser = $metaPaletteParser ?: new MetaPaletteParser();
     }
 
     /**
