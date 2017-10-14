@@ -5,6 +5,7 @@
  *
  * @package   MetaPalettes
  * @author    David Molineus <david.molineus@netzmacht.de>
+ * @author    Christian Schiffler <c.schiffler@cyberspectrum.de>
  * @copyright 2013-2014 bit3 UG
  * @copyright 2015-2017 Contao Community Alliance.
  * @license   LGPL-3.0+ https://github.com/contao-community-alliance/meta-palettes/license
@@ -131,7 +132,11 @@ class PalettesDefinitionInterpreter implements Interpreter
      */
     public function inherit($parent, Parser $parser)
     {
+        $keepName = $this->palette->getName();
         $parser->parsePalette($this->tableName, $parent, $this);
+        if ($this->palette->getName() !== $keepName) {
+            $this->palette->setName($keepName);
+        }
     }
 
     /**
