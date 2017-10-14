@@ -5,6 +5,7 @@
  *
  * @package   MetaPalettes
  * @author    David Molineus <david.molineus@netzmacht.de>
+ * @author    Christian Schiffler <c.schiffler@cyberspectrum.de>
  * @copyright 2013-2014 bit3 UG
  * @copyright 2015-2017 Contao Community Alliance.
  * @license   LGPL-3.0+ https://github.com/contao-community-alliance/meta-palettes/license
@@ -73,8 +74,12 @@ class BuildPalettesListenerTest extends TestCase
         $this->listener->onLoadDataContainer('tl_test');
 
         $this->assertEquals(
-            '{foo_legend},bar,aa;{baz_legend:hide},test2;{test_legend},b',
-            $this->dca['palettes']['test']
+            [
+                '__selector__' => [],
+                'default'      => '{foo_legend},bar;{baz_legend:hide},test;{test_legend},b',
+                'test'         => '{foo_legend},bar,aa;{baz_legend:hide},test2;{test_legend},b'
+            ],
+            $this->dca['palettes']
         );
     }
 
