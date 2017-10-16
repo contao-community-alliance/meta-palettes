@@ -15,6 +15,7 @@
 
 namespace ContaoCommunityAlliance\MetaPalettes\Test\Listener;
 
+use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\DefaultContainer;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Legend;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Palette;
@@ -23,7 +24,6 @@ use ContaoCommunityAlliance\DcGeneral\Factory\Event\BuildDataDefinitionEvent;
 use ContaoCommunityAlliance\MetaPalettes\Listener\MetaPalettesBuilder;
 use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Test the meta palettes builder.
@@ -39,31 +39,15 @@ class MetaPalettesBuilderTest extends TestCase
      */
     public function mockBuilder($dca)
     {
-        $builder = $this->getMockBuilder(MetaPalettesBuilder::class)
+        $framework = $this->getMockBuilder(ContaoFrameworkInterface::class)->getMock();
+        $builder   = $this->getMockBuilder(MetaPalettesBuilder::class)
             ->setMethods(array('loadDca'))
-            ->setConstructorArgs([new MetaPaletteParser()])
+            ->setConstructorArgs([$framework, new MetaPaletteParser()])
             ->getMock();
 
-        $reflection = new \ReflectionProperty(
-            'ContaoCommunityAlliance\DcGeneral\Contao\Dca\Builder\Legacy\DcaReadingDataDefinitionBuilder',
-            'dca'
-        );
+        $reflection = new \ReflectionProperty(MetaPalettesBuilder::class, 'dca');
         $reflection->setAccessible(true);
         $reflection->setValue($builder, $dca);
-
-        $reflection = new \ReflectionProperty(
-            'ContaoCommunityAlliance\DcGeneral\Contao\Dca\Builder\Legacy\DcaReadingDataDefinitionBuilder',
-            'eventName'
-        );
-        $reflection->setAccessible(true);
-        $reflection->setValue($builder, BuildDataDefinitionEvent::NAME);
-
-        $reflection = new \ReflectionProperty(
-            'ContaoCommunityAlliance\DcGeneral\Contao\Dca\Builder\Legacy\DcaReadingDataDefinitionBuilder',
-            'dispatcher'
-        );
-        $reflection->setAccessible(true);
-        $reflection->setValue($builder, new EventDispatcher());
 
         $builder
             ->expects($this->any())
@@ -86,7 +70,7 @@ class MetaPalettesBuilderTest extends TestCase
         $container = new DefaultContainer(uniqid('MetaPalettesBuilderTest-', true));
         $event     = new BuildDataDefinitionEvent($container);
 
-        $builder->build($container, $event);
+        $builder->build($event);
 
         $palettes = $container->getPalettesDefinition();
 

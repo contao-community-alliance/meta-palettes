@@ -16,9 +16,9 @@
 
 namespace ContaoCommunityAlliance\MetaPalettes\Listener;
 
-use ContaoCommunityAlliance\DcGeneral\Contao\Dca\Builder\Legacy\DcaReadingDataDefinitionBuilder;
+use Contao\Controller;
+use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use ContaoCommunityAlliance\DcGeneral\Contao\Dca\Palette\LegacyPalettesParser;
-use ContaoCommunityAlliance\DcGeneral\DataDefinition\ContainerInterface;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Definition\DefaultPalettesDefinition;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Definition\PalettesDefinitionInterface;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\NotCondition;
@@ -40,9 +40,14 @@ use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
  * @author    Tristan Lins <tristan.lins@bit3.de>
  * @package   MetaPalettes
  */
-class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
+class MetaPalettesBuilder
 {
-    const PRIORITY = 200;
+    /**
+     * Controller framework.
+     *
+     * @var ContaoFrameworkInterface
+     */
+    private $contaoFramework;
 
     /**
      * Meta palettes parser.
@@ -52,30 +57,38 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
     private $metaPalettesParser;
 
     /**
+     * Buffer for the DCA.
+     *
+     * @var array
+     */
+    protected $dca;
+
+    /**
      * Construct.
      *
-     * @param null|MetaPaletteParser $metaPaletteParser Meta palettes parser.
+     * @param ContaoFrameworkInterface $contaoFramework   Contao framework.
+     * @param null|MetaPaletteParser   $metaPaletteParser Meta palettes parser.
      */
-    public function __construct(MetaPaletteParser $metaPaletteParser = null)
+    public function __construct(ContaoFrameworkInterface $contaoFramework, MetaPaletteParser $metaPaletteParser = null)
     {
         $this->metaPalettesParser = $metaPaletteParser ?: new MetaPaletteParser();
+        $this->contaoFramework    = $contaoFramework;
     }
 
     /**
      * Build a data definition and store it into the environments container.
      *
-     * @param ContainerInterface       $container Definition container.
-     * @param BuildDataDefinitionEvent $event     Build data definition event.
+     * @param BuildDataDefinitionEvent $event Build data definition event.
      *
      * @return void
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function build(
-        ContainerInterface $container,
-        BuildDataDefinitionEvent $event
-    ) {
-        if (!$this->loadDca($container->getName(), $this->getDispatcher())) {
+    public function build(BuildDataDefinitionEvent $event)
+    {
+        $container = $event->getContainer();
+
+        if (!$this->loadDca($container->getName())) {
             return;
         }
 
@@ -240,5 +253,57 @@ class MetaPalettesBuilder extends DcaReadingDataDefinitionBuilder
                 'Invalid property name in sub palette: ' . var_export($propertyName, true)
             );
         }
+    }
+
+    /**
+     * Load data container array.
+     *
+     * @param string $dcaName Data container name.
+     *
+     * @return bool
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
+     * @SuppressWarnings(PHPMD.CamelCaseVariableName)
+     */
+    protected function loadDca($dcaName)
+    {
+        $this->contaoFramework->initialize();
+
+        /** @var Controller $adapter */
+        $adapter   = $this->contaoFramework->getAdapter(Controller::class);
+        $this->dca = null;
+
+        $adapter->loadDataContainer($dcaName);
+
+        if (isset($GLOBALS['TL_DCA'][$dcaName])) {
+            $this->dca = $GLOBALS['TL_DCA'][$dcaName];
+        }
+
+        $adapter->loadLanguageFile($dcaName);
+
+        return $this->dca !== null;
+    }
+
+    /**
+     * Read the specified sub path from the dca.
+     *
+     * @param string $path The path from the Dca to read.
+     *
+     * @return mixed
+     */
+    protected function getFromDca($path)
+    {
+        $chunks = explode('/', trim($path, '/'));
+        $dca    = $this->dca;
+
+        while (($chunk = array_shift($chunks)) !== null) {
+            if (!(is_array($dca) && array_key_exists($chunk, $dca))) {
+                return null;
+            }
+
+            $dca = $dca[$chunk];
+        }
+
+        return $dca;
     }
 }
