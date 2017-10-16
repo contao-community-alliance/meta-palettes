@@ -132,11 +132,7 @@ class PalettesDefinitionInterpreter implements Interpreter
      */
     public function inherit($parent, Parser $parser)
     {
-        $keepName = $this->palette->getName();
-        $parser->parsePalette($this->tableName, $parent, $this);
-        if ($this->palette->getName() !== $keepName) {
-            $this->palette->setName($keepName);
-        }
+        $parser->parsePalette($this->tableName, $parent, $this, true);
     }
 
     /**
