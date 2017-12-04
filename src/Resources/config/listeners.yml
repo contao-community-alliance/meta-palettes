@@ -5,13 +5,18 @@ services:
       - '@contao.framework'
       - '@cca.meta_palettes.parser'
     tags:
-      - { name: 'kernel.event_listener', event: 'dc-general.factory.build-data-definition', method: 'build', priority: 200 }
+      - name: 'kernel.event_listener'
+        event: 'dc-general.factory.build-data-definition'
+        method: 'build'
+        priority: 200
 
   cca.meta_palettes.listener.build_palettes_listener:
     class: ContaoCommunityAlliance\MetaPalettes\Listener\BuildPalettesListener
+    public: true
     arguments:
       - '@cca.meta_palettes.parser'
       - '@cca.meta_palettes.interpreter.string_palettes'
 
   cca.meta_palettes.listener.sub_select_palettes_listener:
     class: ContaoCommunityAlliance\MetaPalettes\Listener\SubSelectPalettesListener
+    public: true

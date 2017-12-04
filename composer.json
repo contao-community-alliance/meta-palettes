@@ -37,7 +37,7 @@
     "require-dev": {
         "contao/manager-plugin": "^2.0.0",
         "phpcq/all-tasks": "~1.2",
-        "contao-community-alliance/dc-general": "dev-feature/contao4"
+        "contao-community-alliance/dc-general": "~2.1@dev"
     },
     "conflict": {
         "metamodels/dc_general": "<1-dev"
@@ -55,9 +55,9 @@
     "extra": {
         "contao-manager-plugin": "ContaoCommunityAlliance\\MetaPalettes\\ContaoManager\\Plugin",
         "branch-alias": {
-            "dev-master": "1.10.x-dev",
-            "dev-develop": "1.11.x-dev",
-            "dev-release/2.0.0": "2.0.x-dev"
+            "dev-master": "2.0.x-dev",
+            "dev-support/1.x": "1.10.x-dev",
+            "dev-develop": "2.1.x-dev"
         }
     },
     "minimum-stability": "dev",
