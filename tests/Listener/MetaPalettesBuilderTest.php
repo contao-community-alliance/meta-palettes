@@ -1,61 +1,53 @@
 <?php
+
 /**
  * MetaPalettes for the Contao Open Source CMS
  *
- * @link      https://github.com/bit3/contao-meta-palettes SCM
- * @copyright 2013 bit3 UG
+ * @link      https://github.com/bit3/contao-meta-palettes
+ * @copyright 2013-2014 bit3 UG
+ * @copyright 2015-2017 Contao Community Alliance.
  * @author    Christian Schiffler <c.schiffler@cyberspectrum.de>
+ * @author    Tristan Lins <tristan.lins@bit3.de>
+ * @author    David Molineus <david.molineus@netzmacht.de>
  * @package   MetaPalettes
  * @license   LGPL-3.0+
  */
 
-namespace Bit3\Contao\MetaPalettes\Test;
+namespace ContaoCommunityAlliance\MetaPalettes\Test\Listener;
 
+use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\DefaultContainer;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Legend;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Palette;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Property;
 use ContaoCommunityAlliance\DcGeneral\Factory\Event\BuildDataDefinitionEvent;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use ContaoCommunityAlliance\MetaPalettes\Listener\MetaPalettesBuilder;
+use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Test the meta palettes builder.
  */
-class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
+class MetaPalettesBuilderTest extends TestCase
 {
     /**
      * Create a mocking DCA reading builder.
      *
      * @param array $dca The DCA to inject into the builder.
      *
-     * @return \Bit3\Contao\MetaPalettes\MetaPalettesBuilder
+     * @return \ContaoCommunityAlliance\MetaPalettes\Listener\MetaPalettesBuilder
      */
     public function mockBuilder($dca)
     {
-        $builder = $this->getMockBuilder('Bit3\Contao\MetaPalettes\MetaPalettesBuilder')
+        $framework = $this->getMockBuilder(ContaoFrameworkInterface::class)->getMock();
+        $builder   = $this->getMockBuilder(MetaPalettesBuilder::class)
             ->setMethods(array('loadDca'))
+            ->setConstructorArgs([$framework, new MetaPaletteParser()])
             ->getMock();
 
-        $reflection = new \ReflectionProperty(
-            'ContaoCommunityAlliance\DcGeneral\Contao\Dca\Builder\Legacy\DcaReadingDataDefinitionBuilder',
-            'dca'
-        );
+        $reflection = new \ReflectionProperty(MetaPalettesBuilder::class, 'dca');
         $reflection->setAccessible(true);
         $reflection->setValue($builder, $dca);
-
-        $reflection = new \ReflectionProperty(
-            'ContaoCommunityAlliance\DcGeneral\Contao\Dca\Builder\Legacy\DcaReadingDataDefinitionBuilder',
-            'eventName'
-        );
-        $reflection->setAccessible(true);
-        $reflection->setValue($builder, BuildDataDefinitionEvent::NAME);
-
-        $reflection = new \ReflectionProperty(
-            'ContaoCommunityAlliance\DcGeneral\Contao\Dca\Builder\Legacy\DcaReadingDataDefinitionBuilder',
-            'dispatcher'
-        );
-        $reflection->setAccessible(true);
-        $reflection->setValue($builder, new EventDispatcher());
 
         $builder
             ->expects($this->any())
@@ -78,7 +70,7 @@ class MetaPalettesBuilderTest extends \PHPUnit_Framework_TestCase
         $container = new DefaultContainer(uniqid('MetaPalettesBuilderTest-', true));
         $event     = new BuildDataDefinitionEvent($container);
 
-        $builder->build($container, $event);
+        $builder->build($event);
 
         $palettes = $container->getPalettesDefinition();
 

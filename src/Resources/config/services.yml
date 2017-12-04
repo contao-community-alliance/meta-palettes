@@ -1,0 +1,6 @@
+services:
+  cca.meta_palettes.parser:
+    class: ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser
+
+  cca.meta_palettes.interpreter.string_palettes:
+    class: ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter\StringPalettesInterpreter
