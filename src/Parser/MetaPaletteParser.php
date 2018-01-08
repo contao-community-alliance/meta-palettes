@@ -64,6 +64,7 @@ class MetaPaletteParser implements Parser
      * {@inheritdoc}
      *
      * @throws \InvalidArgumentException When meta palette definition does not exist.
+     * @throws \RuntimeException         When recursive inheritance is detected.
      */
     public function parsePalette($tableName, $paletteName, Interpreter $interpreter, $base = false)
     {

@@ -60,7 +60,7 @@
         "contao-manager-plugin": "ContaoCommunityAlliance\\MetaPalettes\\ContaoManager\\Plugin",
         "branch-alias": {
             "dev-master": "2.0.x-dev",
-            "dev-support/1.x": "1.10.x-dev",
+            "dev-support/1.x": "1.11.x-dev",
             "dev-develop": "2.1.x-dev"
         }
     }
