@@ -78,6 +78,12 @@ class MetaPaletteParser implements Parser
         }
 
         foreach ($this->palettes[$tableName][$paletteName]['parents'] as $parent) {
+            if ($parent === $tableName) {
+                throw new \RuntimeException(
+                    sprintf('Circular recursion detected: Palette "%s" extends from itself', $paletteName)
+                );
+            }
+
             $interpreter->inherit($parent, $this);
         }
 
