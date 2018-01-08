@@ -64,6 +64,7 @@ class MetaPaletteParser implements Parser
      * {@inheritdoc}
      *
      * @throws \InvalidArgumentException When meta palette definition does not exist.
+     * @throws \RuntimeException         When recursive inheritance is detected.
      */
     public function parsePalette($tableName, $paletteName, Interpreter $interpreter, $base = false)
     {
@@ -78,6 +79,12 @@ class MetaPaletteParser implements Parser
         }
 
         foreach ($this->palettes[$tableName][$paletteName]['parents'] as $parent) {
+            if ($parent === $tableName) {
+                throw new \RuntimeException(
+                    sprintf('Circular recursion detected: Palette "%s" extends from itself', $paletteName)
+                );
+            }
+
             $interpreter->inherit($parent, $this);
         }
 
@@ -155,6 +162,7 @@ class MetaPaletteParser implements Parser
 
         if (preg_match('#^(\w+) (before|after) (\w+)$#', $legend, $matches)) {
             $interpreter->addLegend($matches[1], $override, $hide, $matches[2], $matches[3]);
+            $legend = $matches[1];
         } else {
             $interpreter->addLegend($legend, $override, $hide);
         }
