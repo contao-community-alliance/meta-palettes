@@ -161,6 +161,7 @@ class MetaPaletteParser implements Parser
 
         if (preg_match('#^(\w+) (before|after) (\w+)$#', $legend, $matches)) {
             $interpreter->addLegend($matches[1], $override, $hide, $matches[2], $matches[3]);
+            $legend = $matches[1];
         } else {
             $interpreter->addLegend($legend, $override, $hide);
         }
