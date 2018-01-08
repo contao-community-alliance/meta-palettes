@@ -8,6 +8,7 @@
  * @author    Richard Henkenjohann <richardhenkenjohann@googlemail.com>
  * @author    Tristan Lins <tristan@lins.io>
  * @author    David Molineus <david.molineus@netzmacht.de>
+ * @author    Christopher Bölter <christopher@boelter.eu>
  * @copyright 2013-2014 bit3 UG
  * @copyright 2015-2017 Contao Community Alliance.
  * @license   LGPL-3.0+ https://github.com/contao-community-alliance/meta-palettes/license
@@ -120,7 +121,7 @@ class BuildPalettesListener
         if (!empty($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes'])) {
             // add callback to generate subselect palettes
             $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] = array_merge(
-                [['cca.meta_palettes.listener.sub_select_palettes_listener', 'generateSubSelectPalettes']],
+                [['cca.meta_palettes.listener.sub_select_palettes_listener', 'onLoad']],
                 (isset($GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']) && is_array(
                     $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback']
                 ) ? $GLOBALS['TL_DCA'][$strTable]['config']['onload_callback'] : [])
