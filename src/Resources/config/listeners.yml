@@ -1,6 +1,7 @@
 services:
   cca.meta_palettes.listeners.meta_models_builders:
     class: ContaoCommunityAlliance\MetaPalettes\Listener\MetaPalettesBuilder
+    public: true
     arguments:
       - '@contao.framework'
       - '@cca.meta_palettes.parser'
