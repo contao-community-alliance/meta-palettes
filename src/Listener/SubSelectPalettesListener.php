@@ -302,7 +302,7 @@ class SubSelectPalettesListener
     private function fetchValueFromDatabase($dataContainer, $strSelector)
     {
         $objRecord = \Database::getInstance()
-            ->prepare(sprintf('SELECT %s FROM %s WHERE id=?', $strSelector, $dataContainer->table))
+            ->prepare(sprintf('SELECT `%s` FROM `%s` WHERE id=?', $strSelector, $dataContainer->table))
             ->limit(1)
             ->execute($dataContainer->id);
 
