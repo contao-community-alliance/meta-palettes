@@ -1,0 +1,26 @@
+{
+  "symbol-whitelist": [
+    "null", "true", "false",
+    "static", "self", "parent",
+    "array", "string", "int", "float", "bool", "iterable", "callable", "void", "object",
+    "Contao\\ManagerPlugin\\Bundle\\BundlePluginInterface",
+    "Contao\\ManagerPlugin\\Bundle\\Config\\BundleConfig",
+    "Contao\\ManagerPlugin\\Bundle\\Parser\\ParserInterface",
+    "Contao\\ManagerPlugin\\Config\\ContainerBuilder",
+    "Contao\\ManagerPlugin\\Config\\ExtensionPluginInterface",
+    "Contao\\ManagerPlugin\\Dependency\\DependentPluginInterface",
+    "ContaoCommunityAlliance\\DcGeneral\\Factory\\Event\\BuildDataDefinitionEvent",
+    "ContaoCommunityAlliance\\DcGeneral\\DataDefinition\\Definition\\PalettesDefinitionInterface",
+    "ContaoCommunityAlliance\\DcGeneral\\DataDefinition\\Definition\\DefaultPalettesDefinition",
+    "ContaoCommunityAlliance\\DcGeneral\\Contao\\Dca\\Palette\\LegacyPalettesParser",
+    "ContaoCommunityAlliance\\DcGeneral\\DataDefinition\\Palette\\Condition\\Property\\PropertyConditionChain",
+    "ContaoCommunityAlliance\\DcGeneral\\DataDefinition\\Palette\\Condition\\Property\\PropertyTrueCondition",
+    "ContaoCommunityAlliance\\DcGeneral\\DataDefinition\\Palette\\Condition\\Property\\PropertyVisibleCondition",
+    "ContaoCommunityAlliance\\DcGeneral\\DataDefinition\\Palette\\Property",
+    "ContaoCommunityAlliance\\DcGeneral\\DataDefinition\\Palette\\Condition\\Property\\PropertyValueCondition",
+    "ContaoCommunityAlliance\\DcGeneral\\DataDefinition\\Palette\\Condition\\Property\\NotCondition",
+    "ContaoCommunityAlliance\\DcGeneral\\DataDefinition\\Palette\\Palette",
+    "ContaoCommunityAlliance\\DcGeneral\\DataDefinition\\Palette\\Legend",
+    "ContaoCommunityAlliance\\DcGeneral\\DataDefinition\\Palette\\LegendInterface"
+  ]
+}
