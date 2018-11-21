@@ -24,7 +24,6 @@ use Contao\System;
 use ContaoCommunityAlliance\DcGeneral\Data\ModelInterface;
 use ContaoCommunityAlliance\MetaPalettes\MetaPalettes;
 use Doctrine\DBAL\Connection;
-use function dump;
 
 /**
  * Class SubSelectPalettesListener
