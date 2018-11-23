@@ -17,10 +17,13 @@ namespace ContaoCommunityAlliance\MetaPalettes\Listener;
 
 use Contao\Config;
 use Contao\DataContainer;
+use Contao\DC_File;
+use Contao\DC_Table;
 use Contao\Input;
 use Contao\System;
 use ContaoCommunityAlliance\DcGeneral\Data\ModelInterface;
 use ContaoCommunityAlliance\MetaPalettes\MetaPalettes;
+use Doctrine\DBAL\Connection;
 
 /**
  * Class SubSelectPalettesListener
@@ -29,6 +32,23 @@ use ContaoCommunityAlliance\MetaPalettes\MetaPalettes;
  */
 class SubSelectPalettesListener
 {
+    /**
+     * Database connection.
+     *
+     * @var Connection
+     */
+    private $connection;
+
+    /**
+     * SubSelectPalettesListener constructor.
+     *
+     * @param Connection $connection Database connection.
+     */
+    public function __construct(Connection $connection)
+    {
+        $this->connection = $connection;
+    }
+
     /**
      * Handle the onlaod callback.
      *
@@ -150,12 +170,12 @@ class SubSelectPalettesListener
         }
 
         // on post, use new value
-        if (\Input::post('FORM_SUBMIT') == $strTable) {
-            return \Input::post($strSelector);
+        if (Input::post('FORM_SUBMIT') == $strTable) {
+            return Input::post($strSelector);
         }
 
         // support for TL_CONFIG data container
-        if ($dataContainer instanceof \DC_File) {
+        if ($dataContainer instanceof DC_File) {
             return Config::get($strSelector);
         }
 
@@ -165,8 +185,8 @@ class SubSelectPalettesListener
         }
 
         // or break, when unable to handle data container
-        if ($dataContainer instanceof \DC_Table
-            && \Database::getInstance()->tableExists($dataContainer->table)
+        if ($dataContainer instanceof DC_Table
+            && $this->connection->getSchemaManager()->tablesExist([$dataContainer->table])
         ) {
             return $this->fetchValueFromDatabase($dataContainer, $strSelector);
         }
@@ -267,7 +287,7 @@ class SubSelectPalettesListener
         }
 
         foreach ($GLOBALS['TL_DCA'][$strTable]['palettes'] as $k => $v) {
-            if ($k != '__selector__') {
+            if ($k !== '__selector__') {
                 $GLOBALS['TL_DCA'][$strTable]['palettes'][$k] = preg_replace(
                     '#([,;]' . preg_quote($strSelector) . ')([,;].*)?$#',
                     '$1' . $strPalette . '$2',
@@ -301,16 +321,19 @@ class SubSelectPalettesListener
      */
     private function fetchValueFromDatabase($dataContainer, $strSelector)
     {
-        $objRecord = \Database::getInstance()
-            ->prepare(sprintf('SELECT %s FROM %s WHERE id=?', $strSelector, $dataContainer->table))
-            ->limit(1)
-            ->execute($dataContainer->id);
+        $statement = $this->connection->createQueryBuilder()
+            ->select($this->connection->quoteIdentifier($strSelector))
+            ->from($this->connection->quoteIdentifier($dataContainer->table))
+            ->where('id=:value')
+            ->setParameter('value', $dataContainer->id)
+            ->setMaxResults(1)
+            ->execute();
 
-        if ($objRecord->next()) {
-            return $objRecord->$strSelector;
+        if ($statement->rowCount() === 0) {
+            return null;
         }
 
-        return null;
+        return $statement->fetchColumn(0);
     }
 
     /**
