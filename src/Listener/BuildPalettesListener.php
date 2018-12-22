@@ -5,8 +5,6 @@
  *
  * @package   MetaPalettes
  * @author    Christian Schiffler <c.schiffler@cyberspectrum.de>
- * @author    Richard Henkenjohann <richardhenkenjohann@googlemail.com>
- * @author    Tristan Lins <tristan@lins.io>
  * @author    David Molineus <david.molineus@netzmacht.de>
  * @author    Christopher Bölter <christopher@boelter.eu>
  * @author    Sven Baumann <baumann.sv@gmail.com>

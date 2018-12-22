@@ -15,6 +15,7 @@
 namespace ContaoCommunityAlliance\MetaPalettes\Test\Listener;
 
 use ContaoCommunityAlliance\MetaPalettes\Listener\SubSelectPalettesListener;
+use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
 
 class SubSelectPalettesListenerTest extends TestCase
@@ -39,7 +40,8 @@ class SubSelectPalettesListenerTest extends TestCase
         ];
 
         $this->dca      = &$GLOBALS['TL_DCA']['tl_test'];
-        $this->listener = new SubSelectPalettesListener();
+        $connection     = $this->getMockBuilder(Connection::class)->disableOriginalConstructor()->getMock();
+        $this->listener = new SubSelectPalettesListener($connection);
     }
 
     function testApply()
