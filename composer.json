@@ -31,7 +31,7 @@
         "source": "https://github.com/contao-community-alliance/meta-palettes"
     },
     "require": {
-        "php": "^5.6 | ^7.0",
+        "php": "^7.1",
         "contao/core-bundle": "^4.4",
         "doctrine/dbal": "^2.5",
         "symfony/config": "^3.3 || ^4.0",
