@@ -1,16 +1,24 @@
 <?php
 
 /**
- * MetaPalettes for the Contao Open Source CMS
+ * This file is part of contao-community-alliance/meta-palettes.
  *
- * @package   MetaPalettes
- * @author    David Molineus <david.molineus@netzmacht.de>
- * @author    Christopher Bölter <christopher@boelter.eu>
- * @author    Sven Baumann <baumann.sv@gmail.com>
- * @copyright 2013-2014 bit3 UG
- * @copyright 2015-2018 Contao Community Alliance.
- * @license   LGPL-3.0+ https://github.com/contao-community-alliance/meta-palettes/license
- * @link      https://github.com/bit3/contao-meta-palettes
+ * (c) 2015-2021 Contao Community Alliance.
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ *
+ * This project is provided in good faith and hope to be usable by anyone.
+ *
+ * @package    contao-community-alliance/meta-palettes
+ * @author     Tristan Lins <tristan.lins@bit3.de>
+ * @author     David Molineus <david.molineus@netzmacht.de>
+ * @author     Christopher Bölter <christopher@boelter.eu>
+ * @author     Sven Baumann <baumann.sv@gmail.com>
+ * @author     Ingolf Steinhardt <info@e-spin.de>
+ * @copyright  2015-2021 Contao Community Alliance.
+ * @license    https://github.com/contao-community-alliance/meta-palettes/license LGPL-3.0-or-later
+ * @filesource
  */
 
 namespace ContaoCommunityAlliance\MetaPalettes\Listener;
@@ -155,6 +163,11 @@ class SubSelectPalettesListener
     private function getValue($dataContainer, $strTable, $strSelector)
     {
         $strValue = null;
+
+        if (method_exists($dataContainer, 'getModel')) {
+            $objModel = $dataContainer->getModel();
+            return $this->getValueFromDcGeneralModel($objModel, $strSelector);
+        }
 
         // try getting getCurrentModel value, provided by DC_General which is not neccessarily installed
         // therefore no instanceof check, do NOT(!) try to load via post if DC_General is in use, as it
