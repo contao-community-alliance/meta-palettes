@@ -27,7 +27,7 @@ class SubSelectPalettesListenerTest extends TestCase
      */
     private $listener;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $GLOBALS['TL_DCA']['tl_test'] = [
             'metapalettes'    => [],

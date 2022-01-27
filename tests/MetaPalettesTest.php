@@ -26,7 +26,7 @@ class MetaPalettesTest extends TestCase
 {
     protected $palettes;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $GLOBALS['TL_DCA']['tl_test']['palettes'] = [];
 

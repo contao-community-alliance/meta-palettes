@@ -18,6 +18,10 @@ namespace ContaoCommunityAlliance\MetaPalettes\Test\Listener;
 
 use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\DefaultContainer;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Definition\PalettesDefinitionInterface;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyConditionChain;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyValueCondition;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyVisibleCondition;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Legend;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Palette;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Property;
@@ -25,6 +29,7 @@ use ContaoCommunityAlliance\DcGeneral\Factory\Event\BuildDataDefinitionEvent;
 use ContaoCommunityAlliance\MetaPalettes\Listener\MetaPalettesBuilder;
 use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
 use PHPUnit\Framework\TestCase;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyTrueCondition;
 
 /**
  * Test the meta palettes builder.
@@ -36,7 +41,7 @@ class MetaPalettesBuilderTest extends TestCase
      *
      * @param array $dca The DCA to inject into the builder.
      *
-     * @return \ContaoCommunityAlliance\MetaPalettes\Listener\MetaPalettesBuilder
+     * @return MetaPalettesBuilder
      */
     public function mockBuilder($dca)
     {
@@ -63,7 +68,7 @@ class MetaPalettesBuilderTest extends TestCase
      *
      * @param array $dca The dca to absorb.
      *
-     * @return \ContaoCommunityAlliance\DcGeneral\DataDefinition\Definition\PalettesDefinitionInterface
+     * @return PalettesDefinitionInterface
      */
     protected function parsePalette($dca)
     {
@@ -73,9 +78,7 @@ class MetaPalettesBuilderTest extends TestCase
 
         $builder->build($event);
 
-        $palettes = $container->getPalettesDefinition();
-
-        return $palettes;
+        return $container->getPalettesDefinition();
     }
 
     /**
@@ -130,41 +133,39 @@ class MetaPalettesBuilderTest extends TestCase
         $this->assertProperty(
             $property,
             $name,
-            '\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyConditionChain'
+            PropertyConditionChain::class
         );
 
+        /** @var array{0: PropertyValueCondition, 1: PropertyVisibleCondition} $conditions */
         $conditions = $property->getVisibleCondition()->getConditions();
 
         $this->assertInstanceOf(
-            '\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyValueCondition',
+            PropertyValueCondition::class,
             $conditions[0]
         );
 
-        $this->assertAttributeEquals(
+        self::assertSame(
             $dependsOn,
-            'propertyName',
-            $conditions[0],
+            $conditions[0]->getPropertyName(),
             $property->getName() . ' getVisibleCondition() check dependant field'
         );
 
-        $this->assertAttributeEquals(
+        self::assertSame(
             $dependedValue,
-            'propertyValue',
-            $conditions[0],
+            $conditions[0]->getPropertyValue(),
             $property->getName() . ' getVisibleCondition() check dependant value'
         );
 
         $this->assertInstanceOf(
-            '\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyVisibleCondition',
+            PropertyVisibleCondition::class,
             $conditions[1],
             $property->getName() . ' getVisibleCondition() check dependant field'
         );
 
-        $this->assertAttributeEquals(
+        self::assertSame(
             $dependsOn,
-            'propertyName',
-            $conditions[1],
-            $property->getName() . ' getVisibleCondition() check dependant field'
+            $conditions[1]->getPropertyName(),
+            $property->getName() . ' getVisibleCondition() check dependant value'
         );
     }
 
@@ -250,66 +251,63 @@ class MetaPalettesBuilderTest extends TestCase
         $this->assertProperty(
             $properties[2],
             'field_three',
-            '\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyConditionChain'
+            PropertyConditionChain::class
         );
 
+        /** @var array{0: PropertyTrueCondition, 1: PropertyVisibleCondition} $conditions */
         $conditions = $properties[2]->getVisibleCondition()->getConditions();
 
         $this->assertInstanceOf(
-            '\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyTrueCondition',
+            PropertyTrueCondition::class,
             $conditions[0]
         );
 
-        $this->assertAttributeEquals(
+        self::assertSame(
             'field_two',
-            'propertyName',
-            $conditions[0],
+            $conditions[0]->getPropertyName(),
             'field_three getVisibleCondition() check dependant field'
         );
 
         $this->assertInstanceOf(
-            '\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyVisibleCondition',
+            PropertyVisibleCondition::class,
             $conditions[1],
             'field_three getVisibleCondition() check dependant field'
         );
 
-        $this->assertAttributeEquals(
+        self::assertSame(
             'field_two',
-            'propertyName',
-            $conditions[1],
+            $conditions[1]->getPropertyName(),
             'field_three getVisibleCondition() check dependant field'
         );
 
         $this->assertProperty(
             $properties[3],
             'field_four',
-            '\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyConditionChain'
+            PropertyConditionChain::class
         );
 
         $conditions = $properties[3]->getVisibleCondition()->getConditions();
 
         $this->assertInstanceOf(
-            '\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyTrueCondition',
+            PropertyTrueCondition::class,
             $conditions[0]
         );
 
-        $this->assertAttributeEquals(
+        self::assertSame(
             'field_two',
-            'propertyName',
-            $conditions[0],
+            $conditions[0]->getPropertyName(),
             'field_four getVisibleCondition() check dependant field'
         );
 
         $this->assertInstanceOf(
-            '\ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyVisibleCondition',
+            PropertyVisibleCondition::class,
             $conditions[1],
             'field_four getVisibleCondition() check dependant field'
         );
 
-        $this->assertAttributeEquals(
+        self::assertSame(
             'field_two',
-            'propertyName',
-            $conditions[1],
+            $conditions[1]->getPropertyName(),
             'field_four getVisibleCondition() check dependant field'
         );
     }

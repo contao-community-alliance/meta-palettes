@@ -27,7 +27,7 @@ class MetaPalettesParserTest extends TestCase
 {
     private $definition;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $GLOBALS['TL_DCA']['tl_test']['metapalettes'] = [];
 

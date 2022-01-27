@@ -29,7 +29,7 @@ class BuildPalettesListenerTest extends TestCase
      */
     private $listener;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $GLOBALS['TL_DCA']['tl_test'] = [
             'metapalettes'    => [],
@@ -91,7 +91,8 @@ class BuildPalettesListenerTest extends TestCase
 
         $this->assertArrayHasKey('foo', $this->dca['subpalettes']);
         $this->assertEquals('bar,baz', $this->dca['subpalettes']['foo']);
-        $this->assertArraySubset(['foo'], $this->dca['palettes']['__selector__']);
+
+        self::assertContains('foo', $this->dca['palettes']['__selector__']);
     }
 
     /**
