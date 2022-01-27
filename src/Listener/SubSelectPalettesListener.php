@@ -24,6 +24,8 @@ use Contao\System;
 use ContaoCommunityAlliance\DcGeneral\Data\ModelInterface;
 use ContaoCommunityAlliance\MetaPalettes\MetaPalettes;
 use Doctrine\DBAL\Connection;
+use const E_USER_DEPRECATED;
+use const E_USER_ERROR;
 
 /**
  * Class SubSelectPalettesListener
@@ -114,7 +116,7 @@ class SubSelectPalettesListener
                 $strTable,
                 gettype($GLOBALS['TL_DCA'][$strTable]['metasubselectpalettes'])
             ),
-            E_ERROR
+            E_USER_ERROR
         );
     }
 
@@ -137,7 +139,7 @@ class SubSelectPalettesListener
                 $strSelector,
                 gettype($arrPalettes)
             ),
-            E_ERROR
+            E_USER_ERROR
         );
     }
 
@@ -329,11 +331,13 @@ class SubSelectPalettesListener
             ->setMaxResults(1)
             ->execute();
 
+        assert(! is_int($statement));
+
         if ($statement->rowCount() === 0) {
             return null;
         }
 
-        return $statement->fetchColumn(0);
+        return $statement->fetchOne();
     }
 
     /**

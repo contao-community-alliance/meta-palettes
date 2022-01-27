@@ -28,6 +28,7 @@ use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Property;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\PropertyInterface;
 use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter;
 use ContaoCommunityAlliance\MetaPalettes\Parser\Parser;
+use RuntimeException;
 
 /**
  * Interpreter class creating the palettes definition used by the DC General.
@@ -48,7 +49,7 @@ class PalettesDefinitionInterpreter implements Interpreter
      *
      * Palette.
      *
-     * @var PaletteInterface
+     * @var PaletteInterface|null
      */
     private $palette;
 
@@ -69,16 +70,9 @@ class PalettesDefinitionInterpreter implements Interpreter
     /**
      * List of built palettes.
      *
-     * @var Palette[]
+     * @var PaletteInterface[]
      */
     private $palettes = [];
-
-    /**
-     * Sub palettes.
-     *
-     * @var array
-     */
-    private $subPalettes;
 
     /**
      * Sub select palettes.
@@ -90,7 +84,7 @@ class PalettesDefinitionInterpreter implements Interpreter
     /**
      * Table name.
      *
-     * @var string
+     * @var string|null
      */
     private $tableName;
 
@@ -102,6 +96,8 @@ class PalettesDefinitionInterpreter implements Interpreter
      * @param array                       $selectorFieldNames   Selector field names.
      * @param array                       $subPalettes          Sub palettes.
      * @param array                       $subSelectPalettes    Sub select palettes.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __construct(
         PalettesDefinitionInterface $palettesDefinition,
@@ -113,7 +109,6 @@ class PalettesDefinitionInterpreter implements Interpreter
         $this->palettesDefinition   = $palettesDefinition;
         $this->legacyPalettesParser = $legacyPalettesParser;
         $this->selectorFieldNames   = $selectorFieldNames;
-        $this->subPalettes          = $subPalettes;
         $this->subSelectPalettes    = $subSelectPalettes;
     }
 
@@ -123,24 +118,37 @@ class PalettesDefinitionInterpreter implements Interpreter
     public function startPalette($tableName, $paletteName)
     {
         $this->tableName = $tableName;
-        $this->palette   = null;
         $this->palette   = new Palette();
         $this->palette->setName($paletteName);
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @throws RuntimeException When interpreter was not started.
      */
     public function inherit($parent, Parser $parser)
     {
+        if ($this->tableName === null) {
+            throw new RuntimeException('Interpreter has to be started first.');
+        }
+
         $parser->parsePalette($this->tableName, $parent, $this, true);
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @throws RuntimeException When interpreter was not started.
+     *
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function addLegend($name, $override, $hide, $position = null, $reference = null)
     {
+        if ($this->palette === null) {
+            throw new RuntimeException('Interpreter has to be started first.');
+        }
+
         if ($this->palette->hasLegend($name)) {
             $legend = $this->palette->getLegend($name);
 
@@ -187,11 +195,17 @@ class PalettesDefinitionInterpreter implements Interpreter
 
     /**
      * {@inheritDoc}
+     *
+     * @throws RuntimeException When interpreter was not started.
      */
-    public function addFieldTo($legendName, $name, $position = null, $reference = null)
+    public function addFieldTo($legend, $name, $position = null, $reference = null)
     {
+        if ($this->palette === null) {
+            throw new RuntimeException('Interpreter has to be started first.');
+        }
+
         $property = new Property($name);
-        $legend   = $this->palette->getLegend($legendName);
+        $legend   = $this->palette->getLegend($legend);
 
         if ($reference) {
             $existingProperties = $legend->getProperties();
@@ -229,9 +243,15 @@ class PalettesDefinitionInterpreter implements Interpreter
 
     /**
      * {@inheritDoc}
+     *
+     * @throws RuntimeException When interpreter was not started.
      */
     public function removeFieldFrom($legend, $name)
     {
+        if ($this->palette === null) {
+            throw new RuntimeException('Interpreter has to be started first.');
+        }
+
         if (!$this->palette->hasLegend($legend)) {
             return;
         }
@@ -245,9 +265,15 @@ class PalettesDefinitionInterpreter implements Interpreter
 
     /**
      * {@inheritDoc}
+     *
+     * @throws RuntimeException When interpreter was not started.
      */
     public function finishPalette()
     {
+        if ($this->palette === null) {
+            throw new RuntimeException('Interpreter has to be started first.');
+        }
+
         $this->palettes[] = $this->palette;
         $this->palette->setCondition(
             $this->legacyPalettesParser->createPaletteCondition($this->palette->getName(), $this->selectorFieldNames)
@@ -359,9 +385,9 @@ class PalettesDefinitionInterpreter implements Interpreter
      *
      * @param LegendInterface $legend    Legend definition.
      * @param string          $insert    Insert mode.
-     * @param string          $reference Reference column.
+     * @param string|null     $reference Reference column.
      *
-     * @return int|null|false
+     * @return PropertyInterface|null|false
      */
     protected function calculateInsertPosition(LegendInterface $legend, $insert, $reference)
     {

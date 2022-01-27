@@ -18,6 +18,10 @@
 namespace ContaoCommunityAlliance\MetaPalettes;
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use InvalidArgumentException;
+use RuntimeException;
+use function is_array;
+use function is_string;
 
 /**
  * Generates the palettes from the meta information.
@@ -33,6 +37,8 @@ class MetaPalettes
      * @param mixed  $varArg2  The meta definition, only needed if the palette name is given as second parameter.
      *
      * @return void
+     *
+     * @throws InvalidArgumentException When meta definition is not an array.
      */
     public static function appendTo($strTable, $varArg1, $varArg2 = null)
     {
@@ -41,12 +47,16 @@ class MetaPalettes
             $varArg1 = 'default';
         }
 
+        if (!is_array($varArg2)) {
+            throw new InvalidArgumentException('Meta definition has to be an array.');
+        }
+
         $manipulator = PaletteManipulator::create();
 
         foreach ($varArg2 as $legend => $fields) {
             $legend .= '_legend';
 
-            $manipulator->addLegend($legend, null);
+            $manipulator->addLegend($legend, []);
             $manipulator->addField($fields, $legend);
         }
 
@@ -64,6 +74,8 @@ class MetaPalettes
      * @param mixed  $varArg3  The meta definition, only needed if the palette name is given as third parameter.
      *
      * @return void
+     *
+     * @throws InvalidArgumentException When meta definition is not an array.
      */
     public static function appendBefore($strTable, $varArg1, $varArg2, $varArg3 = null)
     {
@@ -71,6 +83,10 @@ class MetaPalettes
             $varArg3 = $varArg2;
             $varArg2 = $varArg1;
             $varArg1 = 'default';
+        }
+
+        if (!is_array($varArg3)) {
+            throw new InvalidArgumentException('Meta definition has to be an array.');
         }
 
         $manipulator = PaletteManipulator::create();
@@ -97,6 +113,8 @@ class MetaPalettes
      * @param mixed  $varArg3  The meta definition, only needed if the palette name is given as third parameter.
      *
      * @return void
+     *
+     * @throws InvalidArgumentException When meta definition is not an array.
      */
     public static function appendAfter($strTable, $varArg1, $varArg2, $varArg3 = null)
     {
@@ -104,6 +122,10 @@ class MetaPalettes
             $varArg3 = $varArg2;
             $varArg2 = $varArg1;
             $varArg1 = 'default';
+        }
+
+        if (!is_array($varArg3)) {
+            throw new InvalidArgumentException('Meta definition has to be an array.');
         }
 
         $manipulator = PaletteManipulator::create();
@@ -129,6 +151,8 @@ class MetaPalettes
      * @param mixed  $varArg3  List of fields to append.
      *
      * @return void
+     *
+     * @throws InvalidArgumentException When list of fields is not an array or a string.
      */
     public static function appendFields($strTable, $varArg1, $varArg2, $varArg3 = null)
     {
@@ -136,6 +160,10 @@ class MetaPalettes
             $varArg3 = $varArg2;
             $varArg2 = $varArg1;
             $varArg1 = 'default';
+        }
+
+        if (!is_string($varArg3) && !is_array($varArg3)) {
+            throw new InvalidArgumentException('List of fields has to be an error or string');
         }
 
         PaletteManipulator::create()
@@ -153,6 +181,8 @@ class MetaPalettes
      * @param mixed  $varArg3  List of fields to append.
      *
      * @return void
+     *
+     * @throws InvalidArgumentException When list of fields is not an array or a string.
      */
     public static function prependFields($strTable, $varArg1, $varArg2, $varArg3 = null)
     {
@@ -160,6 +190,10 @@ class MetaPalettes
             $varArg3 = $varArg2;
             $varArg2 = $varArg1;
             $varArg1 = 'default';
+        }
+
+        if (!is_string($varArg3) && !is_array($varArg3)) {
+            throw new InvalidArgumentException('List of fields has to be an error or string');
         }
 
         PaletteManipulator::create()
@@ -177,6 +211,8 @@ class MetaPalettes
      *
      * @return void
      *
+     * @throws InvalidArgumentException When list of fields is not an array.
+     *
      * @SuppressWarnings(PHPMD.Superglobals)
      */
     public static function removeFields($strTable, $varArg1, $varArg2 = null)
@@ -184,6 +220,10 @@ class MetaPalettes
         if (is_array($varArg1)) {
             $varArg2 = $varArg1;
             $varArg1 = 'default';
+        }
+
+        if (!is_array($varArg2)) {
+            throw new InvalidArgumentException('Meta definition has to be an array.');
         }
 
         $varArg2 = array_map(
@@ -218,12 +258,12 @@ class MetaPalettes
             $hide      = in_array(':hide', $arrFields);
             $arrFields = array_filter(
                 $arrFields,
-                function ($strField) {
-                    return $strField[0] != ':';
+                static function (string $strField): bool {
+                    return $strField[0] !== ':';
                 }
             );
 
-            $manipulator->addLegend($strLegend . '_legend', null, $manipulator::POSITION_APPEND, $hide);
+            $manipulator->addLegend($strLegend . '_legend', [], $manipulator::POSITION_APPEND, $hide);
             $manipulator->addField($arrFields, $strLegend . '_legend', $manipulator::POSITION_APPEND);
         }
 

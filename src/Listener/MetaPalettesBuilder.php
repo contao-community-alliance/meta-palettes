@@ -18,7 +18,7 @@
 namespace ContaoCommunityAlliance\MetaPalettes\Listener;
 
 use Contao\Controller;
-use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use ContaoCommunityAlliance\DcGeneral\Contao\Dca\Palette\LegacyPalettesParser;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Definition\DefaultPalettesDefinition;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Definition\PalettesDefinitionInterface;
@@ -27,10 +27,15 @@ use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyTrueCondition;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyValueCondition;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyVisibleCondition;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\PaletteCollectionInterface;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Property;
 use ContaoCommunityAlliance\DcGeneral\Factory\Event\BuildDataDefinitionEvent;
 use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter\PalettesDefinitionInterpreter;
 use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
+use RuntimeException;
+use function get_class;
+use function is_array;
+use function sprintf;
 
 /**
  * Class MetaPalettesBuilder
@@ -46,7 +51,7 @@ class MetaPalettesBuilder
     /**
      * Controller framework.
      *
-     * @var ContaoFrameworkInterface
+     * @var ContaoFramework
      */
     private $contaoFramework;
 
@@ -60,17 +65,17 @@ class MetaPalettesBuilder
     /**
      * Buffer for the DCA.
      *
-     * @var array
+     * @var array|null
      */
     protected $dca;
 
     /**
      * Construct.
      *
-     * @param ContaoFrameworkInterface $contaoFramework   Contao framework.
-     * @param null|MetaPaletteParser   $metaPaletteParser Meta palettes parser.
+     * @param ContaoFramework        $contaoFramework   Contao framework.
+     * @param null|MetaPaletteParser $metaPaletteParser Meta palettes parser.
      */
-    public function __construct(ContaoFrameworkInterface $contaoFramework, MetaPaletteParser $metaPaletteParser = null)
+    public function __construct(ContaoFramework $contaoFramework, MetaPaletteParser $metaPaletteParser = null)
     {
         $this->metaPalettesParser = $metaPaletteParser ?: new MetaPaletteParser();
         $this->contaoFramework    = $contaoFramework;
@@ -84,6 +89,8 @@ class MetaPalettesBuilder
      * @return void
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     *
+     * @throws RuntimeException When no palettes definition exists.
      */
     public function build(BuildDataDefinitionEvent $event)
     {
@@ -95,6 +102,16 @@ class MetaPalettesBuilder
 
         if ($container->hasDefinition(PalettesDefinitionInterface::NAME)) {
             $palettesDefinition = $container->getDefinition(PalettesDefinitionInterface::NAME);
+            if (! $palettesDefinition instanceof PalettesDefinitionInterface) {
+                throw new RuntimeException(
+                    sprintf(
+                        'Definition "%s" has to be an instance of "%s", "%s" given',
+                        PalettesDefinitionInterface::NAME,
+                        PalettesDefinitionInterface::class,
+                        get_class($palettesDefinition)
+                    )
+                );
+            }
         } else {
             $palettesDefinition = new DefaultPalettesDefinition();
             $container->setDefinition(PalettesDefinitionInterface::NAME, $palettesDefinition);
@@ -122,6 +139,7 @@ class MetaPalettesBuilder
             $subSelectPalettes
         );
 
+        assert(is_array($this->dca));
         $this->metaPalettesParser->parse($container->getName(), $this->dca, $interpreter);
 
         $palettes = $interpreter->getPalettes();

@@ -26,7 +26,7 @@ class MetaPaletteParser implements Parser
      *
      * @var array
      */
-    private $palettes;
+    private $palettes = [];
 
     /**
      * Parse a meta palettes definition.

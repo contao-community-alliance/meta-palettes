@@ -16,7 +16,7 @@
 
 namespace ContaoCommunityAlliance\MetaPalettes\Test\Listener;
 
-use Contao\CoreBundle\Framework\ContaoFrameworkInterface;
+use Contao\CoreBundle\Framework\ContaoFramework;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\DefaultContainer;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Definition\PalettesDefinitionInterface;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Condition\Property\PropertyConditionChain;
@@ -45,7 +45,7 @@ class MetaPalettesBuilderTest extends TestCase
      */
     public function mockBuilder($dca)
     {
-        $framework = $this->getMockBuilder(ContaoFrameworkInterface::class)->getMock();
+        $framework = $this->createPartialMock(ContaoFramework::class, []);
         $builder   = $this->getMockBuilder(MetaPalettesBuilder::class)
             ->setMethods(array('loadDca'))
             ->setConstructorArgs([$framework, new MetaPaletteParser()])

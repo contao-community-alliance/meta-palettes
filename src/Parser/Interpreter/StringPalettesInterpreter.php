@@ -17,6 +17,7 @@ namespace ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter;
 use ContaoCommunityAlliance\MetaPalettes\Parser\Parser;
+use RuntimeException;
 
 /**
  * The StringPalettesInterpreter converts the meta palette into the string representation used in Contao.
@@ -28,14 +29,14 @@ class StringPalettesInterpreter implements Interpreter
     /**
      * Name of the data container table.
      *
-     * @var string
+     * @var string|null
      */
     private $tableName;
 
     /**
      * Name of the palette.
      *
-     * @var string
+     * @var string|null
      */
     private $paletteName;
 
@@ -57,9 +58,15 @@ class StringPalettesInterpreter implements Interpreter
 
     /**
      * {@inheritdoc}
+     *
+     * @throws RuntimeException When interpreter was not started.
      */
     public function inherit($parent, Parser $parser)
     {
+        if ($this->tableName === null || $this->paletteName === null) {
+            throw new RuntimeException('Interpreter has to be started first.');
+        }
+
         $parser->parsePalette($this->tableName, $parent, $this, true);
     }
 
@@ -81,11 +88,11 @@ class StringPalettesInterpreter implements Interpreter
                     if ($position === Parser::POSITION_AFTER) {
                         $referencePosition++;
                     }
+
+                    $tail = array_splice($this->definition, $referencePosition);
+
+                    $this->definition += ([$name => $legend] + $tail);
                 }
-
-                $tail = array_splice($this->definition, $referencePosition);
-
-                $this->definition += ([$name => $legend] + $tail);
             }
 
             $this->definition[$name] = $legend;
@@ -147,16 +154,22 @@ class StringPalettesInterpreter implements Interpreter
     /**
      * {@inheritdoc}
      *
+     * @throws RuntimeException When interpreter was not started.
+     *
      * @SuppressWarnings(PHPMD.Superglobals)
      */
     public function finishPalette()
     {
+        if ($this->tableName === null || $this->paletteName === null) {
+            throw new RuntimeException('Interpreter has to be started first.');
+        }
+
         $GLOBALS['TL_DCA'][$this->tableName]['palettes'][$this->paletteName] = '';
 
         $manipulator = PaletteManipulator::create();
 
         foreach ($this->definition as $legend => $config) {
-            $manipulator->addLegend($legend . '_legend', null, $manipulator::POSITION_AFTER, $config['hide']);
+            $manipulator->addLegend($legend . '_legend', [], $manipulator::POSITION_AFTER, $config['hide']);
             $manipulator->addField($config['fields'], $legend . '_legend', $manipulator::POSITION_APPEND);
         }
 
