@@ -5,8 +5,6 @@
  *
  * @package   MetaPalettes
  * @author    Christian Schiffler <c.schiffler@cyberspectrum.de>
- * @author    Richard Henkenjohann <richardhenkenjohann@googlemail.com>
- * @author    Tristan Lins <tristan@lins.io>
  * @author    David Molineus <david.molineus@netzmacht.de>
  * @author    Christopher Bölter <christopher@boelter.eu>
  * @author    Sven Baumann <baumann.sv@gmail.com>
@@ -18,6 +16,7 @@
 
 namespace ContaoCommunityAlliance\MetaPalettes\Listener;
 
+use Contao\System;
 use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter;
 use ContaoCommunityAlliance\MetaPalettes\Parser\Parser;
 
@@ -99,7 +98,7 @@ class BuildPalettesListener
             foreach ($GLOBALS['TL_DCA'][$strTable]['config']['palettes_callback'] as $callback) {
                 if (is_array($callback) && count($callback) == 2) {
                     if (!is_object($callback[0])) {
-                        $callback[0] = \System::importStatic($callback[0]);
+                        $callback[0] = System::importStatic($callback[0]);
                     }
                 }
 

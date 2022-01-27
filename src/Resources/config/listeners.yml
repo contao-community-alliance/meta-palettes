@@ -20,4 +20,6 @@ services:
 
   cca.meta_palettes.listener.sub_select_palettes_listener:
     class: ContaoCommunityAlliance\MetaPalettes\Listener\SubSelectPalettesListener
+    arguments:
+      - '@database_connection'
     public: true
