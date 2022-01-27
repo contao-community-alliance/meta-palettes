@@ -30,12 +30,12 @@
     "source": "https://github.com/contao-community-alliance/meta-palettes"
   },
   "require": {
-    "php": "^7.1",
-    "contao/core-bundle": "^4.4",
-    "doctrine/dbal": "^2.5",
-    "symfony/config": "^3.3 || ^4.0",
-    "symfony/dependency-injection": "^3.3 || ^4.0",
-    "symfony/http-kernel": "^3.3 || ^4.0"
+    "php": "^7.1 || ^8.0",
+    "contao/core-bundle": "^4.9",
+    "doctrine/dbal": "^2.11 || ^3.1",
+    "symfony/config": "^4.4 || ^5.1",
+    "symfony/dependency-injection": "^4.4 || ^5.1",
+    "symfony/http-kernel": "^4.4 || ^5.1"
   },
   "require-dev": {
     "contao-community-alliance/dc-general": "^2.1",

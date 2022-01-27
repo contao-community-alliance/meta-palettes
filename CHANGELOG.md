@@ -1,6 +1,15 @@
 Changelog
 =========
 
+2.0.8 (2018-11-23)
+------------------
+
+[Full Changelog](https://github.com/contao-community-alliance/meta-palettes/compare/2.0.7...2.0.8)
+
+ - Allow PHP 8
+ - Support symfony 5
+ - Support doctrine/dbal 3
+
 2.0.5 (2018-11-23)
 ------------------
 
