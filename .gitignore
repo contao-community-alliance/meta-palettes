@@ -1,9 +1,11 @@
-.project
-.settings
-.buildpath
-.idea
+# composer
 vendor
-# ignore the phpunit configuration by the developer.
-phpunit.xml
-build.properties
 composer.lock
+
+# phpunit
+phpunit.xml
+.phpunit.result.cache
+
+# phpcq
+.phpcq.yaml
+.phpcq
