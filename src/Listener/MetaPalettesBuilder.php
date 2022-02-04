@@ -130,12 +130,11 @@ class MetaPalettesBuilder
         );
 
         $subSelectPalettes = $this->parseSubSelectPalettes($subSelectPalettesDca);
-        $subPalettes       = $this->parseSubPalettes($parser, $subPalettesDca, $selectorFieldNames);
         $interpreter       = new PalettesDefinitionInterpreter(
             $palettesDefinition,
             $parser,
             $selectorFieldNames,
-            $subPalettes,
+            [],
             $subSelectPalettes
         );
 
