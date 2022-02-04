@@ -63,7 +63,7 @@
   },
   "config": {
     "allow-plugins": {
-      "contao-components/installer": true,
+      "contao-components/installer": false,
       "composer/package-versions-deprecated": true,
       "contao/manager-plugin": true
     }
