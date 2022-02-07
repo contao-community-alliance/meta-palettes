@@ -16,6 +16,7 @@
  * @author     Christopher Bölter <christopher@boelter.eu>
  * @author     Sven Baumann <baumann.sv@gmail.com>
  * @author     Ingolf Steinhardt <info@e-spin.de>
+ * @copyright  2013-2014 bit3 UG
  * @copyright  2015-2022 Contao Community Alliance.
  * @license    https://github.com/contao-community-alliance/meta-palettes/license LGPL-3.0-or-later
  * @filesource
