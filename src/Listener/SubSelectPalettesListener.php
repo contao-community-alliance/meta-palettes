@@ -3,7 +3,7 @@
 /**
  * This file is part of contao-community-alliance/meta-palettes.
  *
- * (c) 2015-2021 Contao Community Alliance.
+ * (c) 2015-2022 Contao Community Alliance.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -16,7 +16,7 @@
  * @author     Christopher Bölter <christopher@boelter.eu>
  * @author     Sven Baumann <baumann.sv@gmail.com>
  * @author     Ingolf Steinhardt <info@e-spin.de>
- * @copyright  2015-2021 Contao Community Alliance.
+ * @copyright  2015-2022 Contao Community Alliance.
  * @license    https://github.com/contao-community-alliance/meta-palettes/license LGPL-3.0-or-later
  * @filesource
  */
@@ -29,6 +29,7 @@ use Contao\DC_File;
 use Contao\DC_Table;
 use Contao\Input;
 use Contao\System;
+use ContaoCommunityAlliance\DcGeneral\Contao\Compatibility\DcCompat;
 use ContaoCommunityAlliance\DcGeneral\Data\ModelInterface;
 use ContaoCommunityAlliance\MetaPalettes\MetaPalettes;
 use Doctrine\DBAL\Connection;
@@ -164,21 +165,8 @@ class SubSelectPalettesListener
     {
         $strValue = null;
 
-        if (method_exists($dataContainer, 'getModel')) {
+        if ($dataContainer instanceof DcCompat) {
             $objModel = $dataContainer->getModel();
-            return $this->getValueFromDcGeneralModel($objModel, $strSelector);
-        }
-
-        // try getting getCurrentModel value, provided by DC_General which is not neccessarily installed
-        // therefore no instanceof check, do NOT(!) try to load via post if DC_General is in use, as it
-        // has already updated the current model.
-        if (method_exists($dataContainer, 'getEnvironment')) {
-            $objModel = $dataContainer->getEnvironment()->getCurrentModel();
-            return $this->getValueFromDcGeneralModel($objModel, $strSelector);
-        }
-
-        if (method_exists($dataContainer, 'getCurrentModel')) {
-            $objModel = $dataContainer->getCurrentModel();
             return $this->getValueFromDcGeneralModel($objModel, $strSelector);
         }
 
