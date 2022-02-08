@@ -39,10 +39,6 @@
   },
   "require-dev": {
     "contao-community-alliance/dc-general": "^2.1",
-    "contao-community-alliance/dependency-container": "^2.0",
-    "contao-community-alliance/events-contao-bindings": "^4.4",
-    "contao-community-alliance/translator": "^2.1",
-    "contao-community-alliance/url-builder": "^1.3",
     "contao/manager-plugin": "^2.2",
     "phpcq/coding-standard": "^2.1.2",
     "phpcq/runner-bootstrap": "1.x-dev"
@@ -63,7 +59,7 @@
   },
   "config": {
     "allow-plugins": {
-      "contao-components/installer": true,
+      "contao-components/installer": false,
       "composer/package-versions-deprecated": true,
       "contao/manager-plugin": true
     }

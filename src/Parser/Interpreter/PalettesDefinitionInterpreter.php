@@ -94,7 +94,7 @@ class PalettesDefinitionInterpreter implements Interpreter
      * @param PalettesDefinitionInterface $palettesDefinition   Palettes definition.
      * @param LegacyPalettesParser        $legacyPalettesParser Legacy palettes parser.
      * @param array                       $selectorFieldNames   Selector field names.
-     * @param array                       $subPalettes          Sub palettes.
+     * @param array                       $subPalettes          Sub palettes. Not used, but kept for BC reason
      * @param array                       $subSelectPalettes    Sub select palettes.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -316,9 +316,22 @@ class PalettesDefinitionInterpreter implements Interpreter
             foreach ($this->palettes as $palette) {
                 /** @var LegendInterface $legend */
                 foreach ($palette->getLegends() as $legend) {
-                    if ($legend->hasProperty($selectorPropertyName)) {
-                        $legend->addProperties($properties);
+                    if (!$legend->hasProperty($selectorPropertyName)) {
+                        continue;
                     }
+
+                    $propertyBefore   = null;
+                    $legendProperties = $legend->getProperties();
+
+                    /** @var int $index */
+                    foreach ($legendProperties as $index => $propertyBeforeCandidate) {
+                        if ($propertyBeforeCandidate->getName() === $selectorPropertyName) {
+                            $propertyBefore = ($legendProperties[($index + 1)] ?? null);
+                            break;
+                        }
+                    }
+
+                    $legend->addProperties($properties, $propertyBefore);
                 }
             }
         }
