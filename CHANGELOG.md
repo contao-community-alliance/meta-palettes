@@ -1,7 +1,14 @@
 Changelog
 =========
 
-2.0.8 (2018-11-23)
+2.0.9 (2022-02-08)
+------------------
+
+ - Fix order of diagnostics steps and allow failures for PHP 8 ([#48](https://github.com/contao-community-alliance/meta-palettes/pull/48))
+ - Fix subpalette position for DC General ([#47](https://github.com/contao-community-alliance/meta-palettes/pull/47))
+ - Fix retrieving value from DC General driven model ([#44](https://github.com/contao-community-alliance/meta-palettes/pull/44))
+
+2.0.8 (2022-01-27)
 ------------------
 
 [Full Changelog](https://github.com/contao-community-alliance/meta-palettes/compare/2.0.7...2.0.8)
