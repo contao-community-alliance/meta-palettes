@@ -213,7 +213,7 @@ class MetaPalettesBuilder
             $properties = [];
 
             foreach ($valuePropertyNames as $value => $propertyNames) {
-                if ('!' !== substr($value, 0, 1)) {
+                if ('!' === substr($value, 0, 1)) {
                     $negate = true;
                     $value  = substr($value, 1);
                 } else {
