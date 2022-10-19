@@ -38,7 +38,7 @@
     "symfony/http-kernel": "^4.4 || ^5.1"
   },
   "require-dev": {
-    "contao-community-alliance/dc-general": "^2.1",
+    "contao-community-alliance/dc-general": "^2.3@dev",
     "contao/manager-plugin": "^2.2",
     "phpcq/coding-standard": "^2.1.2",
     "phpcq/runner-bootstrap": "1.x-dev"

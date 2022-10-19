@@ -9,8 +9,9 @@
  * @author    David Molineus <david.molineus@netzmacht.de>
  * @author    Tristan Lins <tristan.lins@bit3.de>
  * @author    Sven Baumann <baumann.sv@gmail.com>
+ * @author    Ingolf Steinhardt <info@e-spin.de>
  * @copyright 2013-2014 bit3 UG
- * @copyright 2015-2018 Contao Community Alliance.
+ * @copyright 2015-2022 Contao Community Alliance.
  * @license   LGPL-3.0+ https://github.com/contao-community-alliance/meta-palettes/license
  * @link      https://github.com/bit3/contao-meta-palettes
  */
@@ -259,7 +260,7 @@ class MetaPalettes
             $arrFields = array_filter(
                 $arrFields,
                 static function (string $strField): bool {
-                    return $strField[0] !== ':';
+                    return substr($strField, 0, 1) !== ':';
                 }
             );
 
