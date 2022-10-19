@@ -9,8 +9,9 @@
  * @author    Stefan Heimes <stefan_heimes@hotmail.com>
  * @author    David Molineus <david.molineus@netzmacht.de>
  * @author    Sven Baumann <baumann.sv@gmail.com>
+ * @author    Ingolf Steinhardt <info@e-spin.de>
  * @copyright 2013-2014 bit3 UG
- * @copyright 2015-2018 Contao Community Alliance.
+ * @copyright 2015-2022 Contao Community Alliance.
  * @license   LGPL-3.0+ https://github.com/contao-community-alliance/meta-palettes/license
  * @link      https://github.com/contao-community-alliance/meta-palettes
  */
@@ -212,7 +213,7 @@ class MetaPalettesBuilder
             $properties = [];
 
             foreach ($valuePropertyNames as $value => $propertyNames) {
-                if ($value[0] == '!') {
+                if ('!' === substr($value, 0, 1)) {
                     $negate = true;
                     $value  = substr($value, 1);
                 } else {
