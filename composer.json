@@ -31,11 +31,11 @@
   },
   "require": {
     "php": "^7.1 || ^8.0",
-    "contao/core-bundle": "^4.9",
+    "contao/core-bundle": "^4.9 || ^5.0",
     "doctrine/dbal": "^2.11 || ^3.1",
-    "symfony/config": "^4.4 || ^5.1",
-    "symfony/dependency-injection": "^4.4 || ^5.1",
-    "symfony/http-kernel": "^4.4 || ^5.1"
+    "symfony/config": "^4.4 || ^5.1 || ^6.0",
+    "symfony/dependency-injection": "^4.4 || ^5.1 || ^6.0",
+    "symfony/http-kernel": "^4.4 || ^5.1 || ^6.0"
   },
   "require-dev": {
     "contao-community-alliance/dc-general": "^2.3@dev",
@@ -66,8 +66,8 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-develop": "2.1.x-dev",
-      "dev-master": "2.0.x-dev",
+      "dev-develop": "2.2.x-dev",
+      "dev-master": "2.1.x-dev",
       "dev-support/1.x": "1.11.x-dev"
     },
     "contao-manager-plugin": "ContaoCommunityAlliance\\MetaPalettes\\ContaoManager\\Plugin"
