@@ -3,7 +3,7 @@
 /**
  * This file is part of contao-community-alliance/meta-palettes.
  *
- * (c) 2015-2022 Contao Community Alliance.
+ * (c) 2015-2023 Contao Community Alliance.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -17,7 +17,7 @@
  * @author     Sven Baumann <baumann.sv@gmail.com>
  * @author     Ingolf Steinhardt <info@e-spin.de>
  * @copyright  2013-2014 bit3 UG
- * @copyright  2015-2022 Contao Community Alliance.
+ * @copyright  2015-2023 Contao Community Alliance.
  * @license    https://github.com/contao-community-alliance/meta-palettes/license LGPL-3.0-or-later
  * @filesource
  */
@@ -34,6 +34,8 @@ use ContaoCommunityAlliance\DcGeneral\Contao\Compatibility\DcCompat;
 use ContaoCommunityAlliance\DcGeneral\Data\ModelInterface;
 use ContaoCommunityAlliance\MetaPalettes\MetaPalettes;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
+
 use const E_USER_DEPRECATED;
 use const E_USER_ERROR;
 
@@ -163,6 +165,8 @@ class SubSelectPalettesListener
      * @return mixed|null
      *
      * @SuppressWarnings(PHPMD.Superglobals)
+     *
+     * @throws Exception When error at schema manager.
      */
     private function getValue($dataContainer, $strTable, $strSelector)
     {
@@ -190,7 +194,7 @@ class SubSelectPalettesListener
 
         // or break, when unable to handle data container
         if ($dataContainer instanceof DC_Table
-            && $this->connection->getSchemaManager()->tablesExist([$dataContainer->table])
+            && $this->connection->createSchemaManager()->tablesExist([$dataContainer->table])
         ) {
             return $this->fetchValueFromDatabase($dataContainer, $strSelector);
         }
@@ -322,6 +326,8 @@ class SubSelectPalettesListener
      * @param string        $strSelector   Selector field name.
      *
      * @return mixed
+     *
+     * @throws Exception When query failed.
      */
     private function fetchValueFromDatabase($dataContainer, $strSelector)
     {
@@ -331,9 +337,7 @@ class SubSelectPalettesListener
             ->where('id=:value')
             ->setParameter('value', $dataContainer->id)
             ->setMaxResults(1)
-            ->execute();
-
-        assert(! is_int($statement));
+            ->executeQuery();
 
         if ($statement->rowCount() === 0) {
             return null;

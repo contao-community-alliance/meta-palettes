@@ -9,6 +9,7 @@
     "Contao\\ManagerPlugin\\Config\\ContainerBuilder",
     "Contao\\ManagerPlugin\\Config\\ExtensionPluginInterface",
     "Contao\\ManagerPlugin\\Dependency\\DependentPluginInterface",
+    "ContaoCommunityAlliance\\DcGeneral\\DC\\General",
     "ContaoCommunityAlliance\\DcGeneral\\Contao\\Compatibility\\DcCompat",
     "ContaoCommunityAlliance\\DcGeneral\\Contao\\Dca\\Palette\\LegacyPalettesParser",
     "ContaoCommunityAlliance\\DcGeneral\\DataDefinition\\Definition\\DefaultPalettesDefinition",
