@@ -194,7 +194,7 @@ class SubSelectPalettesListener
 
         // or break, when unable to handle data container
         if ($dataContainer instanceof DC_Table
-            && $this->connection->createSchemaManager()->tablesExist([$dataContainer->table])
+            && $this->connection->getSchemaManager()->tablesExist([$dataContainer->table])
         ) {
             return $this->fetchValueFromDatabase($dataContainer, $strSelector);
         }
