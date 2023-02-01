@@ -337,7 +337,7 @@ class SubSelectPalettesListener
             ->where('id=:value')
             ->setParameter('value', $dataContainer->id)
             ->setMaxResults(1)
-            ->executeQuery();
+            ->execute();
 
         if ($statement->rowCount() === 0) {
             return null;
