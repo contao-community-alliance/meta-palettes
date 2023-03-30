@@ -165,6 +165,7 @@ class SubSelectPalettesListener
      * @return mixed|null
      *
      * @SuppressWarnings(PHPMD.Superglobals)
+     * @psalm-suppress DeprecatedMethod
      *
      * @throws Exception When error at schema manager.
      */
@@ -326,6 +327,9 @@ class SubSelectPalettesListener
      * @param string        $strSelector   Selector field name.
      *
      * @return mixed
+     *
+     * @psalm-suppress DeprecatedMethod
+     * @psalm-suppress PossiblyInvalidMethodCall
      *
      * @throws Exception When query failed.
      */
