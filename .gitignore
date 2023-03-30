@@ -9,3 +9,6 @@ phpunit.xml
 # phpcq
 .phpcq.yaml
 .phpcq
+
+# misc
+.idea/

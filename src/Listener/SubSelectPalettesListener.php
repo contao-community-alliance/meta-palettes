@@ -339,6 +339,8 @@ class SubSelectPalettesListener
             ->setMaxResults(1)
             ->execute();
 
+        assert(!is_int($statement));
+
         if ($statement->rowCount() === 0) {
             return null;
         }
