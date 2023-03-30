@@ -61,7 +61,8 @@
     "allow-plugins": {
       "contao-components/installer": false,
       "composer/package-versions-deprecated": true,
-      "contao/manager-plugin": true
+      "contao/manager-plugin": true,
+      "php-http/discovery": true
     }
   },
   "extra": {
