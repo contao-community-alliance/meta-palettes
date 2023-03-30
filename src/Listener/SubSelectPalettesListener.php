@@ -165,6 +165,7 @@ class SubSelectPalettesListener
      * @return mixed|null
      *
      * @SuppressWarnings(PHPMD.Superglobals)
+     *
      * @psalm-suppress DeprecatedMethod
      *
      * @throws Exception When error at schema manager.
