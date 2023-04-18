@@ -32,13 +32,13 @@
   "require": {
     "php": "^7.1 || ^8.0",
     "contao/core-bundle": "^4.9 || ^5.0",
-    "doctrine/dbal": "^2.11 || ^3.1",
+    "doctrine/dbal": "^2.13 || ^3.1",
     "symfony/config": "^4.4 || ^5.1 || ^6.0",
     "symfony/dependency-injection": "^4.4 || ^5.1 || ^6.0",
     "symfony/http-kernel": "^4.4 || ^5.1 || ^6.0"
   },
   "require-dev": {
-    "contao-community-alliance/dc-general": "^2.3@dev",
+    "contao-community-alliance/dc-general": "^2.1@dev",
     "contao/manager-plugin": "^2.2",
     "phpcq/coding-standard": "^2.1.2",
     "phpcq/runner-bootstrap": "1.x-dev"
@@ -62,7 +62,8 @@
       "contao-components/installer": false,
       "composer/package-versions-deprecated": true,
       "contao/manager-plugin": true,
-      "php-http/discovery": true
+      "php-http/discovery": true,
+      "ocramius/package-versions": true
     }
   },
   "extra": {

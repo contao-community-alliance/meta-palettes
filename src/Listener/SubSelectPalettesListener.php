@@ -118,6 +118,8 @@ class SubSelectPalettesListener
      * @return void
      *
      * @SuppressWarnings(PHPMD.Superglobals)
+     *
+     * @psalm-suppress InvalidReturnType
      */
     protected function triggerInvalidSubSelectPalettesError($strTable)
     {
@@ -140,6 +142,8 @@ class SubSelectPalettesListener
      * @param array  $arrPalettes Given palettes value.
      *
      * @return void
+     *
+     * @psalm-suppress InvalidReturnType
      */
     protected function triggerSubselectPaletteError($strTable, $strSelector, $arrPalettes)
     {
@@ -190,6 +194,7 @@ class SubSelectPalettesListener
         }
 
         // try getting activeRecord value
+        /** @psalm-suppress RedundantConditionGivenDocblockType */
         if ($dataContainer->activeRecord) {
             return $dataContainer->activeRecord->$strSelector;
         }
@@ -262,7 +267,8 @@ class SubSelectPalettesListener
                         // supporting sub sub palettes :)
                         foreach ($mixSub as $arrValue) {
                             foreach (array_keys($GLOBALS['TL_DCA'][$strTable]['palettes']) as $k) {
-                                if ($k == '__selector__') {
+                                /** @psalm-suppress TypeDoesNotContainType */
+                                if ($k === '__selector__') {
                                     continue;
                                 }
                                 MetaPalettes::appendFields($strTable, $k, $strLegend, [$arrValue]);
@@ -346,10 +352,12 @@ class SubSelectPalettesListener
 
         assert(!is_int($statement));
 
+        /** @psalm-suppress UndefinedInterfaceMethod */
         if ($statement->rowCount() === 0) {
             return null;
         }
 
+        /** @psalm-suppress UndefinedInterfaceMethod */
         return $statement->fetchOne();
     }
 

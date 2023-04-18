@@ -108,6 +108,7 @@ class BuildPalettesListener
                     }
                 }
 
+                /** @psalm-suppress PossiblyInvalidFunctionCall */
                 call_user_func($callback);
             }
         }
