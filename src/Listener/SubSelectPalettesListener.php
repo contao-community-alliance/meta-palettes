@@ -170,8 +170,6 @@ class SubSelectPalettesListener
      *
      * @SuppressWarnings(PHPMD.Superglobals)
      *
-     * @psalm-suppress DeprecatedMethod
-     *
      * @throws Exception When error at schema manager.
      */
     private function getValue($dataContainer, $strTable, $strSelector)
@@ -335,7 +333,6 @@ class SubSelectPalettesListener
      *
      * @return mixed
      *
-     * @psalm-suppress DeprecatedMethod
      * @psalm-suppress PossiblyInvalidMethodCall
      *
      * @throws Exception When query failed.
