@@ -26,7 +26,7 @@ class PalettesDefinitionInterpreterTest extends TestCase
 {
     public function testAddsSubPalettesAfterSelector(): void
     {
-        $definition  = $this->getMockForAbstractClass(PalettesDefinitionInterface::class);
+        $definition  = $this->createMock(PalettesDefinitionInterface::class);
         $parser      = $this->createPartialMock(LegacyPalettesParser::class, []);
         $interpreter = new PalettesDefinitionInterpreter(
             $definition,

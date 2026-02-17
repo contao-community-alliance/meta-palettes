@@ -48,15 +48,27 @@ class MetaPalettesParserTest extends TestCase
             ->method('startPalette')
             ->with('tl_test', 'default');
 
+        $matcher = $this->exactly(2);
         $interpreter
-            ->expects($this->exactly(2))
+            ->expects($matcher)
             ->method('addLegend')
-            ->withConsecutive(['foo', true, false], ['baz', true, true]);
+            ->willReturnCallback(function (...$args) use ($matcher) {
+                match ($matcher->numberOfInvocations()) {
+                    1 => $this->assertEquals(['foo', true, false, null, null], $args),
+                    2 => $this->assertEquals(['baz', true, true, null, null], $args),
+                };
+            });
 
+        $matcher2 = $this->exactly(2);
         $interpreter
-            ->expects($this->exactly(2))
+            ->expects($matcher2)
             ->method('addFieldTo')
-            ->withConsecutive(['foo', 'bar'], ['baz', 'test']);
+            ->willReturnCallback(function (...$args) use ($matcher2) {
+                match ($matcher2->numberOfInvocations()) {
+                    1 => $this->assertEquals(['foo', 'bar', null, null], $args),
+                    2 => $this->assertEquals(['baz', 'test', null, null], $args),
+                };
+            });
 
         $interpreter
             ->expects($this->once())
@@ -87,24 +99,41 @@ class MetaPalettesParserTest extends TestCase
             ->method('startPalette')
             ->with('tl_test', 'default');
 
+        $matcher = $this->exactly(3);
         $interpreter
-            ->expects($this->exactly(3))
+            ->expects($matcher)
             ->method('addLegend')
-            ->withConsecutive(
-                ['foo', false, false],
-                ['baz', true, true],
-                ['legend', false, false]
-            );
+            ->willReturnCallback(function (...$args) use ($matcher) {
+                match ($matcher->numberOfInvocations()) {
+                    1 => $this->assertEquals(['foo', false, null, null, null], $args),
+                    2 => $this->assertEquals(['baz', true, true, null, null], $args),
+                    3 => $this->assertEquals(['legend', false, null, null, null], $args),
+                };
+            });
 
+        $matcher2 = $this->exactly(3);
         $interpreter
-            ->expects($this->exactly(3))
+            ->expects($matcher2)
             ->method('addFieldTo')
-            ->withConsecutive(['foo', 'add'], ['baz', 'test'], ['legend', 'field']);
+            ->willReturnCallback(function (...$args) use ($matcher2) {
+                match ($matcher2->numberOfInvocations()) {
+                    1 => $this->assertEquals(['foo', 'add', null, null], $args),
+                    2 => $this->assertEquals(['baz', 'test', null, null], $args),
+                    3 => $this->assertEquals(['legend', 'field', null, null], $args),
+                };
+            });
 
+        $matcher3 = $this->exactly(3);
         $interpreter
-            ->expects($this->exactly(3))
+            ->expects($matcher3)
             ->method('removeFieldFrom')
-            ->withConsecutive(['foo', 'bar'], ['baz', 'test2'], ['legend', 'remove']);
+            ->willReturnCallback(function (...$args) use ($matcher3) {
+                match ($matcher3->numberOfInvocations()) {
+                    1 => $this->assertEquals(['foo', 'bar'], $args),
+                    2 => $this->assertEquals(['baz', 'test2'], $args),
+                    3 => $this->assertEquals(['legend', 'remove'], $args),
+                };
+            });
 
         $interpreter
             ->expects($this->once())
@@ -130,35 +159,47 @@ class MetaPalettesParserTest extends TestCase
 
         $parser      = new MetaPaletteParser();
         $interpreter = $this->getMockBuilder(Interpreter::class)->getMock();
+        $matcher = $this->exactly(2);
         $interpreter
-            ->expects($this->exactly(2))
+            ->expects($matcher)
             ->method('startPalette')
-            ->withConsecutive(['tl_test', 'default'], ['tl_test', 'test']);
+            ->willReturnCallback(function (...$args) use ($matcher) {
+                match ($matcher->numberOfInvocations()) {
+                    1 => $this->assertEquals(['tl_test', 'default'], $args),
+                    2 => $this->assertEquals(['tl_test', 'test'], $args),
+                };
+            });
 
+        $matcher2 = $this->exactly(4);
         $interpreter
-            ->expects($this->exactly(4))
+            ->expects($matcher2)
             ->method('addLegend')
-            ->withConsecutive(
-                ['foo', true, false],
-                ['title', true, false],
-                ['foo', false, false],
-                ['title', true, false]
-            );
+            ->willReturnCallback(function (...$args) use ($matcher2) {
+                match ($matcher2->numberOfInvocations()) {
+                    1 => $this->assertEquals(['foo', true, false, null, null], $args),
+                    2 => $this->assertEquals(['title', true, false, null, null], $args),
+                    3 => $this->assertEquals(['foo', false, null, null, null], $args),
+                    4 => $this->assertEquals(['title', true, null, null, null], $args),
+                };
+            });
 
+        $matcher3 = $this->exactly(4);
         $interpreter
-            ->expects($this->exactly(4))
+            ->expects($matcher3)
             ->method('addFieldTo')
-            ->withConsecutive(
-                ['foo', 'bar'],
-                ['title', 'headline'],
-                ['foo', 'baz'],
-                ['title', 'title']
-            );
+            ->willReturnCallback(function (...$args) use ($matcher3) {
+                match ($matcher3->numberOfInvocations()) {
+                    1 => $this->assertEquals(['foo', 'bar', null, null], $args),
+                    2 => $this->assertEquals(['title', 'headline', null, null], $args),
+                    3 => $this->assertEquals(['foo', 'baz', null, null], $args),
+                    4 => $this->assertEquals(['title', 'title', null, null], $args),
+                };
+            });
 
         $interpreter
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('removeFieldFrom')
-            ->withConsecutive(['title', 'headline']);
+            ->with('title', 'headline');
 
         $interpreter
             ->expects($this->once())
@@ -192,49 +233,61 @@ class MetaPalettesParserTest extends TestCase
 
         $parser      = new MetaPaletteParser();
         $interpreter = $this->getMockBuilder(Interpreter::class)->getMock();
+        $matcher = $this->exactly(3);
         $interpreter
-            ->expects($this->exactly(3))
+            ->expects($matcher)
             ->method('startPalette')
-            ->withConsecutive(
-                ['tl_test', 'base'],
-                ['tl_test', 'default'],
-                ['tl_test', 'test']
-            );
+            ->willReturnCallback(function (...$args) use ($matcher) {
+                match ($matcher->numberOfInvocations()) {
+                    1 => $this->assertEquals(['tl_test', 'base'], $args),
+                    2 => $this->assertEquals(['tl_test', 'default'], $args),
+                    3 => $this->assertEquals(['tl_test', 'test'], $args),
+                };
+            });
 
+        $matcher2 = $this->exactly(5);
         $interpreter
-            ->expects($this->exactly(5))
+            ->expects($matcher2)
             ->method('addLegend')
-            ->withConsecutive(
-                ['config', true, false],
-                ['foo', true, false],
-                ['title', true, false],
-                ['foo', false, false],
-                ['title', true, false]
-            );
+            ->willReturnCallback(function (...$args) use ($matcher2) {
+                match ($matcher2->numberOfInvocations()) {
+                    1 => $this->assertEquals(['config', true, false, null, null], $args),
+                    2 => $this->assertEquals(['foo', true, false, null, null], $args),
+                    3 => $this->assertEquals(['title', true, false, null, null], $args),
+                    4 => $this->assertEquals(['foo', false, null, null, null], $args),
+                    5 => $this->assertEquals(['title', true, null, null, null], $args),
+                };
+            });
 
+        $matcher3 = $this->exactly(5);
         $interpreter
-            ->expects($this->exactly(5))
+            ->expects($matcher3)
             ->method('addFieldTo')
-            ->withConsecutive(
-                ['config', 'config'],
-                ['foo', 'bar'],
-                ['title', 'headline'],
-                ['foo', 'baz'],
-                ['title', 'title']
-            );
+            ->willReturnCallback(function (...$args) use ($matcher3) {
+                match ($matcher3->numberOfInvocations()) {
+                    1 => $this->assertEquals(['config', 'config', null, null], $args),
+                    2 => $this->assertEquals(['foo', 'bar', null, null], $args),
+                    3 => $this->assertEquals(['title', 'headline', null, null], $args),
+                    4 => $this->assertEquals(['foo', 'baz', null, null], $args),
+                    5 => $this->assertEquals(['title', 'title', null, null], $args),
+                };
+            });
 
         $interpreter
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('removeFieldFrom')
-            ->withConsecutive(['title', 'headline']);
+            ->with('title', 'headline');
 
+        $matcher4 = $this->exactly(2);
         $interpreter
-            ->expects($this->exactly(2))
+            ->expects($matcher4)
             ->method('inherit')
-            ->withConsecutive(
-                ['base', $parser],
-                ['default', $parser]
-            );
+            ->willReturnCallback(function (...$args) use ($matcher4, $parser) {
+                match ($matcher4->numberOfInvocations()) {
+                    1 => $this->assertEquals(['base', $parser], $args),
+                    2 => $this->assertEquals(['default', $parser], $args),
+                };
+            });
 
         $interpreter
             ->expects($this->exactly(3))
@@ -263,36 +316,52 @@ class MetaPalettesParserTest extends TestCase
 
         $parser      = new MetaPaletteParser();
         $interpreter = $this->getMockBuilder(Interpreter::class)->getMock();
+        $matcher = $this->exactly(3);
         $interpreter
-            ->expects($this->exactly(3))
+            ->expects($matcher)
             ->method('startPalette')
-            ->withConsecutive(['tl_test', 'test'], ['tl_test', 'custom'], ['tl_test', 'default']);
+            ->willReturnCallback(function (...$args) use ($matcher) {
+                match ($matcher->numberOfInvocations()) {
+                    1 => $this->assertEquals(['tl_test', 'test'], $args),
+                    2 => $this->assertEquals(['tl_test', 'custom'], $args),
+                    3 => $this->assertEquals(['tl_test', 'default'], $args),
+                };
+            });
 
+        $matcher2 = $this->exactly(3);
         $interpreter
-            ->expects($this->exactly(3))
+            ->expects($matcher2)
             ->method('addLegend')
-            ->withConsecutive(
-                ['test', true, false],
-                ['custom', true, false],
-                ['default', true, false]
-            );
+            ->willReturnCallback(function (...$args) use ($matcher2) {
+                match ($matcher2->numberOfInvocations()) {
+                    1 => $this->assertEquals(['test', true, false, null, null], $args),
+                    2 => $this->assertEquals(['custom', true, false, null, null], $args),
+                    3 => $this->assertEquals(['default', true, false, null, null], $args),
+                };
+            });
 
+        $matcher3 = $this->exactly(3);
         $interpreter
-            ->expects($this->exactly(3))
+            ->expects($matcher3)
             ->method('addFieldTo')
-            ->withConsecutive(
-                ['test', 'test'],
-                ['custom', 'custom'],
-                ['default', 'default']
-            );
+            ->willReturnCallback(function (...$args) use ($matcher3) {
+                match ($matcher3->numberOfInvocations()) {
+                    1 => $this->assertEquals(['test', 'test', null, null], $args),
+                    2 => $this->assertEquals(['custom', 'custom', null, null], $args),
+                    3 => $this->assertEquals(['default', 'default', null, null], $args),
+                };
+            });
 
+        $matcher4 = $this->exactly(2);
         $interpreter
-            ->expects($this->exactly(2))
+            ->expects($matcher4)
             ->method('inherit')
-            ->withConsecutive(
-                ['custom', $parser],
-                ['default', $parser]
-            );
+            ->willReturnCallback(function (...$args) use ($matcher4, $parser) {
+                match ($matcher4->numberOfInvocations()) {
+                    1 => $this->assertEquals(['custom', $parser], $args),
+                    2 => $this->assertEquals(['default', $parser], $args),
+                };
+            });
 
         $interpreter
             ->expects($this->exactly(3))

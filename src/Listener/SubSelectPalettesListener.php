@@ -36,6 +36,8 @@ use ContaoCommunityAlliance\MetaPalettes\MetaPalettes;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 
+use function nullableNever;
+
 use const E_USER_DEPRECATED;
 use const E_USER_ERROR;
 
@@ -193,13 +195,14 @@ class SubSelectPalettesListener
 
         // try getting activeRecord value
         /** @psalm-suppress RedundantConditionGivenDocblockType */
-        if ($dataContainer->activeRecord) {
-            return $dataContainer->activeRecord->$strSelector;
+        $currentRecord = $dataContainer->getCurrentRecord();
+        if ($currentRecord !== null) {
+            return ($currentRecord[$strSelector] ?? null);
         }
 
-        // or break, when unable to handle data container
+        // or break, when unable to handle a data container
         if ($dataContainer instanceof DC_Table
-            && $this->connection->getSchemaManager()->tablesExist([$dataContainer->table])
+            && $this->connection->createSchemaManager()->tablesExist([$dataContainer->table])
         ) {
             return $this->fetchValueFromDatabase($dataContainer, $strSelector);
         }
@@ -320,7 +323,7 @@ class SubSelectPalettesListener
             $GLOBALS['TL_DCA'][$strTable]['subpalettes'][$k] = preg_replace(
                 '#([,;]?' . preg_quote($strSelector) . ')([,;].*)?$#',
                 '$1' . $strPalette . '$2',
-                $GLOBALS['TL_DCA'][$strTable]['subpalettes'][$k]
+                (string) $GLOBALS['TL_DCA'][$strTable]['subpalettes'][$k]
             );
         }
     }

@@ -38,6 +38,7 @@ class MetaPaletteParser implements Parser
      *
      * @return bool
      */
+    #[\Override]
     public function parse($tableName, array $definition, Interpreter $interpreter)
     {
         if (isset($definition['metapalettes'])) {
@@ -68,6 +69,7 @@ class MetaPaletteParser implements Parser
      * @throws \InvalidArgumentException When meta palette definition does not exist.
      * @throws \RuntimeException         When recursive inheritance is detected.
      */
+    #[\Override]
     public function parsePalette($tableName, $paletteName, Interpreter $interpreter, $base = false)
     {
         if (!isset($this->palettes[$tableName][$paletteName])) {

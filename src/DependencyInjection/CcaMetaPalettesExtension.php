@@ -27,6 +27,7 @@ class CcaMetaPalettesExtension extends Extension
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     public function load(array $configs, ContainerBuilder $container): void
     {
         $loader = new YamlFileLoader(

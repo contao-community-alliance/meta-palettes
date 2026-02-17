@@ -47,7 +47,7 @@ class MetaPalettesBuilderTest extends TestCase
     {
         $framework = $this->createPartialMock(ContaoFramework::class, []);
         $builder   = $this->getMockBuilder(MetaPalettesBuilder::class)
-            ->setMethods(array('loadDca'))
+            ->onlyMethods(array('loadDca'))
             ->setConstructorArgs([$framework, new MetaPaletteParser()])
             ->getMock();
 
@@ -58,7 +58,7 @@ class MetaPalettesBuilderTest extends TestCase
         $builder
             ->expects($this->any())
             ->method('loadDca')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         return $builder;
     }
