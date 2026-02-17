@@ -50,6 +50,7 @@ class StringPalettesInterpreter implements Interpreter
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     public function startPalette($tableName, $paletteName)
     {
         $this->tableName   = $tableName;
@@ -61,6 +62,7 @@ class StringPalettesInterpreter implements Interpreter
      *
      * @throws RuntimeException When interpreter was not started.
      */
+    #[\Override]
     public function inherit($parent, Parser $parser)
     {
         if ($this->tableName === null || $this->paletteName === null) {
@@ -73,6 +75,7 @@ class StringPalettesInterpreter implements Interpreter
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     public function addLegend($name, $override, $hide, $position = null, $reference = null)
     {
         if (!isset($this->definition[$name])) {
@@ -81,7 +84,7 @@ class StringPalettesInterpreter implements Interpreter
                 'hide'   => (bool) $hide,
             ];
 
-            if ($reference) {
+            if ($reference !== null) {
                 $referencePosition = array_search($reference, array_keys($this->definition));
 
                 if ($referencePosition !== false) {
@@ -112,13 +115,14 @@ class StringPalettesInterpreter implements Interpreter
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     public function addFieldTo($legend, $name, $position = null, $reference = null)
     {
         if (!isset($this->definition[$legend]['fields'])) {
             $this->definition[$legend]['fields'] = [];
         }
 
-        if ($reference) {
+        if ($reference !== null) {
             $referencePosition = array_search($reference, $this->definition[$legend]['fields']);
 
             if ($referencePosition !== false) {
@@ -138,6 +142,7 @@ class StringPalettesInterpreter implements Interpreter
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     public function removeFieldFrom($legend, $name)
     {
         if (!isset($this->definition[$legend])) {
@@ -158,6 +163,7 @@ class StringPalettesInterpreter implements Interpreter
      *
      * @SuppressWarnings(PHPMD.Superglobals)
      */
+    #[\Override]
     public function finishPalette()
     {
         if ($this->tableName === null || $this->paletteName === null) {
@@ -185,6 +191,7 @@ class StringPalettesInterpreter implements Interpreter
      *
      * @SuppressWarnings(PHPMD.Superglobals)
      */
+    #[\Override]
     public function addSubPalette($tableName, $name, array $fields)
     {
         // only generate if not palette exists

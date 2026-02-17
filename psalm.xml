@@ -2,29 +2,31 @@
 <psalm
     errorLevel="3"
     hideExternalErrors="true"
+    findUnusedCode="false"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config https://getpsalm.org/schema/config"
 >
     <projectFiles>
         <directory name="src" />
-        <ignoreFiles>
-            <directory name="vendor/contao/core-bundle/src/Resources/contao"/>
-        </ignoreFiles>
     </projectFiles>
 
     <issueHandlers>
-        <InternalMethod>
-            <errorLevel type="suppress">
-                <referencedMethod name="Contao\CoreBundle\Framework\ContaoFramework::getAdapter"/>
-                <referencedMethod name="Contao\CoreBundle\Framework\ContaoFramework::initialize"/>
-            </errorLevel>
-        </InternalMethod>
         <DeprecatedMethod>
             <errorLevel type="suppress">
                 <referencedMethod name="Doctrine\DBAL\Connection::getSchemaManager"/>
                 <referencedMethod name="Doctrine\DBAL\Query\QueryBuilder::execute"/>
             </errorLevel>
         </DeprecatedMethod>
+        <ClassMustBeFinal>
+            <errorLevel type="suppress">
+                <directory name="src"/>
+            </errorLevel>
+        </ClassMustBeFinal>
+        <MissingClassConstType>
+            <errorLevel type="suppress">
+                <directory name="src"/>
+            </errorLevel>
+        </MissingClassConstType>
     </issueHandlers>
 </psalm>

@@ -40,7 +40,7 @@ class StringPalettesInterpreterTest extends TestCase
     {
         $interpreter = new StringPalettesInterpreter();
         $parser = $this->getMockBuilder(Parser::class)
-            ->setMethods(['parse', 'parsePalette'])
+            ->onlyMethods(['parse', 'parsePalette'])
             ->getMock();
 
         $parser
@@ -76,16 +76,27 @@ class StringPalettesInterpreterTest extends TestCase
     {
         $interpreter = new StringPalettesInterpreter();
         $parser = $this->getMockBuilder(Parser::class)
-            ->setMethods(['parse', 'parsePalette'])
+            ->onlyMethods(['parse', 'parsePalette'])
             ->getMock();
 
         $parser
             ->expects($this->exactly(2))
             ->method('parsePalette')
-            ->withConsecutive(
-                ['tl_test', 'default', $interpreter, true],
-                ['tl_test', 'custom', $interpreter, true]
-            );
+            ->willReturnCallback(function ($table, $palette, $interp, $flag) use ($interpreter) {
+                static $callCount = 0;
+                $callCount++;
+                if ($callCount === 1) {
+                    $this->assertEquals('tl_test', $table);
+                    $this->assertEquals('default', $palette);
+                    $this->assertSame($interpreter, $interp);
+                    $this->assertTrue($flag);
+                } elseif ($callCount === 2) {
+                    $this->assertEquals('tl_test', $table);
+                    $this->assertEquals('custom', $palette);
+                    $this->assertSame($interpreter, $interp);
+                    $this->assertTrue($flag);
+                }
+            });
 
         $interpreter->startPalette('tl_test', 'test');
 

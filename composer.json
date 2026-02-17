@@ -30,12 +30,12 @@
     "source": "https://github.com/contao-community-alliance/meta-palettes"
   },
   "require": {
-    "php": "^7.1 || ^8.0",
-    "contao/core-bundle": "^4.9 || ^5.0",
-    "doctrine/dbal": "^2.13 || ^3.1",
-    "symfony/config": "^4.4 || ^5.1 || ^6.0 || ^7.4",
-    "symfony/dependency-injection": "^4.4 || ^5.1 || ^6.0 || ^7.4",
-    "symfony/http-kernel": "^4.4 || ^5.1 || ^6.0 || ^7.4"
+    "php": "^8.2",
+    "contao/core-bundle": "^5.3",
+    "doctrine/dbal": "^3.9 || ^4.0",
+    "symfony/config": "^5.4 || ^6.0 || ^7.4",
+    "symfony/dependency-injection": "^5.4 || ^6.0 || ^7.4",
+    "symfony/http-kernel": "^5.1 || ^6.0 || ^7.4"
   },
   "require-dev": {
     "contao-community-alliance/dc-general": "^2.1@dev",
@@ -44,8 +44,7 @@
     "phpcq/runner-bootstrap": "1.x-dev"
   },
   "conflict": {
-    "contao/manager-plugin": "<2.2 || >=3.0",
-    "metamodels/dc_general": "<1-dev"
+    "contao/manager-plugin": "<2.2 || >=3.0"
   },
   "autoload": {
     "psr-4": {
@@ -59,11 +58,11 @@
   },
   "config": {
     "allow-plugins": {
-      "contao-components/installer": false,
       "composer/package-versions-deprecated": true,
+      "contao-components/installer": false,
       "contao/manager-plugin": true,
-      "php-http/discovery": true,
-      "ocramius/package-versions": true
+      "ocramius/package-versions": true,
+      "php-http/discovery": true
     }
   },
   "extra": {

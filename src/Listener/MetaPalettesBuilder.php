@@ -34,6 +34,8 @@ use ContaoCommunityAlliance\DcGeneral\Factory\Event\BuildDataDefinitionEvent;
 use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter\PalettesDefinitionInterpreter;
 use ContaoCommunityAlliance\MetaPalettes\Parser\MetaPaletteParser;
 use RuntimeException;
+
+use function array_values;
 use function get_class;
 use function is_array;
 use function sprintf;
@@ -134,7 +136,7 @@ class MetaPalettesBuilder
         $interpreter       = new PalettesDefinitionInterpreter(
             $palettesDefinition,
             $parser,
-            $selectorFieldNames,
+            array_values($selectorFieldNames),
             [],
             $subSelectPalettes
         );
@@ -184,6 +186,7 @@ class MetaPalettesBuilder
             }
 
             if (count($properties)) {
+                /** @psalm-var list<string> $selectorFieldNames */
                 $selectorPropertyName = $parser->createSubpaletteSelectorFieldName(
                     $selector,
                     $selectorFieldNames

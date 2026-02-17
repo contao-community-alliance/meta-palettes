@@ -235,10 +235,10 @@ class MetaPalettes
         );
 
         $strRegexp  = sprintf('#[,;](%s)([,;]|$)#Ui', implode('|', $varArg2));
-        $strPalette = $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1];
+        $strPalette = (string) $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1];
 
         do {
-            $strPalette = preg_replace($strRegexp, '$2', $strPalette, -1, $count);
+            $strPalette = (string) preg_replace($strRegexp, '$2', $strPalette, -1, $count);
         } while ($count);
 
         $GLOBALS['TL_DCA'][$strTable]['palettes'][$varArg1] = $strPalette;

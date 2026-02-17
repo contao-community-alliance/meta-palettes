@@ -63,7 +63,8 @@ class PalettesDefinitionInterpreter implements Interpreter
     /**
      * Selector field names.
      *
-     * @var array
+     * @var       array
+     * @psalm-var list<string>
      */
     private $selectorFieldNames;
 
@@ -97,6 +98,8 @@ class PalettesDefinitionInterpreter implements Interpreter
      * @param array                       $subPalettes          Sub palettes. Not used, but kept for BC reason
      * @param array                       $subSelectPalettes    Sub select palettes.
      *
+     * @psalm-param list<string> $selectorFieldNames
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __construct(
@@ -115,6 +118,7 @@ class PalettesDefinitionInterpreter implements Interpreter
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     public function startPalette($tableName, $paletteName)
     {
         $this->tableName = $tableName;
@@ -127,6 +131,7 @@ class PalettesDefinitionInterpreter implements Interpreter
      *
      * @throws RuntimeException When interpreter was not started.
      */
+    #[\Override]
     public function inherit($parent, Parser $parser)
     {
         if ($this->tableName === null) {
@@ -143,6 +148,7 @@ class PalettesDefinitionInterpreter implements Interpreter
      *
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
+    #[\Override]
     public function addLegend($name, $override, $hide, $position = null, $reference = null)
     {
         if ($this->palette === null) {
@@ -166,7 +172,7 @@ class PalettesDefinitionInterpreter implements Interpreter
         $legend = new Legend($name);
         $legend->setInitialVisibility(!$hide);
 
-        if (!$reference) {
+        if ($reference === null) {
             $this->palette->addLegend($legend);
 
             return;
@@ -182,7 +188,7 @@ class PalettesDefinitionInterpreter implements Interpreter
             if ($existingLegend->getName() === $reference) {
                 if ($position == Parser::POSITION_AFTER) {
                     // if insert after, get to next
-                    $refLegend = next($existingLegends);
+                    $refLegend = (next($existingLegends) ?: null);
                 } else {
                     $refLegend = $existingLegend;
                 }
@@ -198,6 +204,7 @@ class PalettesDefinitionInterpreter implements Interpreter
      *
      * @throws RuntimeException When interpreter was not started.
      */
+    #[\Override]
     public function addFieldTo($legend, $name, $position = null, $reference = null)
     {
         if ($this->palette === null) {
@@ -207,7 +214,7 @@ class PalettesDefinitionInterpreter implements Interpreter
         $property = new Property($name);
         $legend   = $this->palette->getLegend($legend);
 
-        if ($reference) {
+        if ($reference !== null) {
             $existingProperties = $legend->getProperties();
             $refProperty        = null;
 
@@ -246,6 +253,7 @@ class PalettesDefinitionInterpreter implements Interpreter
      *
      * @throws RuntimeException When interpreter was not started.
      */
+    #[\Override]
     public function removeFieldFrom($legend, $name)
     {
         if ($this->palette === null) {
@@ -268,6 +276,7 @@ class PalettesDefinitionInterpreter implements Interpreter
      *
      * @throws RuntimeException When interpreter was not started.
      */
+    #[\Override]
     public function finishPalette()
     {
         if ($this->palette === null) {
@@ -291,6 +300,7 @@ class PalettesDefinitionInterpreter implements Interpreter
      *
      * @return void
      */
+    #[\Override]
     public function addSubPalette($tableName, $name, array $fields)
     {
         $properties = [];
@@ -406,7 +416,7 @@ class PalettesDefinitionInterpreter implements Interpreter
     {
         $position = null;
 
-        if ($insert && $reference) {
+        if ($insert && $reference !== null) {
             $properties = $legend->getProperties();
             if (!empty($properties)) {
                 $property = current($properties);
@@ -473,7 +483,7 @@ class PalettesDefinitionInterpreter implements Interpreter
             if (in_array($selectorFieldName, $selectorFieldNames)) {
                 break;
             }
-            $selectorFieldName .= '_' . array_shift($selectorValues);
+            $selectorFieldName .= '_' . (array_shift($selectorValues) ?? '');
             $selectorValueCount = count($selectorValues);
         }
 
