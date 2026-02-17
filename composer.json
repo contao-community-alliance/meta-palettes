@@ -35,7 +35,7 @@
     "doctrine/dbal": "^3.9 || ^4.0",
     "symfony/config": "^5.4 || ^6.0 || ^7.4",
     "symfony/dependency-injection": "^5.4 || ^6.0 || ^7.4",
-    "symfony/http-kernel": "^5.1 || ^6.0 || ^7.4"
+    "symfony/http-kernel": "^5.4 || ^6.0 || ^7.4"
   },
   "require-dev": {
     "contao-community-alliance/dc-general": "^2.1@dev",
@@ -68,8 +68,7 @@
   "extra": {
     "branch-alias": {
       "dev-develop": "2.2.x-dev",
-      "dev-master": "2.1.x-dev",
-      "dev-support/1.x": "1.11.x-dev"
+      "dev-master": "2.1.x-dev"
     },
     "contao-manager-plugin": "ContaoCommunityAlliance\\MetaPalettes\\ContaoManager\\Plugin"
   }
