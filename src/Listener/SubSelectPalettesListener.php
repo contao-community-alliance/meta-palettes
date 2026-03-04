@@ -342,23 +342,19 @@ class SubSelectPalettesListener
      */
     private function fetchValueFromDatabase($dataContainer, $strSelector)
     {
-        $statement = $this->connection->createQueryBuilder()
+        $result = $this->connection->createQueryBuilder()
             ->select($this->connection->quoteIdentifier($strSelector))
             ->from($this->connection->quoteIdentifier($dataContainer->table))
             ->where('id=:value')
             ->setParameter('value', $dataContainer->id)
             ->setMaxResults(1)
-            ->execute();
+            ->executeQuery();
 
-        assert(!is_int($statement));
-
-        /** @psalm-suppress UndefinedInterfaceMethod */
-        if ($statement->rowCount() === 0) {
+        if ($result->rowCount() === 0) {
             return null;
         }
 
-        /** @psalm-suppress UndefinedInterfaceMethod */
-        return $statement->fetchOne();
+        return $result->fetchOne();
     }
 
     /**

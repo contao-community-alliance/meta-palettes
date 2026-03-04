@@ -13,12 +13,6 @@
     </projectFiles>
 
     <issueHandlers>
-        <DeprecatedMethod>
-            <errorLevel type="suppress">
-                <referencedMethod name="Doctrine\DBAL\Connection::getSchemaManager"/>
-                <referencedMethod name="Doctrine\DBAL\Query\QueryBuilder::execute"/>
-            </errorLevel>
-        </DeprecatedMethod>
         <ClassMustBeFinal>
             <errorLevel type="suppress">
                 <directory name="src"/>
