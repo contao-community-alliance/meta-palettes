@@ -30,6 +30,14 @@ phpcq:
     phpcs:
       version: ^1.0
       signed: false
+      # Pin phpcs to 3.x: the PhpCodeQuality ruleset references the
+      # Generic.Functions.CallTimePassByReference sniff which was removed in
+      # phpcs 4.0, making the ruleset fail to load ("Report file was not produced").
+      requirements:
+        phpcs:
+          version: ^3.13
+        phpcbf:
+          version: ^3.13
     composer-normalize:
       version: ^1.0
       signed: false

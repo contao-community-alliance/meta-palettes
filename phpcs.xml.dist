@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="ContaoToolkit">
-    <rule ref="vendor/phpcq/coding-standard/phpcs/PhpCodeQuality/ruleset.xml" />
+    <rule ref="vendor/phpcq/coding-standard/phpcs/PhpCodeQuality/ruleset.xml">
+        <!-- VariableCommentSniff calls utf8_encode(), which is deprecated since PHP 8.2 and
+             aborts phpcs ("Internal.Exception"). phpcq/coding-standard has no PHP 8.2+ compatible
+             release (latest stable 2.1.2 dates from 2020), so exclude this single sniff. -->
+        <exclude name="PhpCodeQuality.Commenting.VariableComment"/>
+    </rule>
 </ruleset>
