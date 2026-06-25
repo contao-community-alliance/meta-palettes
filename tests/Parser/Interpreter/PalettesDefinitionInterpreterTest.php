@@ -17,6 +17,7 @@ namespace ContaoCommunityAlliance\MetaPalettes\Test\Parser\Interpreter;
 
 use ContaoCommunityAlliance\DcGeneral\Contao\Dca\Palette\LegacyPalettesParser;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Definition\PalettesDefinitionInterface;
+use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\Property;
 use ContaoCommunityAlliance\DcGeneral\DataDefinition\Palette\PropertyInterface;
 use ContaoCommunityAlliance\MetaPalettes\Parser\Interpreter\PalettesDefinitionInterpreter;
 use PHPUnit\Framework\TestCase;
@@ -57,5 +58,60 @@ class PalettesDefinitionInterpreterTest extends TestCase
         );
 
         self::assertSame(['first', 'injected', 'second', 'last'], $propertyNames);
+    }
+
+    public function testAddsSubSelectPropertiesWhenSelectorPropertyExists(): void
+    {
+        $interpreter = $this->createInterpreterWithRteSubSelect();
+
+        $interpreter->startPalette('tl_example', 'default');
+        $interpreter->addLegend('advanced', true, false);
+        $interpreter->addFieldTo('advanced', 'rte');
+        $interpreter->finishPalette();
+
+        $palette = $interpreter->getPalettes()[0];
+
+        self::assertTrue($palette->hasLegend('presentation'));
+        self::assertTrue($palette->getLegend('presentation')->hasProperty('highlight'));
+    }
+
+    public function testDoesNotAddSubSelectPropertiesWhenSelectorPropertyIsMissing(): void
+    {
+        $interpreter = $this->createInterpreterWithRteSubSelect();
+
+        // Palette without the selector property "rte" (e.g. a text/select attribute setting).
+        $interpreter->startPalette('tl_example', 'default');
+        $interpreter->addLegend('advanced', true, false);
+        $interpreter->addFieldTo('advanced', 'mandatory');
+        $interpreter->finishPalette();
+
+        $palette = $interpreter->getPalettes()[0];
+
+        self::assertFalse(
+            $palette->hasLegend('presentation'),
+            'The sub select legend must not be created when the selector property is absent from the palette.'
+        );
+    }
+
+    private function createInterpreterWithRteSubSelect(): PalettesDefinitionInterpreter
+    {
+        $definition = $this->createMock(PalettesDefinitionInterface::class);
+        $parser     = $this->createPartialMock(LegacyPalettesParser::class, []);
+
+        // Mirrors a parsed metasubselectpalettes entry where selecting "ace" for the "rte"
+        // property reveals the "highlight" property within the "presentation" legend.
+        $subSelectPalettes = [
+            'rte' => [
+                'presentation after rte' => [new Property('highlight')],
+            ],
+        ];
+
+        return new PalettesDefinitionInterpreter(
+            $definition,
+            $parser,
+            ['rte'],
+            [],
+            $subSelectPalettes
+        );
     }
 }

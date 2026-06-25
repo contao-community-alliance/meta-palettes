@@ -22,6 +22,7 @@
     "ContaoCommunityAlliance\\DcGeneral\\DataDefinition\\Palette\\Legend",
     "ContaoCommunityAlliance\\DcGeneral\\DataDefinition\\Palette\\LegendInterface",
     "ContaoCommunityAlliance\\DcGeneral\\DataDefinition\\Palette\\Palette",
+    "ContaoCommunityAlliance\\DcGeneral\\DataDefinition\\Palette\\PaletteInterface",
     "ContaoCommunityAlliance\\DcGeneral\\DataDefinition\\Palette\\Property",
     "ContaoCommunityAlliance\\DcGeneral\\Factory\\Event\\BuildDataDefinitionEvent"
   ]

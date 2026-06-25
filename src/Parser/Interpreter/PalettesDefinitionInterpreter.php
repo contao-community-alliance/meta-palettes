@@ -507,6 +507,13 @@ class PalettesDefinitionInterpreter implements Interpreter
                 }
 
                 foreach ($this->palettes as $palette) {
+                    // Only add the sub select properties when the selector property is actually part of the palette.
+                    // Otherwise the visible condition generated for the sub select property would reference a
+                    // non-existent property and raise an exception when the palette gets rendered.
+                    if (!$this->paletteHasProperty($palette, $propertyName)) {
+                        continue;
+                    }
+
                     if (preg_match('#^(\w+) (before|after) (\w+)$#', $fullLegendName, $matches)) {
                         $legendName = $matches[1];
                         $insert     = $matches[2];
@@ -565,5 +572,24 @@ class PalettesDefinitionInterpreter implements Interpreter
         }
 
         return $subPaletteCallbacks;
+    }
+
+    /**
+     * Determine if any legend of the given palette contains the named property.
+     *
+     * @param PaletteInterface $palette      The palette to search in.
+     * @param string           $propertyName The property name to look for.
+     *
+     * @return bool
+     */
+    private function paletteHasProperty(PaletteInterface $palette, $propertyName)
+    {
+        foreach ($palette->getLegends() as $legend) {
+            if ($legend->hasProperty($propertyName)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
