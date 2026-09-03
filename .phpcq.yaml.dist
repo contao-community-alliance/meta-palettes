@@ -47,6 +47,10 @@ phpcq:
     # PHP_CodeSniffer
     - 31C7E470E2138192
     - 97B02DD8E5071466
+    # phpcs / phpcbf - ab 4.0.2, neuer Release-Schluessel von Juliette Reinders Folmer.
+    # Fingerabdruck gegen die README von PHPCSStandards/PHP_CodeSniffer geprueft:
+    # 5CB4 F778 BF9B C4FB 67AE 511D 96E9 1A99 2CF2 2FF4
+    - 96E91A992CF22FF4
     # Composer normalize
     - C00543248C87FB13
     # PHPMD
