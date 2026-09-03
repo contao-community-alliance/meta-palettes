@@ -20,13 +20,17 @@
       "email": "david.molineus@netzmacht.de",
       "homepage": "https://netzmacht.de",
       "role": "Developer"
+    },
+    {
+      "name": "Ingolf Steinhardt",
+      "email": "info@e-spin.de",
+      "role": "Developer"
     }
   ],
   "homepage": "https://c-c-a.org",
   "support": {
     "issues": "https://github.com/contao-community-alliance/meta-palettes/issues",
     "wiki": "https://github.com/contao-community-alliance/meta-palettes/wiki",
-    "irc": "irc://irc.freenode.org/contao.dev",
     "source": "https://github.com/contao-community-alliance/meta-palettes"
   },
   "require": {
@@ -38,7 +42,7 @@
     "symfony/http-kernel": "^5.4 || ^6.0 || ^7.4 || ^8.0"
   },
   "require-dev": {
-    "contao-community-alliance/dc-general": "^2.1@dev",
+    "contao-community-alliance/dc-general": "^2.4@dev",
     "contao/manager-plugin": "^2.2",
     "phpcq/coding-standard": "^2.1.2",
     "phpcq/runner-bootstrap": "1.x-dev"
@@ -68,8 +72,7 @@
   "extra": {
     "branch-alias": {
       "dev-develop": "2.2.x-dev",
-      "dev-master": "2.1.x-dev",
-      "dev-feature/contao6": "2.1.x-dev"
+      "dev-master": "2.1.x-dev"
     },
     "contao-manager-plugin": "ContaoCommunityAlliance\\MetaPalettes\\ContaoManager\\Plugin"
   }
