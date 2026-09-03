@@ -1,4 +1,190 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="ContaoToolkit">
-    <rule ref="vendor/phpcq/coding-standard/phpcs/PhpCodeQuality/ruleset.xml" />
+    <!--
+        This inlines vendor/phpcq/coding-standard/phpcs/PhpCodeQuality/ruleset.xml (unmaintained
+        since 2020, v2.1.2) instead of referencing it directly, minus its one
+        "Generic.Functions.CallTimePassByReference" rule: PHP_CodeSniffer 4.0.2+ (the version phpcq
+        itself runs, pinned independently of this project's own composer.json) dropped that sniff
+        class outright. PHPCS resolves every referenced sniff class while building the ruleset tree
+        - before any <exclude> is even considered - so wrapping the whole vendor ruleset in an
+        <exclude> for just that one rule still fails with "Referenced sniff ... does not exist."
+        Everything else below is an unmodified copy; only the TYPO3SniffPool paths were rewritten to
+        be relative to this file instead of the vendor ruleset's own location.
+    -->
+    <exclude-pattern>*/.git/*</exclude-pattern>
+
+    <rule ref="PSR2"/>
+
+    <rule ref="Squiz.Arrays.ArrayBracketSpacing" />
+
+    <rule ref="Generic.Classes.DuplicateClassName" />
+    <rule ref="Squiz.Classes.ClassFileName" />
+    <rule ref="Squiz.Classes.SelfMemberReference" />
+    <rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
+        <!-- already handled by phpmd. -->
+        <severity>0</severity>
+    </rule>
+
+    <rule ref="Generic.CodeAnalysis.ForLoopShouldBeWhileLoop" />
+    <rule ref="Generic.CodeAnalysis.ForLoopWithTestFunctionCall" />
+    <rule ref="Generic.CodeAnalysis.JumbledIncrementer" />
+    <rule ref="Generic.CodeAnalysis.UnconditionalIfStatement" />
+    <rule ref="Generic.CodeAnalysis.UnnecessaryFinalModifier" />
+    <rule ref="Generic.CodeAnalysis.UselessOverridingMethod" />
+    <rule ref="Generic.CodeAnalysis.EmptyStatement" />
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedCATCH">
+        <!-- already handled by Squiz.Commenting.EmptyCatchComment.Missing. -->
+        <severity>0</severity>
+    </rule>
+    <rule ref="Generic.CodeAnalysis.EmptyStatement.DetectedCatch">
+        <!-- already handled by Squiz.Commenting.EmptyCatchComment.Missing. -->
+        <severity>0</severity>
+    </rule>
+
+    <!--
+        The PhpCodeQuality.* sniffs below are referenced by file path rather than the usual
+        "Standard.Category.Sniff" dot notation: dot notation only resolves against a standard name
+        PHPCS already knows about (bundled standards, or ones registered via installed_paths), which
+        "PhpCodeQuality" never was here - it only worked previously as a side effect of loading the
+        whole vendor ruleset.xml directly. Referencing each PhpCodeQuality sniff's own file still
+        yields the same "PhpCodeQuality.Category.Sniff[.MessageCode]" error codes (PHPCS derives
+        those from the sniff class's own namespace, e.g. PhpCodeQuality\Sniffs\Commenting\
+        BlockCommentSniff), so the nested name="MessageCode" severity overrides below still target
+        the exact same messages the original vendor ruleset silenced.
+    -->
+    <rule ref="vendor/phpcq/coding-standard/phpcs/PhpCodeQuality/Sniffs/Commenting/BlockCommentSniff.php">
+        <severity name="FirstLineIndent">0</severity>
+        <severity name="LineIndent">0</severity>
+        <severity name="LastLineIndent">0</severity>
+        <severity name="NoCapital">0</severity>
+    </rule>
+
+    <rule ref="vendor/phpcq/coding-standard/phpcs/PhpCodeQuality/Sniffs/Commenting/FileCommentSniff.php">
+        <!-- We do NOT want to enforce to annotate the php version as it will change too fast due to SemVer. -->
+        <severity name="MissingVersion">0</severity>
+    </rule>
+    <!--
+        PhpCodeQuality\Sniffs\Commenting\ClassCommentSniff overrides PEAR\FileCommentSniff's
+        protected $tags property to an empty array - "we do not enforce any tags" on class
+        docblocks, since author/license/category/link already live in each file's header comment.
+        PHPCS 4.x refactored PEAR\FileCommentSniff to read the required-tag list from a
+        "protected const EXPECTED_TAGS" via late static binding instead of the old $tags property,
+        so that override now silently does nothing and PHPCS falls back to the full default PEAR
+        tag list. The severity overrides below restore the vendor sniff's actual original intent.
+    -->
+    <rule ref="vendor/phpcq/coding-standard/phpcs/PhpCodeQuality/Sniffs/Commenting/ClassCommentSniff.php">
+        <severity name="MissingCategoryTag">0</severity>
+        <severity name="MissingPackageTag">0</severity>
+        <severity name="MissingSubpackageTag">0</severity>
+        <severity name="MissingAuthorTag">0</severity>
+        <severity name="MissingLicenseTag">0</severity>
+        <severity name="MissingLinkTag">0</severity>
+        <severity name="PackageTagOrder">0</severity>
+        <severity name="CopyrightTagOrder">0</severity>
+        <severity name="AuthorTagOrder">0</severity>
+        <severity name="LicenseTagOrder">0</severity>
+        <severity name="LinkTagOrder">0</severity>
+        <severity name="CategoryTagOrder">0</severity>
+    </rule>
+    <rule ref="vendor/phpcq/coding-standard/phpcs/PhpCodeQuality/Sniffs/Commenting/FunctionCommentSniff.php">
+        <!-- We do NOT want to enforce type hints everywhere. -->
+        <severity name="TypeHintMissing">0</severity>
+        <!-- We do NOT want to enforce scalar type hints everywhere as we also support PHP <7.0. -->
+        <severity name="ScalarTypeHintMissing">0</severity>
+    </rule>
+    <rule ref="vendor/phpcq/coding-standard/phpcs/PhpCodeQuality/Sniffs/Commenting/VariableCommentSniff.php" />
+    <rule ref="vendor/phpcq/coding-standard/phpcs/PhpCodeQuality/Sniffs/Commenting/DocCommentSniff.php">
+        <!-- We want to allow a line between parameters. -->
+        <severity name="ParamGroup">0</severity>
+    </rule>
+    <rule ref="Generic.Commenting.Fixme" />
+    <rule ref="Generic.Commenting.Todo" />
+    <rule ref="Squiz.Commenting.DocCommentAlignment" />
+    <rule ref="Squiz.Commenting.EmptyCatchComment" />
+    <rule ref="Squiz.Commenting.FunctionCommentThrowTag" />
+    <rule ref="Squiz.Commenting.PostStatementComment" />
+    <rule ref="Squiz.Commenting.InlineComment" />
+    <rule ref="Squiz.Commenting.InlineComment.DocBlock">
+        <!-- Allow doc blocks due to /** @var Class $var */ -->
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.Commenting.InlineComment.NotCapital">
+        <!-- Allow inline comments to start with lower case letters. -->
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.Commenting.InlineComment.InvalidEndChar">
+        <!-- Allow inline comments to end with alternative characters. -->
+        <severity>0</severity>
+    </rule>
+
+    <rule ref="vendor/phpcq/coding-standard/phpcs/TYPO3SniffPool/Sniffs/Commenting/DoubleSlashCommentsInNewLineSniff.php" /><!-- candidate for removal (xtra) -->
+    <rule ref="vendor/phpcq/coding-standard/phpcs/TYPO3SniffPool/Sniffs/Commenting/SpaceAfterDoubleSlashSniff.php" />
+
+    <rule ref="vendor/phpcq/coding-standard/phpcs/TYPO3SniffPool/Sniffs/ControlStructures/ValidDefaultStatementsInSwitchesSniff.php" />
+
+    <rule ref="vendor/phpcq/coding-standard/phpcs/PhpCodeQuality/Sniffs/Files/EncodingUtf8Sniff.php" />
+    <rule ref="Generic.Files.EndFileNewline" />
+    <rule ref="Generic.Files.OneClassPerFile" />
+    <rule ref="Generic.Files.OneInterfacePerFile" />
+
+    <rule ref="Generic.Formatting.MultipleStatementAlignment" />
+    <rule ref="Generic.Formatting.SpaceAfterCast" />
+    <rule ref="Squiz.Formatting.OperatorBracket" />
+
+    <rule ref="Squiz.Functions.FunctionDuplicateArgument" />
+    <rule ref="Squiz.Functions.GlobalFunction" />
+
+    <rule ref="Generic.NamingConventions.ConstructorName" />
+    <rule ref="Squiz.NamingConventions.ValidVariableName.PrivateNoUnderscore">
+        <!-- We do NOT want to have a leading underscore for private fields. -->
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.NamingConventions.ValidVariableName.NotCamelCaps">
+        <!-- This sadly chokes on the variables "$_" used by T.Lins. -->
+        <severity>0</severity>
+    </rule>
+
+    <rule ref="Squiz.Operators.IncrementDecrementUsage" />
+    <rule ref="Squiz.Operators.ValidLogicalOperators" />
+
+    <rule ref="Squiz.PHP.CommentedOutCode" />
+    <rule ref="vendor/phpcq/coding-standard/phpcs/PhpCodeQuality/Sniffs/PHP/ForbiddenFunctionsSniff.php" />
+    <rule ref="Generic.PHP.DeprecatedFunctions" />
+    <rule ref="Generic.PHP.ForbiddenFunctions" />
+    <rule ref="Generic.PHP.NoSilencedErrors" />
+    <rule ref="Generic.PHP.SAPIUsage" />
+    <rule ref="Squiz.PHP.DisallowSizeFunctionsInLoops" />
+    <rule ref="Squiz.PHP.Eval">
+        <exclude-pattern>*/test/*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.PHP.GlobalKeyword" />
+    <rule ref="Squiz.PHP.LowercasePHPFunctions" />
+    <rule ref="Squiz.PHP.NonExecutableCode" />
+
+    <rule ref="Squiz.Scope.MethodScope" />
+    <rule ref="Squiz.Scope.MemberVarScope" />
+    <rule ref="Squiz.Scope.StaticThisUsage" />
+
+    <!--
+        Omitted: PhpCodeQuality.Strings.UnnecessaryStringConcat crashes under PHPCS 4.x with
+        "Undefined property: PHP_CodeSniffer\Files\LocalFile::$tokenizerType" (that property was
+        removed from LocalFile in PHPCS 4) - another casualty of this unmaintained ruleset never
+        having been updated past PHPCS 3.x, same class of problem as
+        Generic.Functions.CallTimePassByReference above.
+    -->
+    <rule ref="Squiz.Strings.DoubleQuoteUsage" /><!-- we could just silence the ContainsVar part here to allow echo "$foo"; -->
+    <rule ref="Squiz.Strings.EchoedStrings" />
+
+    <rule ref="vendor/phpcq/coding-standard/phpcs/PhpCodeQuality/Sniffs/WhiteSpace/WhitespaceAfterAsteriskSniff.php" />
+    <rule ref="Squiz.WhiteSpace.CastSpacing" />
+    <rule ref="Squiz.WhiteSpace.SemicolonSpacing" />
+    <rule ref="Squiz.WhiteSpace.LogicalOperatorSpacing" />
+    <rule ref="Squiz.WhiteSpace.OperatorSpacing.SpacingBefore">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.OperatorSpacing">
+        <properties>
+            <property name="ignoreNewlines" value="true"/>
+        </properties>
+    </rule>
 </ruleset>

@@ -71,7 +71,7 @@ class PalettesDefinitionInterpreter implements Interpreter
     /**
      * List of built palettes.
      *
-     * @var PaletteInterface[]
+     * @var list<PaletteInterface>
      */
     private $palettes = [];
 
@@ -350,7 +350,7 @@ class PalettesDefinitionInterpreter implements Interpreter
     /**
      * Get all generated palettes.
      *
-     * @return array
+     * @return list<PaletteInterface>
      */
     public function getPalettes()
     {
